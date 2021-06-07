@@ -1,0 +1,19 @@
+The gridsup package enables the display of records in a grid from a database.
+
+The database must be a subclass of DBapi (basesup/dbapi.py) or DPTapi (basesup/dptapi.py).
+
+The gridsup package classes support the display of lists of objects from records on the database ordered by index; and editing or deleting existing records; and inserting new records.
+
+The six point Howto for using this package is:
+
+Define a grid as a subclass of DataGrid (datagrid.py).
+Define a record description in a subclass of Record (basesup/api/record.py)
+Define the layout of a row in a subclass of DataRow (gridsup/gui/datarow.py) which is also a subclass of a record description.
+Define the layout of a row using Python Tkinter classes.
+Insert or edit records using a subclass of DataEdit (gridsup/gui/dataedit.py).
+Delete records using a subclass of DataDelete (gridsup/gui/datadelete.py).
+
+
+Contact:
+
+roger.marsh@solentware.co.uk
