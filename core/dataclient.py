@@ -36,6 +36,7 @@ DataLookup
 DataSource
 
 """
+import collections
 
 
 class DataNotify(object):
@@ -432,8 +433,8 @@ class DataLookup(_DataAccess):
         the lookup cache and controls refresh of client displays.
         
         """
-        print self, 'Lookup data change'
-        print instance
+        print(self, 'Lookup data change')
+        print(instance)
         
 
 class DataSource(object):
@@ -490,7 +491,7 @@ class DataSource(object):
         
     def get_cursor(self):
         """Create and return a cursor on the database."""
-        return self.dbhome.make_cursor(self.dbset, self.dbname)
+        return self.dbhome.database_cursor(self.dbset, self.dbname)
 
     def get_database(self):
         """Return database currently attached to datasource."""
@@ -516,16 +517,21 @@ class DataSource(object):
 
     def register_in(self, client, callback):
         """Register client for update notification using callback."""
-        if callable(callback):
+        if isinstance(callback, collections.Callable):
             self.clients[client] = callback
 
     def register_out(self, client):
         """Cancel registration of client for update notification."""
-        if self.clients.has_key(client):
+        if client in self.clients:
             del self.clients[client]
 
     def refresh_widgets(self, instance):
         """Notify registered clients about database update for instance."""
         for w in self.clients:
             self.clients[w](instance)
+
+    @property
+    def dbidentity(self):
+        """"""
+        return id(self.dbhome.get_database(self.dbset, self.dbset))
 

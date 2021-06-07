@@ -21,7 +21,7 @@ CursorRS
 
 from basesup.api.database import Cursor
 
-from gridsup.core.dataclient import DataSource
+from ..core.dataclient import DataSource
 
 
 class DBDataSource(DataSource):
@@ -85,6 +85,7 @@ class CursorRS(Cursor):
     close
     count_records
     first
+    get_partial
     get_record_at_position
     last
     set_partial_key
@@ -101,7 +102,7 @@ class CursorRS(Cursor):
 
     def __init__(self, keymap, recordset):
         """Define a cursor to access recordset in the order given in keymap."""
-        super(CursorRS, self).__init__()
+        super(CursorRS, self).__init__(None)
 
         self.current = None
         self.direct = keymap
@@ -136,12 +137,12 @@ class CursorRS(Cursor):
             return None
         if len(self.records):
             self.current = 0
-            return self.records[self.current]
+            return self._get_record(*self.records[self.current])
 
-    def get_position_of_record(self, key=None):
+    def get_position_of_record(self, record=None):
         """return position of record in file or 0 (zero)"""
         try:
-            return self.records.index(key)
+            return self.records.index(record)
         except ValueError:
             return 0
 
@@ -162,7 +163,7 @@ class CursorRS(Cursor):
             return None
         if len(self.records):
             self.current = len(self.records) - 1
-            return self.records[self.current]
+            return self._get_record(*self.records[self.current])
 
     def set_partial_key(self, partial):
         """Set partial key to None.  Always.
@@ -180,7 +181,7 @@ class CursorRS(Cursor):
                 n = self.direct[key]
                 if n < len(self.records):
                     self.current = n
-                    return self.records[n]
+                    return self._get_record(*self.records[n])
         return None
 
     def next(self):
@@ -193,7 +194,7 @@ class CursorRS(Cursor):
             return None
         else:
             self.current += 1
-        return self.records[self.current]
+        return self._get_record(*self.records[self.current])
 
     def prev(self):
         """Return previous record."""
@@ -205,7 +206,7 @@ class CursorRS(Cursor):
             return None
         else:
             self.current -= 1
-        return self.records[self.current]
+        return self._get_record(*self.records[self.current])
 
     def setat(self, record):
         """Return record after positioning cursor at record."""
@@ -215,6 +216,16 @@ class CursorRS(Cursor):
                 n = self.direct[k]
                 if n < len(self.records):
                     self.current = n
-                    return self.records[n]
+                    return self._get_record(*self.records[n])
         return None
+
+    def get_partial(self):
+        """Return self._partial"""
+        return self._partial
+
+    # The _get_record hack in sqlite3bitdatasource.py becomes the correct way
+    # to do this because the record has bsddb-specific decoding needs.
+    def _get_record(self, key, value):
+        """Return decoded record"""
+        return key, value.decode()
 

@@ -11,9 +11,9 @@ DataEdit - record edit and insert dialogue
 
 """
 
-import Tkinter
+import tkinter
 
-from gridsup.core.dataclient import DataClient
+from ..core.dataclient import DataClient
 
 # minimum_width and mininimum_height arguments for wm_minsize() calls
 # maybe candidate arguments for DataControl.edit_dialog() calls elsewhere
@@ -67,7 +67,8 @@ class RecordEdit(DataClient):
         edit proceeding if the record is changed elsewhere first.
 
         """
-        self.datasource.dbhome.make_internal_cursors()
+        if commit:
+            self.datasource.dbhome.start_transaction()
         self.oldobject.edit_record(
             self.datasource.dbhome,
             self.datasource.dbset,
@@ -75,7 +76,6 @@ class RecordEdit(DataClient):
             self.newobject)
         if commit:
             self.datasource.dbhome.commit()
-        self.datasource.dbhome.close_internal_cursors()
         self.datasource.refresh_widgets(self.oldobject)
         
     def on_data_change(self, instance):
@@ -93,13 +93,13 @@ class RecordEdit(DataClient):
         
     def put(self, commit=True):
         """Insert the record and refresh widgets"""
-        self.datasource.dbhome.make_internal_cursors()
+        if commit:
+            self.datasource.dbhome.start_transaction()
         self.newobject.put_record(
             self.datasource.dbhome,
             self.datasource.dbset)
         if commit:
             self.datasource.dbhome.commit()
-        self.datasource.dbhome.close_internal_cursors()
         self.datasource.refresh_widgets(self.newobject)
         
 
@@ -140,30 +140,30 @@ class DataEdit(RecordEdit):
         parent.wm_minsize(width=minimum_width, height=minimum_height)
         if oldview:
             oldview.get_top_widget().pack(
-                fill=Tkinter.BOTH, expand=Tkinter.TRUE)
+                fill=tkinter.BOTH, expand=tkinter.TRUE)
             oldview.get_top_widget().pack_propagate(False)
-            oldview.takefocus_widget.configure(takefocus=Tkinter.TRUE)
-        newview.get_top_widget().pack(fill=Tkinter.BOTH, expand=Tkinter.TRUE)
+            oldview.takefocus_widget.configure(takefocus=tkinter.TRUE)
+        newview.get_top_widget().pack(fill=tkinter.BOTH, expand=tkinter.TRUE)
         newview.get_top_widget().pack_propagate(False)
-        newview.takefocus_widget.configure(takefocus=Tkinter.TRUE)
+        newview.takefocus_widget.configure(takefocus=tkinter.TRUE)
         newview.takefocus_widget.focus_set()
-        self.status = Tkinter.Label(parent)
-        self.status.pack(side=Tkinter.BOTTOM)
-        self.buttons = Tkinter.Frame(parent)
+        self.status = tkinter.Label(parent)
+        self.status.pack(side=tkinter.BOTTOM)
+        self.buttons = tkinter.Frame(parent)
         self.buttons.pack(
-            fill=Tkinter.X,
-            expand=Tkinter.FALSE,
-            side=Tkinter.TOP)
-        self.ok = Tkinter.Button(
+            fill=tkinter.X,
+            expand=tkinter.FALSE,
+            side=tkinter.TOP)
+        self.ok = tkinter.Button(
             master=self.buttons,
             text='Ok',
             command=self.try_command(self.dialog_on_ok, self.buttons))
-        self.ok.pack(expand=Tkinter.TRUE, side=Tkinter.LEFT)
-        self.cancel = Tkinter.Button(
+        self.ok.pack(expand=tkinter.TRUE, side=tkinter.LEFT)
+        self.cancel = tkinter.Button(
             master=self.buttons,
             text='Cancel',
             command=self.try_command(self.dialog_on_cancel, self.buttons))
-        self.cancel.pack(expand=Tkinter.TRUE, side=Tkinter.LEFT)
+        self.cancel.pack(expand=tkinter.TRUE, side=tkinter.LEFT)
         self.newview = newview
 
     def dialog_clear_error_markers(self):
@@ -252,6 +252,6 @@ class DataEdit(RecordEdit):
             return True
         else:
             self.newobject.set_database(self.datasource.dbhome)
-            self.newobject.key.game = 0
+            self.newobject.key.recno = 0
             self.put()
             return True

@@ -23,7 +23,7 @@ from dptdb import dptapi
 
 from basesup.dptbase import CursorDPT
 
-from gridsup.core.dataclient import DataSource
+from ..core.dataclient import DataSource
 
 
 class DPTDataSource(DataSource):
@@ -59,33 +59,33 @@ class DPTDataSource(DataSource):
 
         self.recordset = None
         self._fieldvalue = dptapi.APIFieldValue()
-        self.dbhome._dptfiles[self.dbset]._sources[self] = None
+        self.dbhome.get_dptfiles()[self.dbset]._sources[self] = None
         
     def close(self):
         if self.recordset is not None:
             try:
-                del self.dbhome._dptfiles[self.dbset]._sources[self]
+                del self.dbhome.get_dptfiles()[self.dbset]._sources[self]
             except:
                 pass
-            self.dbhome._dptfiles[self.dbset].get_database().DestroyRecordSet(
-                self.recordset)
+            self.dbhome.get_dptfiles()[self.dbset].get_database(
+                ).DestroyRecordSet(self.recordset)
             self.recordset = None
 
     def get_cursor(self):
         """Return cursor on record set, or list, associated with datasource."""
         if self.recordset:
             c = CursorRS(
-                self.dbhome._dptfiles[self.dbset],
-                self.dbhome._dptfiles[self.dbname]._primary,
+                self.dbhome.get_dptfiles()[self.dbset],
+                self.dbhome.get_dptfiles()[self.dbname]._primary,
                 recordset=self.recordset)
         else:
             c = CursorRS(
-                self.dbhome._dptfiles[self.dbset],
-                self.dbhome._dptfiles[self.dbname]._primary,
+                self.dbhome.get_dptfiles()[self.dbset],
+                self.dbhome.get_dptfiles()[self.dbname]._primary,
                 recordset=self.dbhome.get_database(
                     self.dbset, self.dbname).CreateRecordList())
         if c:
-            self.dbhome._dptfiles[self.dbset]._cursors[c] = True
+            self.dbhome.get_dptfiles()[self.dbset]._clientcursors[c] = True
         return c
 
     def join_field_occurrences(self, record, field):
@@ -121,6 +121,7 @@ class CursorRS(CursorDPT):
 
     Methods overridden:
 
+    get_partial
     set_partial_key
 
     Methods extended:
@@ -138,5 +139,9 @@ class CursorRS(CursorDPT):
         """
         # See comments in _CursorDPT class definition for reasons why _partial
         # is now constrained to be None always. Originally a design choice.
-        self._partial = None
+        super(CursorRS, self).set_partial_key(None)
+
+    def get_partial(self):
+        """Return self._partial"""
+        return self._partial
 

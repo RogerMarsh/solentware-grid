@@ -13,8 +13,8 @@ if __name__=='__main__':
     
     d = basesup.api.database.Database()
     c = DataClient()
-    print d
-    print c
+    print(d)
+    print(c)
     s = DataSource(d, '', '')
     c.set_data_source(s)
-    print s
+    print(s)

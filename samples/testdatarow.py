@@ -10,4 +10,4 @@ if __name__ == '__main__':
     from gridsup.gui.datarow import DataRow
     
     dr = DataRow()
-    print dr
+    print(dr)

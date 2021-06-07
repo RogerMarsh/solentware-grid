@@ -15,7 +15,7 @@ DataRow
 
 """
 
-import Tkinter
+import tkinter
 
 from basesup.tools.callbackexception import CallbackException
 
@@ -33,11 +33,11 @@ WIDGET_CONFIGURE = 3
 WIDGET = 4
 ROW = 5
 
-_widget_configure = set((
-    'background', 'font'))
+_widget_configure = {
+    'background', 'font'}
 
 
-class DataRowError(StandardError):
+class DataRowError(Exception):
     pass
 
 
@@ -196,7 +196,7 @@ class DataRow(CallbackException):
     def form_row(self, parent, rowsizer):
         '''Not implemented.'''
         # Arguments unchanged from wxPython revisions
-        raise DataRowError, 'form_row not implemented'
+        raise DataRowError('form_row not implemented')
 
     def grid_row(self, textitems=(), **kargs):
         """Subclasses return (<row maker method>, <data items>, <configuration>)
@@ -268,7 +268,13 @@ class DataRow(CallbackException):
         self._row_widgets = row
         return self
 
-    populate_widget = Tkinter.Label.configure
+
+    def populate_widget(self, widget, cnf=None, text=None, **kw):
+        """Default wrapper for assumed tkinter.Label widget configure method."""
+        # Replaces the class attribute set by
+        # populate_widget = tkinter.Label.configure
+        # at Python 2.n version of this module
+        widget.configure(cnf=cnf, text=text, **kw)
 
     def highlight_row_on_pointer_enter(self, event):
         self.set_background_row_under_pointer(self._row_widgets)

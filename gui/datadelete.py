@@ -11,9 +11,9 @@ DataDelete - record delete dialogue
 
 """
 
-import Tkinter
+import tkinter
 
-from gridsup.core.dataclient import DataClient
+from ..core.dataclient import DataClient
 
 # minimum_width and mininimum_height arguments for wm_minsize() calls
 # maybe candidate arguments for DataControl.edit_dialog() calls elsewhere
@@ -64,13 +64,13 @@ class RecordDelete(DataClient):
         deletion proceeding if the record is changed elsewhere first.
 
         """
-        self.datasource.dbhome.make_internal_cursors()
+        if commit:
+            self.datasource.dbhome.start_transaction()
         self.object.delete_record(
             self.datasource.dbhome,
             self.datasource.dbset)
         if commit:
             self.datasource.dbhome.commit()
-        self.datasource.dbhome.close_internal_cursors()
         self.datasource.refresh_widgets(self.object)
 
     def on_data_change(self, instance):
@@ -109,30 +109,30 @@ class DataDelete(RecordDelete):
     def __init__(self, instance, parent, oldview, title):
         """Extend RecordDelete with dialogue widgets for delete instance."""
         super(DataDelete, self).__init__(instance)
-        oldview.get_top_widget().pack(fill=Tkinter.BOTH, expand=Tkinter.TRUE)
+        oldview.get_top_widget().pack(fill=tkinter.BOTH, expand=tkinter.TRUE)
         oldview.get_top_widget().pack_propagate(False)
-        oldview.takefocus_widget.configure(takefocus=Tkinter.TRUE)
+        oldview.takefocus_widget.configure(takefocus=tkinter.TRUE)
         oldview.takefocus_widget.focus_set()
         self.parent = parent
         parent.wm_title(title)
         parent.wm_minsize(width=minimum_width, height=minimum_height)
-        self.status = Tkinter.Label(parent)
-        self.status.pack(side=Tkinter.BOTTOM)
-        self.buttons = Tkinter.Frame(parent)
+        self.status = tkinter.Label(parent)
+        self.status.pack(side=tkinter.BOTTOM)
+        self.buttons = tkinter.Frame(parent)
         self.buttons.pack(
-            fill=Tkinter.X,
-            expand=Tkinter.FALSE,
-            side=Tkinter.TOP)
-        self.ok = Tkinter.Button(
+            fill=tkinter.X,
+            expand=tkinter.FALSE,
+            side=tkinter.TOP)
+        self.ok = tkinter.Button(
             master=self.buttons,
             text='Ok',
             command=self.try_command(self.dialog_on_ok, self.buttons))
-        self.ok.pack(expand=Tkinter.TRUE, side=Tkinter.LEFT)
-        self.cancel = Tkinter.Button(
+        self.ok.pack(expand=tkinter.TRUE, side=tkinter.LEFT)
+        self.cancel = tkinter.Button(
             master=self.buttons,
             text='Cancel',
             command=self.try_command(self.dialog_on_cancel, self.buttons))
-        self.cancel.pack(expand=Tkinter.TRUE, side=Tkinter.LEFT)
+        self.cancel.pack(expand=tkinter.TRUE, side=tkinter.LEFT)
         
     def dialog_clear_error_markers(self):
         """Set status report to ''."""

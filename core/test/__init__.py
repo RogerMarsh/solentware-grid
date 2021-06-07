@@ -1,7 +1,6 @@
-# version.py
+# __init__.py
 # Copyright 2011 Roger Marsh
 # Licence: See LICENCE (BSD licence)
 
-"""gridsup version information
+"""gridsup.core.test package
 """
-_gridsup_version = '0.8'

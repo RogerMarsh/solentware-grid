@@ -13,14 +13,14 @@ DataGrid
 
 """
 
-import Tkinter
+import tkinter
 from bisect import insort, bisect_left, bisect_right
 
 from basesup.tools.constants import SHIFTDOWN, CONTROLDOWN, ALTDOWN
 from basesup.tools.callbackexception import CallbackException
 
-from gridsup.core.dataclient import DataClient
-from gridsup.gui.datarow import DataHeader
+from .core.dataclient import DataClient
+from .gui.datarow import DataHeader
 
 # DataGridBase.get_spare_row_widget is necessary in XP, but not W2000 or *nix,
 # to allow resizing by mouse drag to work. In W2000 and *nix destroying and
@@ -52,7 +52,7 @@ from gridsup.gui.datarow import DataHeader
 # the application on Windows 7 (Vista and XP also I assume).
 
 
-class GridBaseError(StandardError):
+class GridBaseError(Exception):
     pass
 
 
@@ -85,6 +85,7 @@ class DataGridBase(DataClient, CallbackException):
     cancel_visible_selection
     clear_grid_description
     clear_grid_keys
+    encode_navigate_grid_key
     enter_popup
     exit_popup
     fill_data_grid
@@ -122,6 +123,7 @@ class DataGridBase(DataClient, CallbackException):
     make_header
     make_row
     move_selection_to_popup_selection
+    move_slider
     navigate_grid_by_key
     on_configure_canvas
     on_data_change
@@ -186,7 +188,7 @@ class DataGridBase(DataClient, CallbackException):
         self.record_count = None
 
         # Top frame for grid widget
-        self.frame = Tkinter.Frame(
+        self.frame = tkinter.Frame(
             parent,
             takefocus=1,
             highlightthickness=1)
@@ -203,23 +205,23 @@ class DataGridBase(DataClient, CallbackException):
         self.header_maker = None
 
         # Canvas for header and data rows
-        self.gcanvas = Tkinter.Canvas(self.frame)
-        self.gcanvas.grid(column=0, row=0, sticky=Tkinter.NSEW, rowspan=2)
+        self.gcanvas = tkinter.Canvas(self.frame)
+        self.gcanvas.grid(column=0, row=0, sticky=tkinter.NSEW, rowspan=2)
         self.__bind_on()
 
         # Top frame for header and data rows
-        self.data = Tkinter.Frame(self.gcanvas)
-        self.gcanvas.create_window(0, 0, window=self.data, anchor=Tkinter.NW)
+        self.data = tkinter.Frame(self.gcanvas)
+        self.gcanvas.create_window(0, 0, window=self.data, anchor=tkinter.NW)
 
         # Vertical scrollbar for data canvas
-        self.vsbar = Tkinter.Scrollbar(self.frame, orient=Tkinter.VERTICAL)
-        self.vsbar.grid(column=1, row=1, sticky=Tkinter.NSEW)
+        self.vsbar = tkinter.Scrollbar(self.frame, orient=tkinter.VERTICAL)
+        self.vsbar.grid(column=1, row=1, sticky=tkinter.NSEW)
         self.vsbar_number = None
         self.vsbar.bind('<ButtonRelease-1>', self.try_event(self.move_slider))
 
         # Horizontal scrollbar for header and data canvases
-        self.hsbar = Tkinter.Scrollbar(self.frame, orient=Tkinter.HORIZONTAL)
-        self.hsbar.grid(column=0, row=2, sticky=Tkinter.NSEW)
+        self.hsbar = tkinter.Scrollbar(self.frame, orient=tkinter.HORIZONTAL)
+        self.hsbar.grid(column=0, row=2, sticky=tkinter.NSEW)
 
         self.gcanvas.configure(
             xscrollcommand=self.try_command(self.hsbar.set, self.gcanvas))
@@ -267,7 +269,7 @@ class DataGridBase(DataClient, CallbackException):
         self.startkey = None
 
         # The popup menu for the row under the pointer
-        self.menupopup = Tkinter.Menu(master=self.data, tearoff=False)
+        self.menupopup = tkinter.Menu(master=self.data, tearoff=False)
         self.menupopup.bind('<Unmap>', self.try_event(self.exit_popup))
         self.menupopup.bind('<Map>', self.try_event(self.enter_popup))
 
@@ -339,7 +341,7 @@ class DataGridBase(DataClient, CallbackException):
         try:
             self._spare_rows[widget.__class__].add(widget)
         except KeyError:
-            self._spare_rows[widget.__class__] = set((widget,))
+            self._spare_rows[widget.__class__] = {widget}
 
     def bind_off(self):
         """Disable all bindings."""
@@ -657,7 +659,7 @@ class DataGridBase(DataClient, CallbackException):
         """Return scrollbar slider positioning information."""
         items = self.get_client_item_count()
         count = self.get_client_record_count()
-        position = self.cursor.get_position_of_record(key=self.topkey)
+        position = self.cursor.get_position_of_record(record=self.topkey)
         return count, items, position
 
     def get_client_item_count(self):
@@ -705,7 +707,7 @@ class DataGridBase(DataClient, CallbackException):
             if self.selection[0] in self.keys:
                 return self.objects[self.selection[0]]
 
-    def get_spare_row_widget(self, widget_type=Tkinter.Label):
+    def get_spare_row_widget(self, widget_type=tkinter.Label):
         """Return a widget from the pool of discarded grid cell widgets.
 
         This method is a hack to make mouse-drag resizing of the toplevel
@@ -760,8 +762,7 @@ class DataGridBase(DataClient, CallbackException):
                 self.fill_view_from_top()
         elif newkeys == False:
             if len(oldkeys):
-                keys = oldkeys[:]
-                keys.sort()
+                keys = sorted(oldkeys[:])
                 self.fill_view_from_record(keys[0])
                 self.set_selection(keys[0])
                 self.set_properties(oldselection)
@@ -831,22 +832,33 @@ class DataGridBase(DataClient, CallbackException):
             return
         number = float(self.vsbar_number)
         self.vsbar_number = None
-        if number is not None:
-            if number < 0:
-                number = 0
-            elif number > 1:
-                number = 1
-            rc = self.get_client_record_count()
-            p = int(rc * number)
-            if p < 0:
-                p = 0
-            elif p >= rc:
-                p = rc - 1
-            if self.cursor._partial is not None:
-                pass
-            elif p > rc / 2:
-                p = p - rc
-            self.fill_view_from_position(p)
+        if number < 0:
+            number = 0
+        elif number > 1:
+            number = 1
+        rc = self.get_client_record_count()
+        p = int(rc * number)
+        if p < 0:
+            p = 0
+        elif p >= rc:
+            p = rc - 1
+        if self.cursor.get_partial() is not None:
+            pass
+        elif p > rc // 2:
+            p = p - rc
+        self.fill_view_from_position(p)
+
+    def encode_navigate_grid_key(self, key, encoding='utf8'):
+        """Encode string for find nearest in database index
+
+        This method is used to process text entered by the user.
+        It is not used by the standard navigation functions (page up and so on).
+
+        Subclasses must override this method if 'utf8' is not the encoding used
+        on the database index which populates the grid.
+
+        """
+        return self.datasource.dbhome.encode_record_selector(key)
 
     def navigate_grid_by_key(self, event=None):
         """Navigate grid using partial key in Entry widget.
@@ -858,11 +870,11 @@ class DataGridBase(DataClient, CallbackException):
         first record for key is always displayed.
 
         """
-        if not isinstance(event.widget, Tkinter.Entry):
+        if not isinstance(event.widget, tkinter.Entry):
             return False
         c = self.datasource.get_cursor()
         c.set_partial_key(self.partial)
-        r = c.nearest(event.widget.get())
+        r = c.nearest(self.encode_navigate_grid_key(event.widget.get()))
         c.close()
         self.fill_view(currentkey=r, exclude=False)
         return True
@@ -1048,13 +1060,13 @@ class DataGridBase(DataClient, CallbackException):
                     self.startkey = self.cursor.setat(self.bottomkey)
                 else:
                     self.startkey = self.cursor.last()
-            elif not exclude:
+            elif exclude:
                 if down:
-                    self.startkey = self.cursor.prev()
+                    self.startkey = self.cursor.next()
                     if self.startkey is None:
                         self.startkey = self.cursor.first()
                 else:
-                    self.startkey = self.cursor.next()
+                    self.startkey = self.cursor.prev()
                     if self.startkey is None:
                         self.startkey = self.cursor.last()
         else:
@@ -1160,8 +1172,8 @@ class DataGridBase(DataClient, CallbackException):
         """
         if key not in self.objects:
             self.fill_view(currentkey=key, exclude=False)
-        selection = self.objects[key].get_keys(self.datasource, self.partial)
-        selection.sort()
+        selection = sorted(
+            self.objects[key].get_keys(self.datasource, self.partial))
         for r in range(len(selection)):
             if key == selection[0]:
                 self.selection = selection
@@ -1221,7 +1233,7 @@ class DataGridBase(DataClient, CallbackException):
         """Select row clicked by button-3 (right)."""
         self.pointer_popup_selection = None
         ew = event.widget
-        for k, r in self.gridrows_for_key.iteritems():
+        for k, r in self.gridrows_for_key.items():
             for item in r():
                 for w, p in item:
                     if w == ew:
@@ -1252,15 +1264,31 @@ class DataGridBase(DataClient, CallbackException):
 
     def exit_popup(self, event=None):
         """Reset the colour of popup row to the current normal colour."""
-        self.objects[self.pointer_popup_selection].set_popup_state(state=False)
-        self.set_properties(self.pointer_popup_selection)
+        # See enter_popup - this may be affected too.
+        try:
+            self.objects[self.pointer_popup_selection].set_popup_state(
+                state=False)
+            self.set_properties(self.pointer_popup_selection)
+        except KeyError:
+            pass
 
     def enter_popup(self, event=None):
         """Set colour of popup row to the colour when under pointer."""
+        # KeyError exception was raised on the first self.objects reference
+        # approximately concurrent with a widget refresh when deleting the
+        # associated database record.  Unable to repeat but the consequence was
+        # very severe as I had to power-off to recover (after attempting to
+        # view the error detail from the error dialogue).  May be because the
+        # row was the top one in the grid.
+        # No problems on database afterwards, and the delete succeeded.
+        # Briefly it is not yet clear where to adjust pointer_popup_selection.
         key = self.pointer_popup_selection
-        self.objects[key].set_popup_state(state=True)
-        self.objects[key].set_background_row_under_pointer(
-            self.get_row_widgets(key))
+        try:
+            self.objects[key].set_popup_state(state=True)
+            self.objects[key].set_background_row_under_pointer(
+                self.get_row_widgets(key))
+        except KeyError:
+            pass
 
     def get_pointerxy(self):
         """Return the xy pixel coordinates of the pointer."""
@@ -1392,25 +1420,25 @@ class DataGridReadOnly(DataGridBase):
         """Disable all bindings."""
         super(DataGridReadOnly, self).bind_off()
         for sequence, function in (
-            ('<KeyRelease-Prior>', ''),
-            ('<KeyRelease-Next>', ''),
-            ('<Shift-KeyRelease-End>', ''),
-            ('<Shift-KeyRelease-Home>', ''),
-            ('<KeyRelease-Up>', ''),
-            ('<Control-KeyRelease-Up>', ''),
-            ('<KeyRelease-Down>', ''),
-            ('<Control-KeyRelease-Down>', ''),
-            ('<KeyRelease-Left>', ''),
-            ('<Alt-KeyRelease-Left>', ''),
-            ('<Control-KeyRelease-Left>', ''),
-            ('<Shift-KeyRelease-Left>', ''),
-            ('<KeyRelease-Right>', ''),
-            ('<Alt-KeyRelease-Right>', ''),
-            ('<Control-KeyRelease-Right>', ''),
-            ('<Shift-KeyRelease-Right>', ''),
-            ('<Alt-KeyRelease-Insert>', ''),
-            ('<Alt-KeyRelease-Delete>', ''),
-            ('<Control-KeyRelease-Delete>', ''),
+            ('<KeyPress-Prior>', ''),
+            ('<KeyPress-Next>', ''),
+            ('<Shift-KeyPress-End>', ''),
+            ('<Shift-KeyPress-Home>', ''),
+            ('<KeyPress-Up>', ''),
+            ('<Control-KeyPress-Up>', ''),
+            ('<KeyPress-Down>', ''),
+            ('<Control-KeyPress-Down>', ''),
+            ('<KeyPress-Left>', ''),
+            ('<Alt-KeyPress-Left>', ''),
+            ('<Control-KeyPress-Left>', ''),
+            ('<Shift-KeyPress-Left>', ''),
+            ('<KeyPress-Right>', ''),
+            ('<Alt-KeyPress-Right>', ''),
+            ('<Control-KeyPress-Right>', ''),
+            ('<Shift-KeyPress-Right>', ''),
+            ('<Alt-KeyPress-Insert>', ''),
+            ('<Alt-KeyPress-Delete>', ''),
+            ('<Control-KeyPress-Delete>', ''),
             ):
             if function:
                 function = self.try_event(function)
@@ -1424,25 +1452,25 @@ class DataGridReadOnly(DataGridBase):
     def __bind_on(self):
         """Enable all bindings."""
         for sequence, function in (
-            ('<KeyRelease-Prior>', self.up_one_page),
-            ('<KeyRelease-Next>', self.down_one_page),
-            ('<Shift-KeyRelease-End>', self.down_all),
-            ('<Shift-KeyRelease-Home>', self.up_all),
-            ('<KeyRelease-Up>', self.up_one_line),
-            ('<Control-KeyRelease-Up>', self.up_one_line_selection),
-            ('<KeyRelease-Down>', self.down_one_line),
-            ('<Control-KeyRelease-Down>', self.down_one_line_selection),
-            ('<KeyRelease-Left>', self.select_up_one_line),
-            ('<Alt-KeyRelease-Left>', self.select_bookmark_up_one_line),
-            ('<Control-KeyRelease-Left>', self.select_up_one_line_control),
-            ('<Shift-KeyRelease-Left>', self.select_up_one_line_shift),
-            ('<KeyRelease-Right>', self.select_down_one_line),
-            ('<Alt-KeyRelease-Right>', self.select_bookmark_down_one_line),
-            ('<Control-KeyRelease-Right>', self.select_down_one_line_control),
-            ('<Shift-KeyRelease-Right>', self.select_down_one_line_shift),
-            ('<Alt-KeyRelease-Insert>', self.add_bookmark_event),
-            ('<Alt-KeyRelease-Delete>', self.cancel_bookmark_event),
-            ('<Control-KeyRelease-Delete>', self.cancel_selection_event),
+            ('<KeyPress-Prior>', self.up_one_page),
+            ('<KeyPress-Next>', self.down_one_page),
+            ('<Shift-KeyPress-End>', self.down_all),
+            ('<Shift-KeyPress-Home>', self.up_all),
+            ('<KeyPress-Up>', self.up_one_line),
+            ('<Control-KeyPress-Up>', self.up_one_line_selection),
+            ('<KeyPress-Down>', self.down_one_line),
+            ('<Control-KeyPress-Down>', self.down_one_line_selection),
+            ('<KeyPress-Left>', self.select_up_one_line),
+            ('<Alt-KeyPress-Left>', self.select_bookmark_up_one_line),
+            ('<Control-KeyPress-Left>', self.select_up_one_line_control),
+            ('<Shift-KeyPress-Left>', self.select_up_one_line_shift),
+            ('<KeyPress-Right>', self.select_down_one_line),
+            ('<Alt-KeyPress-Right>', self.select_bookmark_down_one_line),
+            ('<Control-KeyPress-Right>', self.select_down_one_line_control),
+            ('<Shift-KeyPress-Right>', self.select_down_one_line_shift),
+            ('<Alt-KeyPress-Insert>', self.add_bookmark_event),
+            ('<Alt-KeyPress-Delete>', self.cancel_bookmark_event),
+            ('<Control-KeyPress-Delete>', self.cancel_selection_event),
             ):
             if function:
                 function = self.try_event(function)
@@ -1604,8 +1632,8 @@ class DataGrid(DataGridReadOnly):
         """Disable all bindings."""
         super(DataGrid, self).bind_off()
         for sequence, function in (
-            ('<KeyRelease-Insert>', ''),
-            ('<KeyRelease-Delete>', ''),
+            ('<KeyPress-Insert>', ''),
+            ('<KeyPress-Delete>', ''),
             ):
             if function:
                 function = self.try_event(function)
@@ -1619,8 +1647,8 @@ class DataGrid(DataGridReadOnly):
     def __bind_on(self):
         """Enable all bindings."""
         for sequence, function in (
-            ('<KeyRelease-Insert>', self.edit_dialog_event),
-            ('<KeyRelease-Delete>', self.delete_dialog_event),
+            ('<KeyPress-Insert>', self.edit_dialog_event),
+            ('<KeyPress-Delete>', self.delete_dialog_event),
             ):
             if function:
                 function = self.try_event(function)
@@ -1642,7 +1670,7 @@ class DataGrid(DataGridReadOnly):
         
         """
         # need to make dialog modal if requested {dialog.grab_set() sequence}
-        dialog = Tkinter.Toplevel()
+        dialog = tkinter.Toplevel()
         dialog.wm_title(title)
         datadelete = instance.delete_row(dialog, oldobject)
         datadelete.set_data_source(self.datasource, datadelete.on_data_change)
@@ -1665,7 +1693,7 @@ class DataGrid(DataGridReadOnly):
         
         """
         # need to make dialog modal if requested {dialog.grab_set() sequence}
-        dialog = Tkinter.Toplevel()
+        dialog = tkinter.Toplevel()
         dialog.wm_title(title)
         dataedit = instance.edit_row(
             dialog, newobject, oldobject, showinitial)

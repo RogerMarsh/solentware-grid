@@ -1,20 +1,53 @@
-To install the gridsup package type
+========================
+Database display classes
+========================
 
-python setup.py install
+.. contents::
+
+
+Description
+===========
+
+This package provides a grid to display a scrollable list of records from a database accessed using the `basesup`_ package.
+
+
+Installation Instructions
+=========================
+
+Build dependencies
+
+* `Python`_ 3.3 or later 
+
+Install the package by typing
+
+   python setup.py install
 
 at the command prompt with setup.py in the current directory.
 
+You may need to give the path and version of Python depending on your system's configuration:
 
-This is gridsup-0.8
+   <path to python>/python<version> setup.py install
+
+   For example
+
+      C:\\Python33\\python setup.py install
+
+         on Microsoft Windows or
+
+      python3.3 setup.py install
+
+         on Unix-like systems.
+
+Runtime dependencies
+
+* `basesup`_ package.
 
 
-Dependencies:
+Notes
+=====
 
-Python 2.6 or Python 2.7 installed.
-basesup-0.8 package from www.solentware.co.uk.
+This package was written because I could not find something which behaved like a Delphi DBGrid, as remembered from the late 1990s.
 
 
-Contact:
-
-roger.marsh@solentware.co.uk
-
+.. _`Python`: https://python.org
+.. _`basesup`: http://solentware.co.uk/products.html
