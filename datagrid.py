@@ -17,6 +17,7 @@ import Tkinter
 from bisect import insort, bisect_left, bisect_right
 
 from basesup.tools.constants import SHIFTDOWN, CONTROLDOWN, ALTDOWN
+from basesup.tools.callbackexception import CallbackException
 
 from gridsup.core.dataclient import DataClient
 from gridsup.gui.datarow import DataHeader
@@ -32,7 +33,7 @@ from gridsup.gui.datarow import DataHeader
 # However it probably will remain because there is a noticable performance
 # advantage in having a pool of ready made widgets for scrolling.
 # Known to occur with Tcl/Tk 8.4 support for Tkinter.
-# A possibly related problem appeared after upgrade to BSD 8.2 Python 2.7 and
+# A possibly related problem appeared on upgrade to FreeBSD 8.2 Python 2.7 and
 # Tcl/Tk 8.5 where the resize works slowly and with too many widgets causes the
 # application to enter an infinite loop judging by CPU usage.  Traced to change
 # in default for opaqueresize attribute of PanedWindow from False at Tk 8.4 to
@@ -40,13 +41,22 @@ from gridsup.gui.datarow import DataHeader
 # Certainly a plausible reason for the XP problem, where the resize backed out
 # but application never failed, if defaults were different even if Tk versions
 # were same.
+# A similar problem appeared running under Wine after this upgrade.  It is not
+# in the straightforward refresh of the grid after scrolling the grid, but when
+# repopulating the grid after a change in another widget which is neither
+# ancestor descendant or sibling of the grid.  An infinite loop is entered
+# which can be broken by clicking on the menu bar causing the refresh, and
+# other expected actions, to complete as expected.
+# The Wine problem is fixed by changing DataGridBase.add_widget_to_spare_pool
+# to destroy the widget.  But this brings back the problem with drag resizing
+# the application on Windows 7 (Vista and XP also I assume).
 
 
 class GridBaseError(StandardError):
     pass
 
 
-class DataGridBase(DataClient):
+class DataGridBase(DataClient, CallbackException):
     
     """Display DB records as rows in scrolled grid.
 
@@ -62,6 +72,7 @@ class DataGridBase(DataClient):
     Methods added:
 
     add_bookmark
+    add_selection_bookmark
     _add_record_to_view
     bind_off
     bind_on
@@ -70,8 +81,12 @@ class DataGridBase(DataClient):
     bookmark_up
     cancel_bookmark
     cancel_selection
+    cancel_selection_bookmark
+    cancel_visible_selection
     clear_grid_description
     clear_grid_keys
+    enter_popup
+    exit_popup
     fill_data_grid
     fill_view
     fill_view_from_bottom
@@ -93,15 +108,20 @@ class DataGridBase(DataClient):
     get_data_frame
     get_frame
     get_horizontal_scrollbar
+    get_pointerxy
     get_selected_record
     get_spare_row_widget
     get_vertical_scrollbar
+    get_visible_key
+    get_visible_record
+    get_visible_selected_key
     is_load_direction_down
     load_data_change
     load_new_index
     load_new_partial_key
     make_header
     make_row
+    move_selection_to_popup_selection
     navigate_grid_by_key
     on_configure_canvas
     on_data_change
@@ -111,7 +131,9 @@ class DataGridBase(DataClient):
     select_cycle_down
     select_cycle_up
     select_down
+    select_row_by_click
     select_up
+    set_row_under_pointer_background
     set_client
     set_data_header
     set_fill_parameters
@@ -122,6 +144,7 @@ class DataGridBase(DataClient):
     set_yscrollbar
     set_xview
     set_yview
+    show_popup_menu
     _fill_down
     _fill_up
     _get_row_reqheight
@@ -133,6 +156,7 @@ class DataGridBase(DataClient):
     Methods extended:
 
     __init__
+    clear_client_keys
     
     """
 
@@ -155,6 +179,11 @@ class DataGridBase(DataClient):
         # to arrange data into neat columns.
         # the grid rows used for key item in self.keys (DataClient)
         self.gridrows_for_key = dict()  # {key: set([gridrow, ...,], ...)
+        # Count of scrollable records. get_client_record_count will do the
+        # necessary database searches to count the records if value is None
+        # so that the slider gives a reasonable idea of the number of records
+        # available.
+        self.record_count = None
 
         # Top frame for grid widget
         self.frame = Tkinter.Frame(
@@ -185,21 +214,27 @@ class DataGridBase(DataClient):
         # Vertical scrollbar for data canvas
         self.vsbar = Tkinter.Scrollbar(self.frame, orient=Tkinter.VERTICAL)
         self.vsbar.grid(column=1, row=1, sticky=Tkinter.NSEW)
+        self.vsbar_number = None
+        self.vsbar.bind('<ButtonRelease-1>', self.try_event(self.move_slider))
 
         # Horizontal scrollbar for header and data canvases
         self.hsbar = Tkinter.Scrollbar(self.frame, orient=Tkinter.HORIZONTAL)
         self.hsbar.grid(column=0, row=2, sticky=Tkinter.NSEW)
 
-        self.gcanvas.configure(xscrollcommand=self.hsbar.set)
-        self.gcanvas.configure(yscrollcommand=self.vsbar.set)
-        self.hsbar.configure(command=self.set_xview)
+        self.gcanvas.configure(
+            xscrollcommand=self.try_command(self.hsbar.set, self.gcanvas))
+        self.gcanvas.configure(
+            yscrollcommand=self.try_command(self.vsbar.set, self.gcanvas))
+        self.hsbar.configure(
+            command=self.try_command(self.set_xview, self.hsbar))
         # Turn off vertical scrolling by scrollbar action if wait_visibility()
         # call turns out to be needed in fill_data_grid method.
-        self.vsbar.configure(command=self.set_yview)
+        self.vsbar.configure(
+            command=self.try_command(self.set_yview, self.vsbar))
 
         # Current key for top row.
         # Used as a base point for scrolling.
-        # Set to cursor positions by _fill_down _fill_up _add_record_to_view
+        # Set to cursor position by _fill_down _fill_up _add_record_to_view
         self.topkey = None
 
         # Key or keys of object for current selected row.
@@ -210,7 +245,7 @@ class DataGridBase(DataClient):
 
         # Current key for bottom row.
         # Used as a base point for scrolling.
-        # Set to cursor positions by _fill_down _fill_up _add_record_to_view
+        # Set to cursor position by _fill_down _fill_up _add_record_to_view
         self.bottomkey = None
         
         # Current key on cursor.
@@ -231,16 +266,31 @@ class DataGridBase(DataClient):
         # Set by set_fill_parameters for _add_record_to_view use as currentkey.
         self.startkey = None
 
-    def add_bookmark(self):
+        # The popup menu for the row under the pointer
+        self.menupopup = Tkinter.Menu(master=self.data, tearoff=False)
+        self.menupopup.bind('<Unmap>', self.try_event(self.exit_popup))
+        self.menupopup.bind('<Map>', self.try_event(self.enter_popup))
+
+        # Selection and pointer location when popup invoked
+        # The popup is mapped before the Leave event for invoking widget
+        # The popup is unmapped before the action, if any, is invoked
+        self.pointer_popup_xy = None
+        self.pointer_popup_selection = None
+
+    def add_bookmark(self, key):
+        """Add key to bookmarks."""
+        if key not in self.bookmarks:
+            insort(self.bookmarks, key)
+            if key not in self.keys:
+                self.fill_view_from_record(key)
+            else:
+                self.set_properties(key)
+
+    def add_selection_bookmark(self):
         """Add selection to bookmarks."""
         if self.selection:
             s = self.selection[0]
-            if s not in self.bookmarks:
-                insort(self.bookmarks, s)
-                if s not in self.keys:
-                    self.fill_view_from_record(s)
-                else:
-                    self.set_properties(s)
+            self.add_bookmark(s)
 
     def _add_record_to_view(self):
         """Add record to grid and return record depending on load direction.
@@ -301,7 +351,9 @@ class DataGridBase(DataClient):
 
     def __bind_on(self):
         """Enable all bindings."""
-        self.gcanvas.bind('<Configure>', self.on_configure_canvas)
+        self.gcanvas.bind(
+            '<Configure>',
+            self.try_event(self.on_configure_canvas))
 
     def bookmark_down(self):
         """Select first bookmark after current selection."""
@@ -392,29 +444,41 @@ class DataGridBase(DataClient):
             self.set_properties(oldselection)
             self.set_properties(self.selection[0])
 
-    def cancel_bookmark(self):
+    def cancel_selection_bookmark(self):
         """Cancel selection from bookmarks."""
         if self.selection:
             s = self.selection[0]
-            if s in self.bookmarks:
-                self.bookmarks.remove(s)
-                if s not in self.keys:
-                    self.fill_view(currentkey=s, exclude=False)
-                else:
-                    self.set_properties(s)
+            self.cancel_bookmark(s)
+
+    def cancel_bookmark(self, key):
+        """Cancel key from bookmarks."""
+        if key in self.bookmarks:
+            self.bookmarks.remove(key)
+            if key not in self.keys:
+                self.fill_view(currentkey=key, exclude=False)
+            else:
+                self.set_properties(key)
         
     def cancel_selection(self):
         """Cancel selection."""
         if self.selection:
             s = self.selection[0]
-            if s in self.keys:
-                self.selection = []
-                self.set_properties(s)
+            self.cancel_visible_selection(s)
+        
+    def cancel_visible_selection(self, key):
+        """Cancel selection highlighting if key is visible."""
+        if key in self.keys:
+            self.selection = []
+            self.set_properties(key)
+
+    def clear_client_keys(self):
+        """Extend to set background for listed items if re-listed."""
+        super(DataGridBase, self).clear_client_keys()
 
     def clear_grid_description(self):
         """Clear grid description and keys."""
-        self.gridrows_for_key = dict()
         self.clear_client_keys()
+        self.gridrows_for_key = dict()
 
     def clear_grid_keys(self):
         """Clear grid selections and description and keys."""
@@ -482,13 +546,13 @@ class DataGridBase(DataClient):
         # grid the new data widgets
         baserow += len(headers)
         for key in self.keys:
-            for row, gridrow in enumerate(self.gridrows_for_key[key]):
+            for row, gridrow in enumerate(self.gridrows_for_key[key]()):
                 for column, widget in enumerate(gridrow):
                     widget[0].grid_configure(
                         row=row + baserow,
                         column=column,
                         sticky=widget[1]['sticky'])
-            baserow += len(self.gridrows_for_key[key])
+            baserow += len(self.gridrows_for_key[key]())
         # Ref: Pract. Prog. in Tcl and Tk (4th ed) Canvas widget Window Items 
         # There is a suggestion that a wait_visibility() call on one of the
         # self.data.grid_slaves() widgets is necessary at this point to
@@ -507,7 +571,8 @@ class DataGridBase(DataClient):
                 str(self.gcanvas.winfo_height()))))
         # Schedule the setting of vertical scrollbar to occur after processing
         # triggering event.
-        self.frame.after_idle(self.set_yscrollbar)
+        self.frame.after_idle(
+            self.try_command(self.set_yscrollbar, self.frame))
 
     def fill_view(
         self,
@@ -544,8 +609,8 @@ class DataGridBase(DataClient):
     def fill_view_from_position(self, position):
         """Load view starting at position."""
         self.fill_view(
-            currentkey=self.cursor.nearest(
-                self.cursor.GetKeyAtPosition(position)))
+            currentkey=self.cursor.get_record_at_position(position),
+            exclude=False)
 
     def fill_view_from_record(self, record):
         """Load view starting at record."""
@@ -562,7 +627,7 @@ class DataGridBase(DataClient):
     def fill_view_to_position(self, position):
         """Load view ending at position."""
         self.fill_view(
-            currentkey=self.cursor.GetKeyAtPosition(position),
+            currentkey=self.cursor.get_record_at_position(position),
             down=False)
 
     def fill_view_to_record(self, record):
@@ -579,7 +644,12 @@ class DataGridBase(DataClient):
 
     def focus_set_grid_on_click_child_widget(self, w):
         """Bind button1 to focus_set_frame for w and all child widgets."""
-        w.bind('<Button-1>', self.focus_set_frame)
+        w.bind(
+            '<Button-1>',
+            self.try_event(self.focus_set_frame))
+        w.bind(
+            '<Button-3>',
+            self.try_event(self.select_row_by_click))
         for c in w.winfo_children():
             self.focus_set_grid_on_click_child_widget(c)
 
@@ -587,7 +657,7 @@ class DataGridBase(DataClient):
         """Return scrollbar slider positioning information."""
         items = self.get_client_item_count()
         count = self.get_client_record_count()
-        position = items * 3
+        position = self.cursor.get_position_of_record(key=self.topkey)
         return count, items, position
 
     def get_client_item_count(self):
@@ -601,13 +671,14 @@ class DataGridBase(DataClient):
         in maintenance.
 
         """
-        #return self.cursor.Count() # not correct call anyway
-        return self.get_client_item_count() * 10
+        if self.record_count is None:
+            self.record_count = self.cursor.count_records()
+        return self.record_count
 
     def get_row_widgets(self, key):
         """Return widgets for row associated with key."""
         widgets = []
-        for r in self.gridrows_for_key[key]:
+        for r in self.gridrows_for_key[key]():
             for w in r:
                 widgets.append(w)
         return widgets
@@ -650,6 +721,22 @@ class DataGridBase(DataClient):
         """Return the vertical scrollbar widget."""
         return self.vsbar
 
+    def get_visible_key(self, key):
+        """Return key if it is visible."""
+        if key in self.keys:
+            return key
+
+    def get_visible_record(self, key):
+        """Return selected record if it is visible."""
+        if key in self.keys:
+            return self.objects[key]
+
+    def get_visible_selected_key(self):
+        """Return selected record if it is visible."""
+        if len(self.selection):
+            if self.selection[0] in self.keys:
+                return self.selection[0]
+
     def is_load_direction_down(self):
         """Return current load direction."""
         return self.down
@@ -677,6 +764,7 @@ class DataGridBase(DataClient):
                 keys.sort()
                 self.fill_view_from_record(keys[0])
                 self.set_selection(keys[0])
+                self.set_properties(oldselection)
                 self.set_properties(keys[0])
         else:
             for key in [o for o in oldkeys if o not in newkeys]:
@@ -691,12 +779,14 @@ class DataGridBase(DataClient):
                     keys.sort()
                     self.fill_view_from_record(keys[0])
                     self.set_selection(keys[0])
+                    self.set_properties(oldselection)
                     self.set_properties(keys[0])
                 else:
                     self.fill_view_from_top()
 
     def load_new_index(self):
         """Clear selection and reload grid after changing index."""
+        self.record_count = None
         self.close_client_cursor()
         self.make_client_cursor()
         self.clear_grid_keys()
@@ -704,6 +794,7 @@ class DataGridBase(DataClient):
 
     def load_new_partial_key(self, key):
         """Clear selection and reload grid after changing partial key."""
+        self.record_count = None
         self.set_partial_key(key)
         self.clear_grid_keys()
         self.fill_data_grid() 
@@ -729,10 +820,33 @@ class DataGridBase(DataClient):
         row_maker, values, kargs = record
         newrow = row_maker(
             self.get_spare_row_widget, self.data, values, **kargs)
-        for gridrow in newrow:
+        for gridrow in newrow():
             for w in gridrow:
                 self.focus_set_grid_on_click_child_widget(w[0])
         return newrow
+
+    def move_slider(self, event=None):
+        """Move slider on release of button at end of motion."""
+        if self.vsbar_number is None:
+            return
+        number = float(self.vsbar_number)
+        self.vsbar_number = None
+        if number is not None:
+            if number < 0:
+                number = 0
+            elif number > 1:
+                number = 1
+            rc = self.get_client_record_count()
+            p = int(rc * number)
+            if p < 0:
+                p = 0
+            elif p >= rc:
+                p = rc - 1
+            if self.cursor._partial is not None:
+                pass
+            elif p > rc / 2:
+                p = p - rc
+            self.fill_view_from_position(p)
 
     def navigate_grid_by_key(self, event=None):
         """Navigate grid using partial key in Entry widget.
@@ -770,6 +884,7 @@ class DataGridBase(DataClient):
         Exact behaviour depends on use of set_data_source method.
         
         """
+        self.record_count = None
         self.refresh_cursor()
         if instance is None:
             if len(self.keys) == 0:
@@ -921,26 +1036,27 @@ class DataGridBase(DataClient):
         
         """
         if currentkey:
-            self.currentkey = self.cursor.setat(currentkey)
-            if self.currentkey is None:
+            self.currentkey = False
+            self.startkey = self.cursor.setat(currentkey)
+            if self.startkey is None:
                 if down:
                     if self.topkey:
-                        self.currentkey = self.cursor.setat(self.topkey)
+                        self.startkey = self.cursor.setat(self.topkey)
                     else:
-                        self.currentkey = self.cursor.first()
+                        self.startkey = self.cursor.first()
                 elif self.bottomkey:
-                    self.currentkey = self.cursor.setat(self.bottomkey)
+                    self.startkey = self.cursor.setat(self.bottomkey)
                 else:
-                    self.currentkey = self.cursor.last()
+                    self.startkey = self.cursor.last()
             elif not exclude:
                 if down:
-                    self.currentkey = self.cursor.prev()
-                    if self.currentkey is None:
-                        self.currentkey = self.cursor.first()
+                    self.startkey = self.cursor.prev()
+                    if self.startkey is None:
+                        self.startkey = self.cursor.first()
                 else:
-                    self.currentkey = self.cursor.next()
-                    if self.currentkey is None:
-                        self.currentkey = self.cursor.last()
+                    self.startkey = self.cursor.next()
+                    if self.startkey is None:
+                        self.startkey = self.cursor.last()
         else:
             self.currentkey = currentkey
             if topstart:
@@ -966,10 +1082,17 @@ class DataGridBase(DataClient):
         for key in self.keys:
             self.set_properties(key)
 
-    def set_properties(self, key):
-        """Set row widget properties for selection and bookmark status."""
+    def set_properties(self, key, dodefaultaction=True):
+        """Set row properties and return True unless default action not done.
+
+        This method allows caller to take responsibility for setting properties
+        where the alternative is the default properties. dodefaultaction=False
+        causes this method to return False in cases where it would otherwise
+        set the default properties.
+
+        """
         if key not in self.keys:
-            return
+            return True
         if len(self.selection):
             selection = self.selection[0]
         else:
@@ -987,27 +1110,47 @@ class DataGridBase(DataClient):
         elif key in self.bookmarks:
             self.objects[key].set_background_bookmark(
                 self.get_row_widgets(key))
-        else:
+        elif dodefaultaction:
             self.objects[key].set_background_normal(self.get_row_widgets(key))
+        else:
+            return False
+        self.set_row_under_pointer_background(key)
+        return True
 
-    def set_row(self, key):
-        """Return row widget for key."""
-        if key in self.keys:
-            if len(self.selection):
-                selection = self.selection[0]
+    def set_row_under_pointer_background(self, key):
+        """Set row backgound if row for key is under pointer."""
+        if self.objects[key].is_row_under_pointer(*self.get_pointerxy()):
+            self.objects[key].set_background_row_under_pointer(
+                self.get_row_widgets(key))
+
+    def set_row(self, key, dodefaultaction=True, **kargs):
+        """Return row widget for key or None
+
+        **kargs can contain arguments in either of two sets.  One set is widget
+        configuration arguments passed to things like Tkinter.Text() calls and
+        the other set is used by an extension of the grid_row method in a
+        subclass of DataRow.
+
+        """
+        if key not in self.keys:
+            return None
+        if len(self.selection):
+            selection = self.selection[0]
+        else:
+            selection = None
+        if key == selection:
+            if key in self.bookmarks:
+                return self.objects[key].grid_row_bookmarked_selection(**kargs)
+            elif len(self.selection) > 1:
+                return self.objects[key].grid_row_selection_cycle(**kargs)
             else:
-                selection = None
-            if key == selection:
-                if key in self.bookmarks:
-                    return self.objects[key].grid_row_bookmarked_selection()
-                elif len(self.selection) > 1:
-                    return self.objects[key].grid_row_selection_cycle()
-                else:
-                    return self.objects[key].grid_row_selection()
-            elif key in self.bookmarks:
-                return self.objects[key].grid_row_bookmark()
-            else:
-                return self.objects[key].grid_row_normal()
+                return self.objects[key].grid_row_selection(**kargs)
+        elif key in self.bookmarks:
+            return self.objects[key].grid_row_bookmark(**kargs)
+        elif dodefaultaction:
+            return self.objects[key].grid_row_normal(**kargs)
+        else:
+            return None
 
     def set_selection(self, key):
         """Set selection to all keys for row referenced by key.
@@ -1035,16 +1178,17 @@ class DataGridBase(DataClient):
         # writing - also not clear if this is correct effect).
         count, items, position = self.get_client_item_and_record_counts()
         try:
-            start = float(position) / count
-            size = start + float(items + 1) / count
+            first = float(position) / count
+            last = float(position + items) / count
         except:
             return
-        self.vsbar.set(start, size)
+        self.vsbar.set(first, last)
 
     def set_xview(self, scroll=None, number=None, scrollunit=None):
         """Adjust datagrid on horizontal scrollbar action."""
         self.gcanvas.xview(scroll, number, scrollunit)
-        self.frame.after_idle(self.set_yscrollbar)
+        self.frame.after_idle(
+            self.try_command(self.set_yscrollbar, self.frame))
 
     def set_yview(self, scroll=None, number=None, scrollunit=None):
         """Adjust datagrid on vertical scrollbar action.
@@ -1069,14 +1213,58 @@ class DataGridBase(DataClient):
                             self.fill_view_to_item_index(0)
                     elif scrollunit == 'units':
                         self.fill_view_to_item_index(-1)
-            '''elif scroll == 'moveto':
-                rc = self.get_client_record_count()
-                p = int(rc * float(number))
-                if p < 0:
-                    p = 0
-                elif p >= rc:
-                    p = rc - 1
-                self.fill_view_from_position(p)'''
+            elif scroll == 'moveto':
+                self.vsbar_number = number
+                # movement done by move_slider() method on button release
+
+    def select_row_by_click(self, event=None):
+        """Select row clicked by button-3 (right)."""
+        self.pointer_popup_selection = None
+        ew = event.widget
+        for k, r in self.gridrows_for_key.iteritems():
+            for item in r():
+                for w, p in item:
+                    if w == ew:
+                        self.pointer_popup_selection = k
+                        self.show_popup_menu()
+                        return
+
+    def show_popup_menu(self):
+        """Show the popup menu for the grid.
+
+        Subclasses may have particular entries to be the default which is
+        implemented by overriding this method.
+
+        """
+        self.pointer_popup_xy = self.data.winfo_pointerxy()
+        self.menupopup.tk_popup(*self.pointer_popup_xy)
+
+    def move_selection_to_popup_selection(self):
+        """Change selection to active row for popup menu."""
+        if len(self.selection):
+            oldselection = self.selection[0]
+        else:
+            oldselection = None
+        self.set_selection(self.pointer_popup_selection)
+        self.pointer_popup_selection = None
+        self.set_properties(oldselection)
+        self.set_properties(self.selection[0])
+
+    def exit_popup(self, event=None):
+        """Reset the colour of popup row to the current normal colour."""
+        self.objects[self.pointer_popup_selection].set_popup_state(state=False)
+        self.set_properties(self.pointer_popup_selection)
+
+    def enter_popup(self, event=None):
+        """Set colour of popup row to the colour when under pointer."""
+        key = self.pointer_popup_selection
+        self.objects[key].set_popup_state(state=True)
+        self.objects[key].set_background_row_under_pointer(
+            self.get_row_widgets(key))
+
+    def get_pointerxy(self):
+        """Return the xy pixel coordinates of the pointer."""
+        return self.data.winfo_pointerxy()
 
     def _fill_down(self, rows, cheight):
         """Put rows in grid until added row is not completely visible."""
@@ -1084,8 +1272,8 @@ class DataGridBase(DataClient):
         while True:
             if cheight > self.gcanvas.winfo_height():
                 if len(rows) > 1:
-                    cheight -= self._get_row_reqheight(rows[-1])
-                    for r in rows.pop():
+                    cheight -= self._get_row_reqheight(rows[-1]())
+                    for r in rows.pop()():
                         for w in r:
                             w[0].grid_forget()
                             self.add_widget_to_spare_pool(w[0])
@@ -1105,7 +1293,7 @@ class DataGridBase(DataClient):
             if key is None:
                 break
             rows.append(self.make_row(self.set_row(key)))
-            cheight += self._get_row_reqheight(rows[-1])
+            cheight += self._get_row_reqheight(rows[-1]())
             self.gridrows_for_key[key] = rows[-1]
 
         try:
@@ -1120,8 +1308,8 @@ class DataGridBase(DataClient):
         while True:
             if cheight > self.gcanvas.winfo_height():
                 if len(rows) > 1:
-                    cheight -= self._get_row_reqheight(rows[-1])
-                    for r in rows.pop(0):
+                    cheight -= self._get_row_reqheight(rows[-1]())
+                    for r in rows.pop(0)():
                         for w in r:
                             w[0].grid_forget()
                             self.add_widget_to_spare_pool(w[0])
@@ -1141,7 +1329,7 @@ class DataGridBase(DataClient):
             if key is None:
                 break
             rows.insert(0, self.make_row(self.set_row(key)))
-            cheight += self._get_row_reqheight(rows[-1])
+            cheight += self._get_row_reqheight(rows[-1]())
             self.gridrows_for_key[key] = rows[0]
 
         try:
@@ -1203,25 +1391,30 @@ class DataGridReadOnly(DataGridBase):
     def bind_off(self):
         """Disable all bindings."""
         super(DataGridReadOnly, self).bind_off()
-        self.frame.bind('<KeyRelease-Prior>', '')
-        self.frame.bind('<KeyRelease-Next>', '')
-        self.frame.bind('<Shift-KeyRelease-End>', '')
-        self.frame.bind('<Shift-KeyRelease-Home>', '')
-        self.frame.bind('<KeyRelease-Up>', '')
-        self.frame.bind('<Control-KeyRelease-Up>', '')
-        self.frame.bind('<KeyRelease-Down>', '')
-        self.frame.bind('<Control-KeyRelease-Down>', '')
-        self.frame.bind('<KeyRelease-Left>', '')
-        self.frame.bind('<Alt-KeyRelease-Left>', '')
-        self.frame.bind('<Control-KeyRelease-Left>', '')
-        self.frame.bind('<Shift-KeyRelease-Left>', '')
-        self.frame.bind('<KeyRelease-Right>', '')
-        self.frame.bind('<Alt-KeyRelease-Right>', '')
-        self.frame.bind('<Control-KeyRelease-Right>', '')
-        self.frame.bind('<Shift-KeyRelease-Right>', '')
-        self.frame.bind('<Alt-KeyRelease-Insert>', '')
-        self.frame.bind('<Alt-KeyRelease-Delete>', '')
-        self.frame.bind('<Control-KeyRelease-Delete>', '')
+        for sequence, function in (
+            ('<KeyRelease-Prior>', ''),
+            ('<KeyRelease-Next>', ''),
+            ('<Shift-KeyRelease-End>', ''),
+            ('<Shift-KeyRelease-Home>', ''),
+            ('<KeyRelease-Up>', ''),
+            ('<Control-KeyRelease-Up>', ''),
+            ('<KeyRelease-Down>', ''),
+            ('<Control-KeyRelease-Down>', ''),
+            ('<KeyRelease-Left>', ''),
+            ('<Alt-KeyRelease-Left>', ''),
+            ('<Control-KeyRelease-Left>', ''),
+            ('<Shift-KeyRelease-Left>', ''),
+            ('<KeyRelease-Right>', ''),
+            ('<Alt-KeyRelease-Right>', ''),
+            ('<Control-KeyRelease-Right>', ''),
+            ('<Shift-KeyRelease-Right>', ''),
+            ('<Alt-KeyRelease-Insert>', ''),
+            ('<Alt-KeyRelease-Delete>', ''),
+            ('<Control-KeyRelease-Delete>', ''),
+            ):
+            if function:
+                function = self.try_event(function)
+            self.frame.bind(sequence, function)
 
     def bind_on(self):
         """Enable all bindings."""
@@ -1230,33 +1423,30 @@ class DataGridReadOnly(DataGridBase):
 
     def __bind_on(self):
         """Enable all bindings."""
-        self.frame.bind('<KeyRelease-Prior>', self.up_one_page)
-        self.frame.bind('<KeyRelease-Next>', self.down_one_page)
-        self.frame.bind('<Shift-KeyRelease-End>', self.down_all)
-        self.frame.bind('<Shift-KeyRelease-Home>', self.up_all)
-        self.frame.bind('<KeyRelease-Up>', self.up_one_line)
-        self.frame.bind('<Control-KeyRelease-Up>', self.up_one_line_selection)
-        self.frame.bind('<KeyRelease-Down>', self.down_one_line)
-        self.frame.bind(
-            '<Control-KeyRelease-Down>', self.down_one_line_selection)
-        self.frame.bind('<KeyRelease-Left>', self.select_up_one_line)
-        self.frame.bind(
-            '<Alt-KeyRelease-Left>', self.select_bookmark_up_one_line)
-        self.frame.bind(
-            '<Control-KeyRelease-Left>', self.select_up_one_line_control)
-        self.frame.bind(
-            '<Shift-KeyRelease-Left>', self.select_up_one_line_shift)
-        self.frame.bind('<KeyRelease-Right>', self.select_down_one_line)
-        self.frame.bind(
-            '<Alt-KeyRelease-Right>', self.select_bookmark_down_one_line)
-        self.frame.bind(
-            '<Control-KeyRelease-Right>', self.select_down_one_line_control)
-        self.frame.bind(
-            '<Shift-KeyRelease-Right>', self.select_down_one_line_shift)
-        self.frame.bind('<Alt-KeyRelease-Insert>', self.add_bookmark_event)
-        self.frame.bind('<Alt-KeyRelease-Delete>', self.cancel_bookmark_event)
-        self.frame.bind(
-            '<Control-KeyRelease-Delete>', self.cancel_selection_event)
+        for sequence, function in (
+            ('<KeyRelease-Prior>', self.up_one_page),
+            ('<KeyRelease-Next>', self.down_one_page),
+            ('<Shift-KeyRelease-End>', self.down_all),
+            ('<Shift-KeyRelease-Home>', self.up_all),
+            ('<KeyRelease-Up>', self.up_one_line),
+            ('<Control-KeyRelease-Up>', self.up_one_line_selection),
+            ('<KeyRelease-Down>', self.down_one_line),
+            ('<Control-KeyRelease-Down>', self.down_one_line_selection),
+            ('<KeyRelease-Left>', self.select_up_one_line),
+            ('<Alt-KeyRelease-Left>', self.select_bookmark_up_one_line),
+            ('<Control-KeyRelease-Left>', self.select_up_one_line_control),
+            ('<Shift-KeyRelease-Left>', self.select_up_one_line_shift),
+            ('<KeyRelease-Right>', self.select_down_one_line),
+            ('<Alt-KeyRelease-Right>', self.select_bookmark_down_one_line),
+            ('<Control-KeyRelease-Right>', self.select_down_one_line_control),
+            ('<Shift-KeyRelease-Right>', self.select_down_one_line_shift),
+            ('<Alt-KeyRelease-Insert>', self.add_bookmark_event),
+            ('<Alt-KeyRelease-Delete>', self.cancel_bookmark_event),
+            ('<Control-KeyRelease-Delete>', self.cancel_selection_event),
+            ):
+            if function:
+                function = self.try_event(function)
+            self.frame.bind(sequence, function)
 
     def up_one_page(self, event):
         """Scroll grid up one page of rows."""
@@ -1350,11 +1540,11 @@ class DataGridReadOnly(DataGridBase):
 
     def add_bookmark_event(self, event):
         """Add selection"""
-        self.add_bookmark()
+        self.add_selection_bookmark()
 
     def cancel_bookmark_event(self, event):
         """Cancel bookmark"""
-        self.cancel_bookmark()
+        self.cancel_selection_bookmark()
 
     def cancel_selection_event(self, event):
         """Cancel selection"""
@@ -1369,10 +1559,18 @@ class DataGrid(DataGridReadOnly):
 
     create_delete_dialog
     create_edit_dialog
-    edit_dialog
-    edit_dialog_event
     delete_dialog
     delete_dialog_event
+    delete_from_popup
+    edit_dialog
+    edit_dialog_event
+    edit_from_popup
+    edit_show_from_popup
+    insert_from_popup
+    launch_delete_record
+    launch_edit_record
+    launch_edit_show_record
+    launch_insert_new_record
     __bind_on
     
     Methods overridden:
@@ -1391,12 +1589,27 @@ class DataGrid(DataGridReadOnly):
         """Extend with event bindings for update actions."""
         super(DataGrid, self).__init__(parent)
         self.__bind_on()
-    
+        for label, function, accelerator in (
+            ('Insert', self.insert_from_popup, 'Insert'),
+            ('Edit', self.edit_from_popup, 'Shift Insert'),
+            ('Edit and show', self.edit_show_from_popup, 'Ctrl Insert'),
+            ('Delete', self.delete_from_popup, 'Delete'),
+            ):
+            self.menupopup.add_command(
+                label=label,
+                command=self.try_command(function, self.menupopup),
+                accelerator=accelerator)
+
     def bind_off(self):
         """Disable all bindings."""
         super(DataGrid, self).bind_off()
-        self.frame.bind('<KeyRelease-Insert>', '')
-        self.frame.bind('<KeyRelease-Delete>', '')
+        for sequence, function in (
+            ('<KeyRelease-Insert>', ''),
+            ('<KeyRelease-Delete>', ''),
+            ):
+            if function:
+                function = self.try_event(function)
+            self.frame.bind(sequence, function)
 
     def bind_on(self):
         """Enable all bindings."""
@@ -1405,33 +1618,55 @@ class DataGrid(DataGridReadOnly):
 
     def __bind_on(self):
         """Enable all bindings."""
-        self.frame.bind('<KeyRelease-Insert>', self.edit_dialog_event)
-        self.frame.bind('<KeyRelease-Delete>', self.delete_dialog_event)
+        for sequence, function in (
+            ('<KeyRelease-Insert>', self.edit_dialog_event),
+            ('<KeyRelease-Delete>', self.delete_dialog_event),
+            ):
+            if function:
+                function = self.try_event(function)
+            self.frame.bind(sequence, function)
 
-    def create_delete_dialog(self, instance, oldobject, modal):
+    def create_delete_dialog(
+        self,
+        instance,
+        oldobject,
+        modal,
+        title='Delete record'):
         """Create dialogue and display record for deletion.
 
         Create a toplevel widget and pass it to the record's delete_row
         method for completion before concluding the dialog.
         
-        """
-        # need to make dialog modal if requested {dialog.grab_set() sequence}
-        dialog = Tkinter.Toplevel()
-        dialog.wm_title('Delete Record')
-        datadelete = instance.delete_row(dialog, oldobject)
-        datadelete.set_data_source(self.datasource, datadelete.on_data_change)
-
-    def create_edit_dialog(
-        self, instance, newobject, oldobject, showinitial, modal):
-        """Create dialog and display for record insetion or amendment.
-
-        Create a toplevel widget and pass it to the record's edit_row
-        method for completion before concluding the dialog.
+        This method may need to be extended in subclasses, especially if the
+        launch_... methods are extended.
         
         """
         # need to make dialog modal if requested {dialog.grab_set() sequence}
         dialog = Tkinter.Toplevel()
-        dialog.wm_title('Edit Record')
+        dialog.wm_title(title)
+        datadelete = instance.delete_row(dialog, oldobject)
+        datadelete.set_data_source(self.datasource, datadelete.on_data_change)
+
+    def create_edit_dialog(
+        self,
+        instance,
+        newobject,
+        oldobject,
+        showinitial,
+        modal,
+        title='Edit Record'):
+        """Create dialog and display for record insetion or amendment.
+
+        Create a toplevel widget and pass it to the record's edit_row
+        method for completion before concluding the dialog.
+
+        This method may need to be extended in subclasses, especially if the
+        launch_... methods are extended.
+        
+        """
+        # need to make dialog modal if requested {dialog.grab_set() sequence}
+        dialog = Tkinter.Toplevel()
+        dialog.wm_title(title)
         dataedit = instance.edit_row(
             dialog, newobject, oldobject, showinitial)
         dataedit.set_data_source(self.datasource, dataedit.on_data_change)
@@ -1439,37 +1674,15 @@ class DataGrid(DataGridReadOnly):
     def edit_dialog(self, key, event, modal=True):
         """Create and display object to be edited and optionally the original.
 
-        By default use the datagrid new_row() method for insert and clones of
-        the displayed row for edit.  If the row instance does not implement
-        the full behaviour needed to generate the database transaction this
-        edit_dialog method must be overridden in the DataGrid subclass.
-        
         """
         if key not in self.keys:
-            newobject = self.datasource.new_row
-            instance = newobject()
-            newobject.empty()
-            oldobject = None
-            showinitial = False
+            self.launch_insert_new_record(modal=modal)
         elif event.state & SHIFTDOWN:
-            newobject = self.objects[key].clone
-            oldobject = self.objects[key].clone
-            instance = self.objects[key]
-            showinitial = True
+            self.launch_edit_record(key, modal=modal)
         elif event.state & CONTROLDOWN:
-            newobject = self.objects[key].clone
-            oldobject = self.objects[key].clone
-            instance = self.objects[key]
-            showinitial = False
+            self.launch_edit_show_record(key, modal=modal)
         else:
-            newobject = self.datasource.new_row
-            instance = newobject()
-            newobject.empty()
-            oldobject = None
-            showinitial = False
-        
-        self.create_edit_dialog(
-            instance, newobject, oldobject, showinitial, modal)
+            self.launch_insert_new_record(modal=modal)
 
     def edit_dialog_event(self, event):
         """Add selection and database record insert and edit functions"""
@@ -1490,8 +1703,7 @@ class DataGrid(DataGridReadOnly):
         """
         if key not in self.keys:
             return
-        self.create_delete_dialog(
-            self.objects[key], self.objects[key].clone, modal)
+        self.launch_delete_record(key)
 
     def delete_dialog_event(self, event):
         """Cancel selection and database record delete function"""
@@ -1500,3 +1712,92 @@ class DataGrid(DataGridReadOnly):
         else:
             s = None
         self.delete_dialog(s, event, False)
+
+    def delete_from_popup(self):
+        """Launch a delete record dialogue."""
+        self.launch_delete_record(self.pointer_popup_selection)
+        self.move_selection_to_popup_selection()
+
+    def edit_from_popup(self):
+        """Launch an edit record dialogue from popup."""
+        self.launch_edit_record(self.pointer_popup_selection)
+        self.move_selection_to_popup_selection()
+
+    def edit_show_from_popup(self):
+        """Launch an edit record dialogue with a reference copy from popup."""
+        self.launch_edit_show_record(self.pointer_popup_selection)
+        self.move_selection_to_popup_selection()
+
+    def insert_from_popup(self):
+        """Launch an insert new record dialogue from popup."""
+        self.launch_insert_new_record()
+
+    def launch_delete_record(self, key, modal=True):
+        """Create delete dialogue.
+
+        By default use the datagrid new_row() method for insert and clones of
+        the displayed row for edit.  If the row instance does not implement
+        the full behaviour needed to generate the database transaction the
+        launch_... methods, and probably the create_edit_dialog method, will
+        need to be extended in the DataGrid subclass.
+        
+        """
+        self.create_delete_dialog(
+            self.objects[key],
+            self.objects[key].clone,
+            modal)
+
+    def launch_edit_record(self, key, modal=True):
+        """Create edit dialogue.
+
+        By default use clones of the displayed row for edit.  If the row
+        instance does not implement the full behaviour needed to generate the
+        database transaction the launch_... methods, and probably the
+        create_edit_dialog method, will need to be extended in the DataGrid
+        subclass.
+        
+        """
+        self.create_edit_dialog(
+            self.objects[key],
+            self.objects[key].clone,
+            self.objects[key].clone,
+            False,
+            modal)
+
+    def launch_edit_show_record(self, key, modal=True):
+        """Create edit dialogue including reference copy of original.
+
+        By default use clones of the displayed row for edit.  If the row
+        instance does not implement the full behaviour needed to generate the
+        database transaction the launch_... methods, and probably the
+        create_edit_dialog method, will need to be extended in the DataGrid
+        subclass.
+        
+        """
+        self.create_edit_dialog(
+            self.objects[key],
+            self.objects[key].clone,
+            self.objects[key].clone,
+            True,
+            modal)
+
+    def launch_insert_new_record(self, modal=True):
+        """Create insert dialogue.
+
+        By default use the datagrid new_row() method for insert.  If the row
+        instance does not implement the full behaviour needed to generate the
+        database transaction the launch_... methods, and probably the
+        create_edit_dialog method, will need to be extended in the DataGrid
+        subclass.
+        
+        """
+        newobject = self.datasource.new_row
+        instance = newobject()
+        newobject.empty()
+        self.create_edit_dialog(
+            instance,
+            newobject,
+            None,
+            False,
+            modal,
+            title='New Record')

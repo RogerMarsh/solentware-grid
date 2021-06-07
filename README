@@ -1,0 +1,20 @@
+To install the gridsup package type
+
+python setup.py install
+
+at the command prompt with setup.py in the current directory.
+
+
+This is gridsup-0.8
+
+
+Dependencies:
+
+Python 2.6 or Python 2.7 installed.
+basesup-0.8 package from www.solentware.co.uk.
+
+
+Contact:
+
+roger.marsh@solentware.co.uk
+

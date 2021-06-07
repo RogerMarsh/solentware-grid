@@ -4,4 +4,3 @@
 
 """gridsup package
 """
-_gridsup_version = '0.4'
