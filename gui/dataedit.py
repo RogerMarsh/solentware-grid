@@ -2,13 +2,8 @@
 # Copyright 2007 Roger Marsh
 # Licence: See LICENCE (BSD licence)
 
-"""Record and dialogue support for edit record classes.
-
-List of classes:
-
-RecordEdit - record edit and data update notification
-DataEdit - record edit and insert dialogue
-
+"""This module provide base classes for record editing
+dialogues.
 """
 
 import tkinter
@@ -23,32 +18,17 @@ minimum_height = 300
 
 class RecordEdit(DataClient):
 
-    """Edit or insert a DB record.
-    
-    Methods added:
-
-    edit - edit record if instance attached to database
-    on_data_change - block update if record for instance changed elsewhere
-    put - insert record
-
-    Methods overridden:
-
-    None
-
-    Methods extended:
-
-    __init__ - extend DataClient identifying instance being edited or inserted
-    
+    """Edit or insert a database record.
     """
 
     def __init__(self, newobject, oldobject):
-        """Extend DataClient to identify instance being edited or inserted.
+        """Delegate to superclas then set number of rows to 1.
 
-        self.rows: DataClient provides one record
-        self.newobject: the record to be inserted or the replacement record
-        self.oldobject: the record being replaced or None if insertion
-        self.newobject.newrecord: this is new or replacement record
-        self.blockchange: True means prevent deletion when requested
+        newobject - the record to be inserted or the replacement record
+        oldobject - the record being replaced or None if insertion
+
+        blockchange is set False to indicate update is allowed unless an
+        update notification changes the situation.
 
         """
         super(RecordEdit, self).__init__()
@@ -59,7 +39,12 @@ class RecordEdit(DataClient):
         self.blockchange = False
 
     def edit(self, commit=True):
-        """Edit the record and refresh widgets
+        """Edit the record and refresh widgets.
+
+        commit - update within, and commit, transaction if True.  A transaction
+                is started if one is not already started.
+                If not True a transaction is not started and an existing
+                transaction, if there is one, is not committed.
 
         The datasource must be set by a call to set_data_source (inherited
         from DataClient) to allow edit to happen.  That call should also
@@ -81,6 +66,8 @@ class RecordEdit(DataClient):
     def on_data_change(self, instance):
         """Block record edit if instance is record being edited.
 
+        instance - the updated record, which cannot be deleted by self
+
         Implication is that record has been modified separately and it is
         not correct to edit based on the record as held in self.
         
@@ -92,7 +79,19 @@ class RecordEdit(DataClient):
             pass
         
     def put(self, commit=True):
-        """Insert the record and refresh widgets"""
+        """Insert the record and refresh widgets.
+
+        commit - update within, and commit, transaction if True.  A transaction
+                is started if one is not already started.
+                If not True a transaction is not started and an existing
+                transaction, if there is one, is not committed.
+
+        The datasource must be set by a call to set_data_source (inherited
+        from DataClient) to allow update to happen.  That call should also
+        specify on_data_change as the update notification callback to prevent
+        edit proceeding if the record is changed elsewhere first.
+
+        """
         if commit:
             self.datasource.dbhome.start_transaction()
         self.newobject.put_record(
@@ -105,23 +104,7 @@ class RecordEdit(DataClient):
 
 class DataEdit(RecordEdit):
     
-    """Provide an edit and insert record dialogue
-    
-    Methods added:
-
-    dialog_clear_error_markers
-    dialog_ok
-    dialog_on_cancel
-    dialog_on_ok
-
-    Methods overridden:
-
-    None
-
-    Methods extended:
-
-    __init__
-    
+    """An edit and insert record dialogue.
     """
 
     def __init__(
@@ -133,9 +116,20 @@ class DataEdit(RecordEdit):
         title,
         oldview=None,
         ):
-        """Extend RecordEdit with dialogue widgets for edit objects."""
+        """Delegate to superclass then create the dialogue.
+
+        newobject - passed to superclass as newobject argument
+        parent - parent widget for dialog
+        oldobject - passed to superclass as oldobject argument
+        newview - widget displaying record with updates applied
+        title - title for dialogue
+        oldview - widget displaying record before edit or None if inserted
+        """
         super(DataEdit, self).__init__(newobject, oldobject)
         self.parent = parent
+        self.newview = newview
+        self.oldview = oldview
+        parent.bind('<Destroy>', self.on_destroy)
         parent.wm_title(title)
         parent.wm_minsize(width=minimum_width, height=minimum_height)
         if oldview:
@@ -164,7 +158,6 @@ class DataEdit(RecordEdit):
             text='Cancel',
             command=self.try_command(self.dialog_on_cancel, self.buttons))
         self.cancel.pack(expand=tkinter.TRUE, side=tkinter.LEFT)
-        self.newview = newview
 
     def dialog_clear_error_markers(self):
         """Set status report to ''."""
@@ -180,12 +173,7 @@ class DataEdit(RecordEdit):
         return self.status
 
     def on_data_change(self, instance):
-        """Block record deletion if instance is record being deleted.
-
-        Implication is that record has been modified separately and it is
-        not correct to delete based on the record as held in self.
-        
-        """
+        """Delegate to superclass then destroy dialogue if deleted."""
         super(DataEdit, self).on_data_change(instance)
         if self.blockchange:
             if self.ok:
@@ -255,3 +243,28 @@ class DataEdit(RecordEdit):
             self.newobject.key.recno = 0
             self.put()
             return True
+
+    def ok_by_keypress_binding(self, event=None):
+        """Delegate to dialog_on_ok after accepting event argument."""
+        self.dialog_on_ok()
+
+    def cancel_by_keypress_binding(self, event=None):
+        """Delegate to dialog_on_ok after accepting event argument."""
+        self.dialog_on_cancel()
+
+    def bind_buttons_to_widget(self, widget):
+        """Bind button commands to underlined character for widget."""
+        for b, u, f in ((self.ok, 0, self.ok_by_keypress_binding),
+                     (self.cancel, 0, self.cancel_by_keypress_binding)):
+            b.configure(underline=u)
+            widget.bind(
+                b.configure('text')[-1][u].lower().join(('<Alt-', '>')),
+                self.try_event(f))
+
+    def on_destroy(self, event=None):
+        """Tidy up after destruction of dialogue widget and all children."""
+        if event.widget == self.parent:
+            self.tidy_on_destroy()
+
+    def tidy_on_destroy(self):
+        """Do nothing. Override as required."""

@@ -2,5 +2,5 @@
 # Copyright 2011 Roger Marsh
 # Licence: See LICENCE (BSD licence)
 
-"""gridsup package
+"""Provide base classes for scrollable grids of records from databases.
 """

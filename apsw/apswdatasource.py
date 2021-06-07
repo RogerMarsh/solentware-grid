@@ -1,4 +1,4 @@
-# sqlite3datasource.py
+# apswdatasource.py
 # Copyright 2011 Roger Marsh
 # Licence: See LICENCE (BSD licence)
 
@@ -7,8 +7,8 @@
 # will be sibling methods of 'self.dbhome.get_database(...)'
 # It is possible this will become datasource class for recordsets and that
 # sqlite3datasource.py will become similar for sorted recordsets.
-"""This module provides the Sqlite3DataSource class using the sqlite3 package
-to access a Sqlite3 database.
+"""This module provides the Sqlite3DataSource class using the apsw package to
+access a Sqlite3 database.
 
 """
 

@@ -8,15 +8,11 @@ Database display classes
 Description
 ===========
 
-This package provides a grid to display a scrollable list of records from a database accessed using the `basesup`_ package.
+This package provides a grid to display a scrollable list of records from a database accessed using the `solentware-base`_ package.
 
 
 Installation Instructions
 =========================
-
-Build dependencies
-
-* `Python`_ 3.3 or later 
 
 Install the package by typing
 
@@ -38,9 +34,7 @@ You may need to give the path and version of Python depending on your system's c
 
          on Unix-like systems.
 
-Runtime dependencies
-
-* `basesup`_ package.
+Use `Python`_ 3.3 or later.
 
 
 Notes
@@ -50,4 +44,4 @@ This package was written because I could not find something which behaved like a
 
 
 .. _`Python`: https://python.org
-.. _`basesup`: http://solentware.co.uk/products.html
+.. _`solentware-base`: http://solentware.co.uk/components.html

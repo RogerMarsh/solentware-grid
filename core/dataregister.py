@@ -2,20 +2,17 @@
 # Copyright 2009 Roger Marsh
 # Licence: See LICENCE (BSD licence)
 
-"""Provide a way to link Controls to the database updates of interest.
+"""This module provides a way to link widgets to the database updates of
+interest.
 
-These classes are designed to work with the classes in dataclient.py
-
-List of classes:
-
-DataRegister
+This module designed to work with the dataclient module.
 
 """
 
 
 class DataRegister(object):
     
-    """Register the interest of a DataControl in updates to an index.
+    """Register the interest of a DataSource instance in updates to an index.
     
     Maintain a dictionary of callback methods:
     self._datasources[(db, file, index)][control] = callback
@@ -25,37 +22,18 @@ class DataRegister(object):
     dictionary allows the indexes to be cross referenced so that all controls
     that may be displaying the updated instance get a chance to refresh.
     
-    Methods added:
-
-    refresh_at_start_of_file
-    refresh_after_update
-    register_in
-    register_out
-
-    Methods overridden:
-
-    None
-    
-    Methods extended:
-
-    __init__
-    
     """
 
     def __init__(self, **kargs):
-        """Create an empty register of datasources"""
+        """Create an empty register of datasources."""
         super(DataRegister, self).__init__()
         self.datasources = dict()
 
     def refresh_at_start_of_file(self):
         """Refresh all registered data clients and position at start of file.
 
-        Clear all selections on all clients (subclasses of
-        _DataAccess) in self._datasources and position datagrid for
-        client at start of file.
-        Sample use after updating and deleting many records in one
-        transaction to remove references to deleted records and index
-        values.
+        Clear all selections on all dataclients in the register of datasources
+        and position datagrid for client at start of file.
         
         """
         sources = self.datasources

@@ -2,7 +2,9 @@
 # Copyright 2008 Roger Marsh
 # Licence: See LICENCE (BSD licence)
 
-"""Classes for linking a GUI Control with a database.
+"""This module provides classes to hold the records from a database which are
+currently displayed in a widget, and provide a way to synchronize the refresh
+of widgets when the records are updated.
 
 Each DataClient holds details of the data displayed on a control and
 provides wrappers for the underlying database functions to support scrolling
@@ -27,14 +29,6 @@ in a secondary read but is an integer when the key in a primary read.
 
 Partial key can be specified to define a key range to be returned.
 
-List of classes:
-
-DataNotify
-_DataAccess
-DataClient
-DataLookup
-DataSource
-
 """
 import collections
 
@@ -46,23 +40,6 @@ class DataNotify(object):
     Use this class to get update notifications but not record and cursor
     access with subclass methods.  Use the get_data_source method to access
     records and cursors with the tools of the underlying database engine.
-    
-    Methods added:
-
-    get_data_source
-    register_in
-    register_out
-    refresh_widgets
-    set_data_source
-    set_named_data_sources
-
-    Methods overridden:
-
-    __init__
-
-    Methods extended:
-
-    None
     
     """
 
@@ -78,9 +55,8 @@ class DataNotify(object):
     def register_in(self, datasource, callback):
         """Register callback with datasource for update notification.
 
-        The current registered callback for datasource, if any, is forgotten.
-
-        Subclasses must define any callbacks required.
+        datasource - update notifications required for updates using datasource
+        callback - the callback method to use when update occurs on datasource
 
         """
         if datasource:
@@ -126,11 +102,11 @@ class DataNotify(object):
             pass
 
     def set_named_data_sources(self, sources):
-        """Update dictionary of named datasources.
+        """Update dictionary of datasources from which notifications are needed.
         
-        Then set_data_source(name, ...) will set self.datasource accordingly.
-        None cannot be a key of self._datasources as this is the null value
-        for self.datasource.
+        sources - a dictionary of DataSource instances
+                Then set_data_source(name, ...) will set self.datasource
+                accordingly.
         
         """
         if not isinstance(sources, dict):
@@ -151,24 +127,6 @@ class _DataAccess(DataNotify):
 
     This class should not be used directly. Use subclasses defined in this
     module.
-    
-    Methods added:
-
-    get_record
-    set_partial_key
-    get_cursor
-    get_database
-    is_recno
-    new_row
-    new_row_for_database
-
-    Methods overridden:
-
-    None
-
-    Methods extended:
-
-    __init__
     
     """
 
@@ -254,23 +212,6 @@ class DataClient(_DataAccess):
     define which records are neighbours and selection criteria define which
     records are seen for inclusion in the variable set.
     
-    Methods added:
-
-    clear_client_keys
-    close_client_cursor
-    make_client_cursor
-    load_object
-    refresh_cursor
-
-    Methods overridden:
-
-    None
-
-    Methods extended:
-
-    __init__
-    set_partial_key
-    
     """
 
     def __init__(self):
@@ -279,9 +220,10 @@ class DataClient(_DataAccess):
         self.keys: the variable contiguous set of record keys
                    [(skey, pkey), ...] or [(pkey, value), ...]
         self.rows: number of records to be held in self.keys
-        self.objects: the unpickled values for the records in self.keys
-                   {(skey, pkey) : unpickled value, ...} or
-                   {(pkey, value) : unpickled value, ...}
+        self.objects: values for records in self.keys returned by literal_eval()
+                    from module ast.
+                    {(skey, pkey) : literal_eval(value), ...} or
+                    {(pkey, value) : literal_eval(value), ...}
 
         """
         super(DataClient, self).__init__()
@@ -315,29 +257,31 @@ class DataClient(_DataAccess):
     def load_object(self, key):
         """Create a new row and populate it with data from record for key."""
         newrow = self.datasource.new_row()
-        self.objects[key] = newrow
+        # Adjusted to catch exception diplaying grid after drop table.
+        #self.objects[key] = newrow
         newrow.load_instance(
             self.datasource.dbhome,
             self.datasource.dbset,
             self.datasource.dbname,
             key)
+        self.objects[key] = newrow
 
-    def refresh_cursor(self):
+    def refresh_cursor(self, instance=None):
         """Modify cursor data structures after database update.
 
         A database engine dependant action.  The called refresh_recordset
         method will do anything needed.
 
         """
-        # The last change while this module was in rmappsup adjusted cursor
-        # management to keep the cursor for a datagrid between scrolling
+        # The last change while this module was in solentware_misc adjusted
+        # cursor management to keep the cursor for a datagrid between scrolling
         # actions rather than destroy it and create a new one next time.
         # The problem was the time take to position the new cursor towards
         # the end of large recordsets in DPT.  This introduced the problem of
         # dealing with record deletion and addition because the DPT foundsets
         # may no longer agree with the existence bitmap.
         if self.cursor:
-            self.cursor.refresh_recordset()
+            self.cursor.refresh_recordset(instance)
 
     def set_partial_key(self, key=None):
         """Set a partial key. key=None unsets partial key."""
@@ -348,29 +292,15 @@ class DataClient(_DataAccess):
         
 class DataLookup(_DataAccess):
     
-    """Provide a variable cache of records from a database with unique keys.
+    """Provide a cache of records from a database with unique keys.
 
     Use of this class is restricted to cases where the key is associated
     with a single value.
     
-    Methods added:
-
-    close (not sure why this exists)
-    load_cache
-    on_data_change (not implemented)
-
-    Methods overridden:
-
-    None
-
-    Methods extended:
-
-    __init__
-    
     """
 
     def __init__(self):
-        """Extend _DataAccess with variable cache of records.
+        """Extend _DataAccess with cache of records read from database.
 
         self.keys: the variable set of record keys
                    [pkey1, pkey2, ...] or [skey1, skey2, ...]
@@ -421,20 +351,13 @@ class DataLookup(_DataAccess):
             return newrow
 
     def on_data_change(self, instance):
-        """Not implemented.
-
-        Object changed added or deleted
-        If instance.newrecord is False then object was added.
-        If instance.newrecord is None or absent then object was deleted.
-        Otherwise object.newrecord replaced object.
-        Exact behaviour depends on use of set_data_source method.
-
-        Not sure of detail yet but it may be that this class maintains
-        the lookup cache and controls refresh of client displays.
-        
+        """Not implemented.  Raises RuntimeError exception.
         """
-        print(self, 'Lookup data change')
-        print(instance)
+        raise RuntimeError('Not implemented')
+
+
+class DataSourceError(Exception):
+    pass
         
 
 class DataSource(object):
@@ -443,24 +366,6 @@ class DataSource(object):
     
     This class is designed to work with records defined by subclasses of
     Record accesed via subclasses of DataNotify.
-    
-    Methods added:
-
-    get_cursor
-    get_database
-    new_row
-    new_row_for_database
-    register_in
-    register_out
-    refresh_widgets
-
-    Methods overridden:
-
-    __init__
-
-    Methods extended:
-
-    None
     
     """
 
@@ -532,6 +437,6 @@ class DataSource(object):
 
     @property
     def dbidentity(self):
-        """"""
+        """id(<primary database instance>)"""
         return id(self.dbhome.get_database(self.dbset, self.dbset))
 
