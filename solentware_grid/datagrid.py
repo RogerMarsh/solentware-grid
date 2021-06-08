@@ -1660,7 +1660,7 @@ class DataGrid(DataGridReadOnly):
         
         """
         # need to make dialog modal if requested {dialog.grab_set() sequence}
-        dialog = tkinter.Toplevel()
+        dialog = tkinter.Toplevel(master=self.parent)
         dialog.wm_title(title)
         datadelete = instance.delete_row(dialog, oldobject)
         datadelete.set_data_source(self.datasource, datadelete.on_data_change)
@@ -1683,7 +1683,7 @@ class DataGrid(DataGridReadOnly):
         
         """
         # need to make dialog modal if requested {dialog.grab_set() sequence}
-        dialog = tkinter.Toplevel()
+        dialog = tkinter.Toplevel(master=self.parent)
         dialog.wm_title(title)
         dataedit = instance.edit_row(
             dialog, newobject, oldobject, showinitial)
@@ -1705,7 +1705,7 @@ class DataGrid(DataGridReadOnly):
         
         """
         # need to make dialog modal if requested {dialog.grab_set() sequence}
-        dialog = tkinter.Toplevel()
+        dialog = tkinter.Toplevel(master=self.parent)
         dialog.wm_title(title)
         datashow = instance.show_row(dialog, oldobject)
         datashow.set_data_source(self.datasource, datashow.on_data_change)
