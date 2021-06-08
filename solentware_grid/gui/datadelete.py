@@ -1,8 +1,8 @@
-# datashow.py
-# Copyright 2015 Roger Marsh
+# datadelete.py
+# Copyright 2007 Roger Marsh
 # Licence: See LICENCE (BSD licence)
 
-"""This module provide base classes for record display
+"""This module provides base classes for record deletion
 dialogues.
 
 """
@@ -17,27 +17,50 @@ minimum_width = 600
 minimum_height = 200
 
 
-class RecordShow(DataClient):
+class RecordDelete(DataClient):
     
-    """Show a database record.
+    """Delete a database record.
     """
 
     def __init__(self, instance):
         """Delegate to superclass then set number of rows to 1.
 
-        instance - the record to be displayed
+        instance - the record to be deleted
 
-        instance.newrecord is set None to indicate a record display.
+        instance.newrecord is set False to indicate a record deletion.
 
         blockchange is set False to indicate deletion is allowed unless an
         update notification changes the situation.
 
         """
-        super(RecordShow, self).__init__()
+        super(RecordDelete, self).__init__()
         self.rows = 1
         self.object = instance
         self.object.newrecord = None
         self.blockchange = False
+
+    def delete(self, commit=True):
+        """Delete the record and refresh widgets.
+
+        commit - delete within, and commit, transaction if True.  A transaction
+                is started if one is not already started.
+                If not True a transaction is not started and an existing
+                transaction, if there is one, is not committed.
+
+        The datasource must be set by a call to set_data_source (inherited
+        from DataClient) to allow delete to happen.  That call should also
+        specify on_data_change as the update notification callback to prevent
+        deletion proceeding if the record is changed elsewhere first.
+
+        """
+        if commit:
+            self.datasource.dbhome.start_transaction()
+        self.object.delete_record(
+            self.datasource.dbhome,
+            self.datasource.dbset)
+        if commit:
+            self.datasource.dbhome.commit()
+        self.datasource.refresh_widgets(self.object)
 
     def on_data_change(self, instance):
         """Block record deletion if instance is record being deleted.
@@ -45,16 +68,16 @@ class RecordShow(DataClient):
         instance - the updated record, which cannot be deleted by self
 
         Implication is that record has been modified separately and it is
-        not correct to update based on the record as held in self.
+        not correct to delete based on the record as held in self.
         
         """
         if instance == self.object:
             self.blockchange = True
         
 
-class DataShow(RecordShow):
+class DataDelete(RecordDelete):
     
-    """A show record dialogue.
+    """A delete record dialogue.
     """
 
     def __init__(self, instance, parent, oldview, title):
@@ -62,10 +85,10 @@ class DataShow(RecordShow):
 
         instance - passed to superclass as instance argument
         parent - parent widget for dialog
-        oldview - widget displaying the record
+        oldview - widget displaying the record to be deleted
         title - title for dialogue
         """
-        super(DataShow, self).__init__(instance)
+        super(DataDelete, self).__init__(instance)
         self.parent = parent
         self.oldview = oldview
         parent.bind('<Destroy>', self.on_destroy)
@@ -87,10 +110,20 @@ class DataShow(RecordShow):
             text='Ok',
             command=self.try_command(self.dialog_on_ok, self.buttons))
         self.ok.pack(expand=tkinter.TRUE, side=tkinter.LEFT)
+        self.cancel = tkinter.Button(
+            master=self.buttons,
+            text='Cancel',
+            command=self.try_command(self.dialog_on_cancel, self.buttons))
+        self.cancel.pack(expand=tkinter.TRUE, side=tkinter.LEFT)
         
     def dialog_clear_error_markers(self):
         """Set status report to ''."""
         self.status.configure(text='')
+
+    def dialog_on_cancel(self):
+        """Destroy dialogue on Cancel response in dialogue."""
+        self.parent.destroy()
+        self.set_data_source()
         
     def dialog_status(self):
         """Return widget used to display status reports and error messages."""
@@ -98,19 +131,27 @@ class DataShow(RecordShow):
 
     def on_data_change(self, instance):
         """Delegate to superclass then destroy dialogue if deleted."""
-        super(DataShow, self).on_data_change(instance)
+        super(DataDelete, self).on_data_change(instance)
         if self.blockchange:
             if self.ok:
                 self.ok.destroy()
                 self.ok = None
 
     def dialog_ok(self):
-        """Delete record and return show action response."""
+        """Delete record and return delete action response (True for deleted).
+
+        Check that database is open and is same one as deletion action was
+        started.
+
+        """
         if self.datasource is not None:
-            if self.datasource.dbhome.get_database(
-                self.datasource.dbset, self.datasource.dbset):
+            if self.datasource.dbhome.get_table_connection(
+                self.datasource.dbset):
+                self.delete()
                 return True
             else:
+                self.status.configure(
+                    text='Cannot delete because original database was closed')
                 if self.ok:
                     self.ok.destroy()
                     self.ok = None
@@ -118,23 +159,44 @@ class DataShow(RecordShow):
                 return False
 
     def dialog_on_ok(self):
-        """Destroy dialogue"""
+        """Delete record and destroy dialogue on Ok response.
+
+        Deletion is not allowed if the record has been changed since start
+        of delete action or the database has been closed since then.
+
+        """
         self.dialog_clear_error_markers()
         if self.blockchange:
+            self.status.configure(
+                text=' '.join((
+                    'Cannot delete because the record has',
+                    'been changed since this dialogue opened.',
+                    )))
             self.ok.destroy()
             self.ok = None
             return
         dok = self.dialog_ok()
-        self.parent.destroy()
-        self.set_data_source()
+        if dok:
+            self.parent.destroy()
+            self.set_data_source()
+        elif dok is False:
+            pass
+        else:
+            self.status.configure(
+                text='Cannot delete because not connected to a database')
 
     def ok_by_keypress_binding(self, event=None):
         """Delegate to dialog_on_ok after accepting event argument."""
         self.dialog_on_ok()
 
+    def cancel_by_keypress_binding(self, event=None):
+        """Delegate to dialog_on_ok after accepting event argument."""
+        self.dialog_on_cancel()
+
     def bind_buttons_to_widget(self, widget):
         """Bind button commands to underlined character for widget."""
-        for b, u, f in ((self.ok, 0, self.ok_by_keypress_binding),):
+        for b, u, f in ((self.ok, 0, self.ok_by_keypress_binding),
+                     (self.cancel, 0, self.cancel_by_keypress_binding)):
             b.configure(underline=u)
             widget.bind(
                 b.configure('text')[-1][u].lower().join(('<Alt-', '>')),

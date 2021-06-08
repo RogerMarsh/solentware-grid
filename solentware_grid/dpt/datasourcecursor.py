@@ -1,8 +1,8 @@
-# dptdatasource.py
+# datasourcecursor.py
 # Copyright 2008 Roger Marsh
 # Licence: See LICENCE (BSD licence)
 
-"""This module provides the DPTDataSource class using the dptdb package to
+"""This module provides the DataSource class using the dptdb package to
 access a DPT database.
 
 """
@@ -12,32 +12,31 @@ from dptdb import dptapi
 from ..core.dataclient import DataSource
 
 
-class DPTDataSource(DataSource):
+class DataSourceCursor(DataSource):
     
     """Provide bsddb3 style cursor access to recordset of arbitrary records.
     """
 
-    def __init__(self, dbhome, dbset, dbname, newrow=None):
+    def __init__(self, *a, **k):
         """Delegate to superclass then set the recordset attribute to None,
         indicating this datasource is not associated with a recordset.
 
         """
-        super(DPTDataSource, self).__init__(
-            dbhome, dbset, dbname, newrow=newrow)
+        super().__init__(*a, **k)
 
         self.recordset = None
         self._fieldvalue = dptapi.APIFieldValue()
-        self.dbhome.database_definition[self.dbset]._sources[self] = None
+        #self.dbhome.table[self.dbset]._sources[self] = None
         
     def close(self):
         """Destroy the APIRecordSet created by DPT to implement recordset."""
         if self.recordset is not None:
             try:
-                del self.dbhome.database_definition[self.dbset]._sources[self]
+                del self.dbhome.table[self.dbset]._sources[self]
             except:
                 pass
-            self.dbhome.database_definition[self.dbset].get_database(
-                ).DestroyRecordSet(self.recordset)
+            #self.dbhome.table[self.dbset].get_database(
+            #    ).DestroyRecordSet(self.recordset)
             self.recordset = None
 
     def get_cursor(self):
@@ -49,10 +48,7 @@ class DPTDataSource(DataSource):
             c = self.dbhome.create_recordset_cursor(
                 self.dbset,
                 self.dbname,
-                self.dbhome.get_database(self.dbset, self.dbname
-                                         ).CreateRecordList())
-        if c:
-            self.dbhome.database_definition[self.dbset]._clientcursors[c] = True
+                self.dbhome.recordlist_nil(self.dbset))
         return c
 
     def join_field_occurrences(self, record, field):
@@ -73,7 +69,7 @@ class DPTDataSource(DataSource):
     def set_recordset(self, records):
         """Set recordset as this datasource's recordset if the recordset and
         this datasource are associated with the same database identity."""
-        if self.recordset:
-            self.dbhome.get_database(
-                self.dbset, self.dbname).DestroyRecordSet(self.recordset)
+        #if self.recordset:
+        #    self.dbhome.get_table_connection(
+        #        self.dbset).DestroyRecordSet(self.recordset)
         self.recordset = records

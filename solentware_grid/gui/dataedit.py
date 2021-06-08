@@ -223,8 +223,8 @@ class DataEdit(RecordEdit):
         started.
 
         """
-        if self.datasource.dbhome.get_database(
-            self.datasource.dbset, self.datasource.dbset) is None:
+        if self.datasource.dbhome.get_table_connection(
+            self.datasource.dbset) is None:
             self.status.configure(
                 text='Cannot update because original database was closed')
             if self.ok:
@@ -240,7 +240,7 @@ class DataEdit(RecordEdit):
             return True
         else:
             self.newobject.set_database(self.datasource.dbhome)
-            self.newobject.key.recno = 0
+            self.newobject.key.recno = None
             self.put()
             return True
 

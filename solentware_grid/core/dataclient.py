@@ -400,7 +400,7 @@ class DataSource(object):
 
     def get_database(self):
         """Return database currently attached to datasource."""
-        return self.dbhome.get_database(self.dbset, self.dbname)
+        return self.dbhome.get_table_connection(self.dbset)
 
     def new_row(self):
         """Return a new row but do not attach it to database."""
@@ -438,5 +438,5 @@ class DataSource(object):
     @property
     def dbidentity(self):
         """id(<primary database instance>)"""
-        return id(self.dbhome.get_database(self.dbset, self.dbset))
+        return id(self.dbhome.get_table_connection(self.dbset))
 

@@ -58,7 +58,7 @@ class DataSourceSet(DataSource):
                 keyrange=None,
                 recordset=self.recordsets)
         else:
-            dbfile = self.dbhome.get_database(self.dbset, self.dbname)
+            dbfile = self.dbhome.get_table_connection(self.dbset)
             empty = dbfile.CreateRecordList()
             return self.dbhome.create_recordsetlist_cursor(
                 self.dbset,
@@ -156,8 +156,8 @@ class DataSourceSet(DataSource):
 
         self._clear_recordsets()
 
-        dbfile = self.dbhome.get_database(self.dbset, self.dbname)
-        dbindex = self.dbhome.database_definition[self.dbset].secondary[dbname]
+        dbfile = self.dbhome.get_table_connection(self.dbset)
+        dbindex = self.dbhome.table[self.dbset].secondary[dbname]
         all_records = self.get_recordset(
             dbindex, from_=population) # should be fd not fdwol
         unmatched_records = dbfile.CreateRecordList()
@@ -184,7 +184,7 @@ class DataSourceSet(DataSource):
 
     def _clear_recordsets(self):
         """Destroy Record Sets."""
-        dbfile = self.dbhome.get_database(self.dbset, self.dbname)
+        dbfile = self.dbhome.get_table_connection(self.dbset)
         for rs in self.recordsets.values():
             dbfile.DestroyRecordSet(rs)
         self.recordsets.clear()
@@ -192,7 +192,7 @@ class DataSourceSet(DataSource):
     def _find_all_records(self):
         """Return APIFoundset containing all records on DPT file.
         """
-        dbfile = self.dbhome.get_database(self.dbset, self.dbname)
+        dbfile = self.dbhome.get_table_connection(self.dbset)
         return dbfile.FindRecords()
 
     def _find_field_equals_value(self, dbname, value):
@@ -200,9 +200,8 @@ class DataSourceSet(DataSource):
 
         value: field value
         """
-        dbfile = self.dbhome.get_database(self.dbset, self.dbname)
-        #dbname = self.dbhome.database_definition[self.dbset
-        #                                         ].secondary[self.dbname]
+        dbfile = self.dbhome.get_table_connection(self.dbset)
+        #dbname = self.dbhome.table[self.dbset].secondary[self.dbname]
         return dbfile.FindRecords(
             dptapi.APIFindSpecification(
                 dbname,#'Playerpartialname',#self.dbname,
@@ -212,9 +211,8 @@ class DataSourceSet(DataSource):
     def _in_recordset_find(self, dbname, recordset):
         """Return APIFoundset containing all records on DPT file.
         """
-        dbfile = self.dbhome.get_database(self.dbset, self.dbname)
-        #dbname = self.dbhome.database_definition[self.dbset
-        #                                         ].secondary[self.dbname]
+        dbfile = self.dbhome.get_table_connection(self.dbset)
+        #dbname = self.dbhome.table[self.dbset].secondary[self.dbname]
         return dbfile.FindRecords(
             dptapi.APIFindSpecification(
                 dbname,#'Playerpartialname',#self.dbname,
@@ -228,9 +226,8 @@ class DataSourceSet(DataSource):
         recordset: DPT foundset or list.
         value: field value
         """
-        dbfile = self.dbhome.get_database(self.dbset, self.dbname)
-        #dbname = self.dbhome.database_definition[self.dbset
-        #                                         ].secondary[self.dbname]
+        dbfile = self.dbhome.get_table_connection(self.dbset)
+        #dbname = self.dbhome.table[self.dbset].secondary[self.dbname]
         return dbfile.FindRecords(
             dptapi.APIFindSpecification(
                 dbname,#'Playerpartialname',#self.dbname,
