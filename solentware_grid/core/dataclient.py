@@ -30,7 +30,6 @@ in a secondary read but is an integer when the key in a primary read.
 Partial key can be specified to define a key range to be returned.
 
 """
-import collections
 
 
 class DataNotify(object):
@@ -422,7 +421,7 @@ class DataSource(object):
 
     def register_in(self, client, callback):
         """Register client for update notification using callback."""
-        if isinstance(callback, collections.Callable):
+        if callable(callback):
             self.clients[client] = callback
 
     def register_out(self, client):

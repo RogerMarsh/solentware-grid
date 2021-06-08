@@ -1223,7 +1223,7 @@ class DataGridBase(DataClient, CallbackException):
                         return
 
     def show_popup_menu(self):
-        """Show the popup menu for the grid.
+        """Show the popup menu for the grid over a row.
 
         Subclasses may have particular entries to be the default which is
         implemented by overriding this method.
@@ -1241,6 +1241,49 @@ class DataGridBase(DataClient, CallbackException):
         """
         self.pointer_popup_xy = self.data.winfo_pointerxy()
         self.menupopupnorow.tk_popup(*self.pointer_popup_xy)
+
+    # At present callers must establish the keystroke binding.
+    # Intention is to fix on 'Shift F10' implemented in DataGridBase class at
+    # some point in future.
+    # return 'break' to prevent the menubar, if there is one, being activated.
+    def show_grid_or_row_popup_menu_at_top_left_by_keypress(self, event=None):
+        """Show the popup menu for the grid or the selected row if visible.
+
+        At some point in future the binding will become 'Shift F10' by default
+        but at present callers must establish a suitable keystroke binding.
+
+        """
+        self.pointer_popup_xy = event.x_root-event.x, event.y_root-event.y
+        if self.selection:
+            if self.selection[0] in self.gridrows_for_key:
+                self.pointer_popup_selection = self.selection[0]
+                self.menupopup.tk_popup(*self.pointer_popup_xy)
+                return 'break'
+        self.menupopupnorow.tk_popup(*self.pointer_popup_xy)
+        return 'break'
+
+    # At present callers must establish the keystroke binding.
+    # Intention is to fix on 'Ctrl F10' implemented in DataGridBase class at
+    # some point in future.
+    # return 'break' to prevent the menubar, if there is one, being activated.
+    def show_grid_or_row_popup_menu_at_pointer_by_keypress(self, event=None):
+        """Show the popup menu for the grid or the selected row if visible.
+
+        The pointer may be anywhere: context is provided by the widget having
+        focus, not pointer location.
+
+        At some point in future the binding will become 'Ctrl F10' by default
+        but at present callers must establish a suitable keystroke binding.
+
+        """
+        self.pointer_popup_xy = event.widget.winfo_pointerxy()
+        if self.selection:
+            if self.selection[0] in self.gridrows_for_key:
+                self.pointer_popup_selection = self.selection[0]
+                self.menupopup.tk_popup(*self.pointer_popup_xy)
+                return 'break'
+        self.menupopupnorow.tk_popup(*self.pointer_popup_xy)
+        return 'break'
 
     def move_selection_to_popup_selection(self):
         """Change selection to active row for popup menu."""

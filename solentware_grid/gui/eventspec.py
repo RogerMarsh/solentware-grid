@@ -12,6 +12,10 @@ class EventSpec(object):
     select_row_in_datagridbase = '<Button-3>'
     insert_row_in_datagrid = '<Button-3>'
 
+    grid_or_row_popup_at_top_left = (
+        '<Shift-KeyPress-F10>', 'Popup Menu at Top Left', 'Shift F10')
+    grid_or_row_popup_at_pointer = (
+        '<Ctrl-KeyPress-F10>', 'Popup Menu at Pointer', 'Ctrl F10')
     up_one_page = '<KeyPress-Prior>', 'Page Up', 'Page Up'
     down_one_page = '<KeyPress-Next>', 'Page Down', 'Page Down'
     down_all = '<Shift-KeyPress-End>', 'End', 'Shift End'

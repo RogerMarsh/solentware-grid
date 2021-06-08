@@ -10,7 +10,7 @@ if __name__ == '__main__':
 
     setup(
         name='solentware-grid',
-        version='2.1',
+        version='2.1.2',
         description='Database display classes',
         author='Roger Marsh',
         author_email='roger.marsh@solentware.co.uk',
@@ -28,6 +28,7 @@ if __name__ == '__main__':
             'Programming Language :: Python :: 3.5',
             'Programming Language :: Python :: 3.6',
             'Programming Language :: Python :: 3.7',
+            'Programming Language :: Python :: 3.8',
             'Operating System :: OS Independent',
             'Topic :: Software Development',
             'Topic :: Database :: Front-Ends',
