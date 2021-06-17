@@ -2,8 +2,9 @@
 # Copyright 2011 Roger Marsh
 # Licence: See LICENCE (BSD licence)
 
-"""This module provides a default CallbackException class for the datagrid
-classes with four methods: report_exception, try_command, try_event, and
+"""Provide a default CallbackException class for the datagrid classes.
+
+Four methods are defined: report_exception, try_command, try_event, and
 try_thread.
 
 The 'try_' methods return the method argument and report_exception re-raises
@@ -14,10 +15,12 @@ ExceptionHandler class for use like 'class DG(ExceptionHandler, DataGrid)'.
 """
 
 
-class CallbackException(object):
-    """The CallbackException class provides dummy methods to report exceptions
-    in a modal dialogue and 'do nothing' wrappers for tkinter callbacks and
-    methods run in a separate thread.
+class CallbackException:
+    """Provides dummy methods to wrap methods in exception handlers.
+
+    The try_command, try_event, and try_thread, methods return the method.
+
+    The report_exception method raises a RuntimeError exception.
     """
 
     def report_exception(self, root=None, title=None, message=None):
@@ -35,4 +38,3 @@ class CallbackException(object):
     def try_thread(self, method, widget):
         """Return the method."""
         return method
-

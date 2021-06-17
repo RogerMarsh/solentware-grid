@@ -2,9 +2,9 @@
 # Copyright (c) 2009 Roger Marsh
 # Licence: See LICENCE (BSD licence)
 
-"""This module defines some constants for modifiers used in tkinter event
-patterns.
+"""Define constants for modifiers used in tkinter event patterns.
 
+Neither tkinter nor tk define constants for these values.
 """
 
 # state values in keyboard events.

@@ -1,3 +1,8 @@
-'''Provide data access for display of records in scrollable grids and refresh
-of multiple grids showing the same data when that data is updated.
-'''
+# dataclient.py
+# Copyright 2021 Roger Marsh
+# Licence: See LICENCE (BSD licence)
+"""Provide access to records for display in scrollable grids.
+
+Refresh of multiple grids showing the same records when those records
+are updated is supported.
+"""

@@ -2,25 +2,20 @@
 # Copyright 2015 Roger Marsh
 # Licence: See LICENCE (BSD licence)
 
-"""This module provide base classes for record display
-dialogues.
-
-"""
+"""Provide base classes for record display dialogues."""
 
 import tkinter
 
 from ..core.dataclient import DataClient
 
-# minimum_width and mininimum_height arguments for wm_minsize() calls
+# minimum_width and minimum_height arguments for wm_minsize() calls
 # maybe candidate arguments for DataControl.edit_dialog() calls elsewhere
-minimum_width = 600
-minimum_height = 200
+MINIMUM_WIDTH = 600
+MINIMUM_HEIGHT = 200
 
 
 class RecordShow(DataClient):
-    
-    """Show a database record.
-    """
+    """Show a database record."""
 
     def __init__(self, instance):
         """Delegate to superclass then set number of rows to 1.
@@ -33,7 +28,7 @@ class RecordShow(DataClient):
         update notification changes the situation.
 
         """
-        super(RecordShow, self).__init__()
+        super().__init__()
         self.rows = 1
         self.object = instance
         self.object.newrecord = None
@@ -46,16 +41,14 @@ class RecordShow(DataClient):
 
         Implication is that record has been modified separately and it is
         not correct to update based on the record as held in self.
-        
+
         """
         if instance == self.object:
             self.blockchange = True
-        
+
 
 class DataShow(RecordShow):
-    
-    """A show record dialogue.
-    """
+    """A show record dialogue."""
 
     def __init__(self, instance, parent, oldview, title):
         """Delegate to superclass then create the dialogue.
@@ -65,40 +58,40 @@ class DataShow(RecordShow):
         oldview - widget displaying the record
         title - title for dialogue
         """
-        super(DataShow, self).__init__(instance)
+        super().__init__(instance)
         self.parent = parent
         self.oldview = oldview
-        parent.bind('<Destroy>', self.on_destroy)
+        parent.bind("<Destroy>", self.on_destroy)
         oldview.get_top_widget().pack(fill=tkinter.BOTH, expand=tkinter.TRUE)
         oldview.get_top_widget().pack_propagate(False)
         oldview.takefocus_widget.configure(takefocus=tkinter.TRUE)
         oldview.takefocus_widget.focus_set()
         parent.wm_title(title)
-        parent.wm_minsize(width=minimum_width, height=minimum_height)
+        parent.wm_minsize(width=MINIMUM_WIDTH, height=MINIMUM_HEIGHT)
         self.status = tkinter.Label(parent)
         self.status.pack(side=tkinter.BOTTOM)
         self.buttons = tkinter.Frame(parent)
         self.buttons.pack(
-            fill=tkinter.X,
-            expand=tkinter.FALSE,
-            side=tkinter.TOP)
+            fill=tkinter.X, expand=tkinter.FALSE, side=tkinter.TOP
+        )
         self.ok = tkinter.Button(
             master=self.buttons,
-            text='Ok',
-            command=self.try_command(self.dialog_on_ok, self.buttons))
+            text="Ok",
+            command=self.try_command(self.dialog_on_ok, self.buttons),
+        )
         self.ok.pack(expand=tkinter.TRUE, side=tkinter.LEFT)
-        
+
     def dialog_clear_error_markers(self):
         """Set status report to ''."""
-        self.status.configure(text='')
-        
+        self.status.configure(text="")
+
     def dialog_status(self):
         """Return widget used to display status reports and error messages."""
         return self.status
 
     def on_data_change(self, instance):
         """Delegate to superclass then destroy dialogue if deleted."""
-        super(DataShow, self).on_data_change(instance)
+        super().on_data_change(instance)
         if self.blockchange:
             if self.ok:
                 self.ok.destroy()
@@ -108,23 +101,24 @@ class DataShow(RecordShow):
         """Delete record and return show action response."""
         if self.datasource is not None:
             if self.datasource.dbhome.get_table_connection(
-                self.datasource.dbset):
+                self.datasource.dbset
+            ):
                 return True
-            else:
-                if self.ok:
-                    self.ok.destroy()
-                    self.ok = None
-                self.blockchange = True
-                return False
+            if self.ok:
+                self.ok.destroy()
+                self.ok = None
+            self.blockchange = True
+            return False
+        return None
 
     def dialog_on_ok(self):
-        """Destroy dialogue"""
+        """Destroy dialogue."""
         self.dialog_clear_error_markers()
         if self.blockchange:
             self.ok.destroy()
             self.ok = None
             return
-        dok = self.dialog_ok()
+        self.dialog_ok()
         self.parent.destroy()
         self.set_data_source()
 
@@ -134,11 +128,16 @@ class DataShow(RecordShow):
 
     def bind_buttons_to_widget(self, widget):
         """Bind button commands to underlined character for widget."""
-        for b, u, f in ((self.ok, 0, self.ok_by_keypress_binding),):
-            b.configure(underline=u)
+        for button, underline, method in (
+            (self.ok, 0, self.ok_by_keypress_binding),
+        ):
+            button.configure(underline=underline)
             widget.bind(
-                b.configure('text')[-1][u].lower().join(('<Alt-', '>')),
-                self.try_event(f))
+                button.configure("text")[-1][underline]
+                .lower()
+                .join(("<Alt-", ">")),
+                self.try_event(method),
+            )
 
     def on_destroy(self, event=None):
         """Tidy up after destruction of dialogue widget and all children."""

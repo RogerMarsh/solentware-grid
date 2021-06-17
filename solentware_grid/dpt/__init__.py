@@ -2,8 +2,9 @@
 # Copyright 2011 Roger Marsh
 # Licence: See LICENCE (BSD licence)
 
-"""Provide bsddb3 style cursor access to recordsets implemented on a DPT
-database using the dpt3.0-dptdb package available on PyPI.
+"""Provide bsddb3 style cursor access to recordsets on a DPT database.
+
+The dpt3.0-dptdb package, available on PyPI, implements the DPT database.
 
 Two points worth mention on transactions in DPT compared with Sqlite3 are:
 transactions are started automatically, and transactions are committed by

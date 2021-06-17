@@ -2,9 +2,9 @@
 # Copyright 2008 Roger Marsh
 # Licence: See LICENCE (BSD licence)
 
-"""This module provides classes to hold the records from a database which are
-currently displayed in a widget, and provide a way to synchronize the refresh
-of widgets when the records are updated.
+"""Provide classes to hold records displayed in a widget and refresh them.
+
+Refresh of widgets can be synchronized with record updates.
 
 Each DataClient holds details of the data displayed on a control and
 provides wrappers for the underlying database functions to support scrolling
@@ -32,14 +32,13 @@ Partial key can be specified to define a key range to be returned.
 """
 
 
-class DataNotify(object):
-    
+class DataNotify:
     """Provide interface to register a callback with a DataSource.
 
     Use this class to get update notifications but not record and cursor
     access with subclass methods.  Use the get_data_source method to access
     records and cursors with the tools of the underlying database engine.
-    
+
     """
 
     def __init__(self):
@@ -54,8 +53,8 @@ class DataNotify(object):
     def register_in(self, datasource, callback):
         """Register callback with datasource for update notification.
 
-        datasource - update notifications required for updates using datasource
-        callback - the callback method to use when update occurs on datasource
+        datasource - update notifications required for updates on datasource.
+        callback - callback method to use when update occurs on datasource.
 
         """
         if datasource:
@@ -67,9 +66,7 @@ class DataNotify(object):
             datasource.register_out(self)
 
     def refresh_widgets(self, instance):
-        """Notify registed clients about database update for instance.
-
-        """
+        """Notify registed clients about database update for instance."""
         if self.datasource:
             self.datasource.refresh_widgets(instance)
 
@@ -101,57 +98,56 @@ class DataNotify(object):
             pass
 
     def set_named_data_sources(self, sources):
-        """Update dictionary of datasources from which notifications are needed.
-        
-        sources - a dictionary of DataSource instances
+        """Add sources to datasources from which notifications are needed.
+
+        sources - a dictionary of DataSource instances.
                 Then set_data_source(name, ...) will set self.datasource
                 accordingly.
-        
+
         """
         if not isinstance(sources, dict):
             return
-        for n in sources:
-            if n not in self._datasources:
-                if isinstance(sources[n], DataSource):
-                    if n is not None:
-                        self._datasources[n] = sources[n]
-        
+        for source in sources:
+            if source not in self._datasources:
+                if isinstance(sources[source], DataSource):
+                    if source is not None:
+                        self._datasources[source] = sources[source]
+
 
 class _DataAccess(DataNotify):
-    
     """Provide methods to access records by cursor and do update notifications.
-    
+
     The database must be defined in an instance of a subclass of Database
     and the record definition must be an instance of a subclass of Record.
 
     This class should not be used directly. Use subclasses defined in this
     module.
-    
+
     """
 
     def __init__(self):
         """Extend with cursor and partial key."""
-        super(_DataAccess, self).__init__()
+        super().__init__()
         self.cursor = None  # should this be in DataClient?
         self.partial = None
 
     def get_record(self, record):
         """Return record if key matches partial key (if any)."""
-        if self.partial == None:
+        if self.partial is None:
             return record
-        else:
-            try:
-                key, value = record
-                if key.startswith(self.partial):
-                    return record
-            except:
-                return None
+        try:
+            key, value = record
+            if key.startswith(self.partial):
+                return record
+        except:
+            return None
+        return None
 
     def set_partial_key(self, key=None):
         """Set partial key. None removes partial key. False matches no key."""
-        if key == None:
+        if key is None:
             self.partial = None
-        elif key == False:
+        elif key is False:
             self.partial = False
         elif len(key):
             self.partial = key
@@ -162,21 +158,24 @@ class _DataAccess(DataNotify):
     # Intended as alternative implementation of NullDataSource relying on
     # self.datasource being None.
     # To be removed if idea not implemented.
-    
+
     def get_cursor(self):
         """Return a new cursor for current datasource database."""
         if self.datasource:
             return self.datasource.get_cursor()
+        return None
 
     def get_database(self):
         """Return current datasource database."""
         if self.datasource:
             return self.datasource.get_database()
+        return None
 
     def is_recno(self):
         """Return True if datasource database has record number keys."""
         if self.datasource:
             return self.datasource.recno
+        return None
 
     def new_row(self):
         """Return a row display instance for the datasource.
@@ -185,10 +184,11 @@ class _DataAccess(DataNotify):
 
         The row display instance must be an instance of a class that is a
         subclass of both Record and DataRow.
-        
+
         """
         if self.datasource:
             return self.datasource.new_row()
+        return None
 
     def new_row_for_database(self):
         """Return a row display instance for the datasource.
@@ -197,20 +197,20 @@ class _DataAccess(DataNotify):
 
         The row display instance must be an instance of a class that is a
         subclass of both Record and DataRow.
-        
+
         """
         if self.datasource:
             return self.datasource.new_row_for_database()
+        return None
 
 
 class DataClient(_DataAccess):
-    
-    """Provide interface to a variable set of contiguous of records on database.
+    """Provide interface to a variable set of contiguous of records.
 
     The signification of contiguous is given by the database engine.  Indexes
     define which records are neighbours and selection criteria define which
     records are seen for inclusion in the variable set.
-    
+
     """
 
     def __init__(self):
@@ -219,13 +219,13 @@ class DataClient(_DataAccess):
         self.keys: the variable contiguous set of record keys
                    [(skey, pkey), ...] or [(pkey, value), ...]
         self.rows: number of records to be held in self.keys
-        self.objects: values for records in self.keys returned by literal_eval()
-                    from module ast.
+        self.objects: values for records in self.keys returned by
+                    literal_eval() from module ast.
                     {(skey, pkey) : literal_eval(value), ...} or
                     {(pkey, value) : literal_eval(value), ...}
 
         """
-        super(DataClient, self).__init__()
+        super().__init__()
         self.keys = []
         self.rows = 0
         self.objects = dict()
@@ -250,19 +250,21 @@ class DataClient(_DataAccess):
         elif not self.cursor.database_cursor_exists():
             self.cursor = self.datasource.get_cursor()
         self.cursor.set_partial_key(self.partial)
-        if record != None:
+        if record is not None:
             return self.cursor.setat(record)
+        return None
 
     def load_object(self, key):
         """Create a new row and populate it with data from record for key."""
         newrow = self.datasource.new_row()
         # Adjusted to catch exception diplaying grid after drop table.
-        #self.objects[key] = newrow
+        # self.objects[key] = newrow
         newrow.load_instance(
             self.datasource.dbhome,
             self.datasource.dbset,
             self.datasource.dbname,
-            key)
+            key,
+        )
         self.objects[key] = newrow
 
     def refresh_cursor(self, instance=None):
@@ -284,34 +286,33 @@ class DataClient(_DataAccess):
 
     def set_partial_key(self, key=None):
         """Set a partial key. key=None unsets partial key."""
-        super(DataClient, self).set_partial_key(key)
+        super().set_partial_key(key)
         if self.cursor:
             self.cursor.set_partial_key(self.partial)
 
-        
+
 class DataLookup(_DataAccess):
-    
     """Provide a cache of records from a database with unique keys.
 
     Use of this class is restricted to cases where the key is associated
     with a single value.
-    
+
     """
 
     def __init__(self):
         """Extend _DataAccess with cache of records read from database.
 
-        self.keys: the variable set of record keys
+        self.keys: the variable set of record keys.
                    [pkey1, pkey2, ...] or [skey1, skey2, ...]
-        self.rowmax: maximum number of records to be held in self.keys
+        self.rowmax: maximum number of records to be held in self.keys.
         self.rowmin: number of records to be held in self.keys after
-                     trimming when self.rowmax reached
-        self.cache: the unpickled values for the records in self.keys
+                     trimming when self.rowmax reached.
+        self.cache: the unpickled values for the records in self.keys.
                    {pkey : unpickled value, ...} or
                    {skey : unpickled primary value, ...}
 
         """
-        super(DataLookup, self).__init__()
+        super().__init__()
         self.keys = []
         self.rowmax = 100
         self.rowmin = 10
@@ -319,7 +320,6 @@ class DataLookup(_DataAccess):
 
     def close(self):
         """Not implemented."""
-        pass
 
     def load_cache(self, key):
         """Return new row for record key from cache after adding if absent.
@@ -329,54 +329,52 @@ class DataLookup(_DataAccess):
         """
         if key in self.cache:
             return self.cache[key]
+        record = self.get_record(self.datasource.get_database().get(key))
+        if record:
+            value = (key, record)
         else:
-            record = self.get_record(self.datasource.get_database().get(key))
-            if record:
-                value = (key, record)
-            else:
-                return None
-            newrow = self.datasource.new_row()
-            newrow.load_instance(
-                self.datasource.dbhome,
-                self.datasource.dsname,
-                value)
-            self.cache[key] = newrow
-            self.keys.append(key)
-            if len(self.keys) > self.rowmax:
-                cache = self.cache
-                for k in self.keys[:-self.rowmin]:
-                    del cache[k]
-                del self.keys[:-self.rowmin]
-            return newrow
+            return None
+        newrow = self.datasource.new_row()
+        newrow.load_instance(
+            self.datasource.dbhome,
+            self.datasource.dbset,
+            self.datasource.dbname,
+            value,
+        )
+        self.cache[key] = newrow
+        self.keys.append(key)
+        if len(self.keys) > self.rowmax:
+            cache = self.cache
+            for k in self.keys[: -self.rowmin]:
+                del cache[k]
+            del self.keys[: -self.rowmin]
+        return newrow
 
     def on_data_change(self, instance):
-        """Not implemented.  Raises RuntimeError exception.
-        """
-        raise RuntimeError('Not implemented')
+        """Not implemented.  Raises RuntimeError exception."""
+        raise RuntimeError("Not implemented")
 
 
 class DataSourceError(Exception):
-    pass
-        
+    """Exception for DataSource class."""
 
-class DataSource(object):
-    
+
+class DataSource:
     """Provide interface to database records and update notifications.
-    
+
     This class is designed to work with records defined by subclasses of
     Record accesed via subclasses of DataNotify.
-    
+
     """
 
     def __init__(self, dbhome, dbset, dbname, newrow=None):
-        
         """Define a DataSource on a database.
 
         dbhome = instance of a subclass of Database.
         dbset = name of set of associated databases in dbhome to be accessed.
         dbname = name of database in dbset to be accessed.
         newrow = class used to generate new records in dbname database.
-        
+
         """
         self.clients = {}
         if dbhome.exists(dbset, dbname):
@@ -392,7 +390,7 @@ class DataSource(object):
             self.primary = None
             self.recno = None
         self.newrow = newrow
-        
+
     def get_cursor(self):
         """Create and return a cursor on the database."""
         return self.dbhome.database_cursor(self.dbset, self.dbname)
@@ -412,7 +410,7 @@ class DataSource(object):
         unpickle and the database attachment made then.  Sometimes
         a row is created that needs the database information, a
         header row or a new record perhaps, as part of setup.
-        
+
         """
         newrow = self.newrow()
         newrow.set_database(self.dbhome)
@@ -431,11 +429,10 @@ class DataSource(object):
 
     def refresh_widgets(self, instance):
         """Notify registered clients about database update for instance."""
-        for w in self.clients:
-            self.clients[w](instance)
+        for client in self.clients:
+            self.clients[client](instance)
 
     @property
     def dbidentity(self):
-        """id(<primary database instance>)"""
+        """Return id(<primary database instance>)."""
         return id(self.dbhome.get_table_connection(self.dbset))
-

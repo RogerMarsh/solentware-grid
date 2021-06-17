@@ -2,8 +2,9 @@
 # Copyright 2008 Roger Marsh
 # Licence: See LICENCE (BSD licence)
 
-"""This module provides the DataSourceSet class to access a sequence of
-recordsets.
+"""Provide the DataSourceSet class to access a sequence of recordsets.
+
+Nothing significant is implemented.
 
 A recordset holds all the selected records in the order they appear on the
 database.  The sequence of recordsets allows the records to be presented in
@@ -18,30 +19,20 @@ from .dataclient import DataSource
 
 
 class DataSourceSet(DataSource):
-    
-    """Provide bsddb3 style cursor access to a sequence of recordsets.
-    """
+    """Provide bsddb3 style cursor access to a sequence of recordsets."""
 
     def __init__(self, dbhome, dbset, dbname, newrow=None):
-        """Delegate to superclass then create an empty dictionary of recordsets
-        indicating this datasource is not associated with any recordsets.
-
-        """
-        super(DataSourceSet, self).__init__(
-            dbhome, dbset, dbname, newrow=newrow)
+        """Delegate then initialise key_sets and recordsets attributes."""
+        super().__init__(dbhome, dbset, dbname, newrow=newrow)
 
         self.key_sets = []
         self.recordsets = dict()
-        
+
     def close(self):
         """Close resources."""
         self._clear_recordsets()
-        
-    def get_recordset(
-        self,
-        dbname,
-        key=None,
-        from_=None):
+
+    def get_recordset(self, dbname, key=None, from_=None):
         """Create a recordset and add it to the dictionary of recorsets.
 
         dbname - index used to partition records
@@ -53,12 +44,10 @@ class DataSourceSet(DataSource):
         if key is None:
             if from_ is None:
                 return self._find_all_records()
-            else:
-                return self._in_recordset_find(dbname, from_)
-        elif from_ is None:
+            return self._in_recordset_find(dbname, from_)
+        if from_ is None:
             return self._find_field_equals_value(dbname, key)
-        else:
-            return self._in_recordset_field_equals_value(dbname, from_, key)
+        return self._in_recordset_field_equals_value(dbname, from_, key)
 
     def set_recordsets(
         self,
@@ -66,7 +55,8 @@ class DataSourceSet(DataSource):
         partial_keys=None,
         constant_keys=None,
         include_without_constant_keys=False,
-        population=None):
+        population=None,
+    ):
         """To be defined.
 
         dbname: index containing partial key values
@@ -81,8 +71,6 @@ class DataSourceSet(DataSource):
         # playergrids needs to be changed so fill_view can be called in this
         # method
 
-
     def _clear_recordsets(self):
         """Destroy all recordsets."""
         self.recordsets.clear()
-        
