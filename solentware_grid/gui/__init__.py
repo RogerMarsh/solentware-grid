@@ -8,6 +8,6 @@ These are intended for use in association with the datagrid.DataGrid class.
 
 A subclass of a DataGrid class will use a subclass of the appropriate class
 from this package, together with a subclass of Record from the
-solentware_base.api package, to do it's actions.
+solentware_base.core package, to do it's actions.
 
 """

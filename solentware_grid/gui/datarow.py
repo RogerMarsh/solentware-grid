@@ -90,7 +90,7 @@ class DataRow(CallbackException):
     Subclass must override methods grid_row.
 
     Typical use is
-    class FooRecord(solentware_base.api.record.Record):
+    class FooRecord(solentware_base.core.record.Record):
         ...
     class FooRow(FooRecord, solentware_grid.gui.datarow.DataRow):
         ...

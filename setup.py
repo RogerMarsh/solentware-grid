@@ -1,6 +1,7 @@
 # setup.py
 # Copyright 2011 Roger Marsh
 # Licence: See LICENCE (BSD licence)
+"""solentware-grid setup file."""
 
 from setuptools import setup
 
@@ -25,10 +26,10 @@ if __name__ == "__main__":
         license="BSD",
         classifiers=[
             "License :: OSI Approved :: BSD License",
-            "Programming Language :: Python :: 3.5",
             "Programming Language :: Python :: 3.6",
             "Programming Language :: Python :: 3.7",
             "Programming Language :: Python :: 3.8",
+            "Programming Language :: Python :: 3.9",
             "Operating System :: OS Independent",
             "Topic :: Software Development",
             "Topic :: Database :: Front-Ends",
