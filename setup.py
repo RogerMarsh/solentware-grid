@@ -11,7 +11,7 @@ if __name__ == "__main__":
 
     setup(
         name="solentware-grid",
-        version="2.1.3",
+        version="2.1.4",
         description="Database display classes",
         author="Roger Marsh",
         author_email="roger.marsh@solentware.co.uk",
