@@ -198,7 +198,7 @@ class DataSourceSet(DataSource):
         # dbname = self.dbhome.table[self.dbset].secondary[self.dbname]
         return dbfile.FindRecords(
             dptapi.APIFindSpecification(
-                dbname,  #'Playerpartialname',#self.dbname,
+                dbname,  # 'Playerpartialname',  # self.dbname,
                 dptapi.FD_EQ,
                 dptapi.APIFieldValue(value),
             )
@@ -210,7 +210,7 @@ class DataSourceSet(DataSource):
         # dbname = self.dbhome.table[self.dbset].secondary[self.dbname]
         return dbfile.FindRecords(
             dptapi.APIFindSpecification(
-                dbname,  #'Playerpartialname',#self.dbname,
+                dbname,  # 'Playerpartialname',  # self.dbname,
                 dptapi.FD_ALLRECS,
                 dptapi.APIFieldValue(""),
             ),
@@ -227,7 +227,7 @@ class DataSourceSet(DataSource):
         # dbname = self.dbhome.table[self.dbset].secondary[self.dbname]
         return dbfile.FindRecords(
             dptapi.APIFindSpecification(
-                dbname,  #'Playerpartialname',#self.dbname,
+                dbname,  # 'Playerpartialname',  # self.dbname,
                 dptapi.FD_EQ,
                 dptapi.APIFieldValue(value),
             ),

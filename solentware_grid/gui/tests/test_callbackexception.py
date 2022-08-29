@@ -26,7 +26,7 @@ class CallbackException(unittest.TestCase):
             TypeError,
             "".join(
                 (
-                    "report_exception\(\) takes from 1 to 4 positional ",
+                    r"report_exception\(\) takes from 1 to 4 positional ",
                     "arguments but 5 were given",
                 )
             ),
@@ -49,7 +49,7 @@ class CallbackException(unittest.TestCase):
             TypeError,
             "".join(
                 (
-                    "try_command\(\) missing 2 required positional ",
+                    r"try_command\(\) missing 2 required positional ",
                     "arguments: 'method' and 'widget'",
                 )
             ),
@@ -66,7 +66,7 @@ class CallbackException(unittest.TestCase):
             TypeError,
             "".join(
                 (
-                    "try_event\(\) missing 1 required positional ",
+                    r"try_event\(\) missing 1 required positional ",
                     "argument: 'method'",
                 )
             ),
@@ -83,7 +83,7 @@ class CallbackException(unittest.TestCase):
             TypeError,
             "".join(
                 (
-                    "try_thread\(\) missing 2 required positional ",
+                    r"try_thread\(\) missing 2 required positional ",
                     "arguments: 'method' and 'widget'",
                 )
             ),

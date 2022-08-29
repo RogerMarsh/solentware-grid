@@ -834,10 +834,10 @@ class DataGridBase(DataClient, CallbackException):
         """Encode string for find nearest in database index.
 
         This method is used to process text entered by the user.
-        It is not used by the standard navigation functions (page up and so on).
+        It is not used by standard navigation functions (page up and so on).
 
-        Subclasses must override this method if 'utf8' is not the encoding used
-        on the database index which populates the grid.
+        Subclasses must override this method if 'utf8' is not the encoding
+        used on the database index which populates the grid.
 
         """
         return self.datasource.dbhome.encode_record_selector(key)
@@ -893,7 +893,7 @@ class DataGridBase(DataClient, CallbackException):
             if len(self.keys) == 0:
                 self.fill_view_from_top()
                 return
-            # does self.fill_view_from_top() do following as well? if so use it!
+            # does self.fill_view_from_top() do this as well? if so use it!
             record = self.make_client_cursor(self.keys[0])
             try:
                 if record is None:
@@ -1815,7 +1815,7 @@ class DataGrid(DataGridReadOnly):
         datashow.set_data_source(self.datasource, datashow.on_data_change)
 
     def edit_dialog(self, key, event, modal=True):
-        """Create and display object to be edited and optionally the original."""
+        """Display object for editing and optionally a copy of original."""
         if key not in self.keys:
             self.launch_insert_new_record(modal=modal)
         elif event.state & SHIFTDOWN:

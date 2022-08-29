@@ -8,7 +8,8 @@ Neither tkinter nor tk define constants for these values.
 """
 
 # state values in keyboard events.
-# These value mappings may vary by system and keyboard (Tk reference forgotten).
+# These value mappings may vary by system and keyboard (Tk reference
+# forgotten).
 # (CapsLock and NumLk are key labels; presume one is Lock key).
 # Combinations are allowed: 5 is Shift down and Control down and so on.
 

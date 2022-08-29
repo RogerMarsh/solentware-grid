@@ -127,7 +127,7 @@ class DataRow(CallbackException):
         self.set_background(widgets, self._current_row_background)
 
     def set_background_bookmarked_selection(self, widgets):
-        """Set background colour of widgets to SELECTION_AND_BOOKMARK_COLOUR."""
+        """Set background colour to SELECTION_AND_BOOKMARK_COLOUR."""
         self._current_row_background = SELECTION_AND_BOOKMARK_COLOUR
         self.set_background(widgets, self._current_row_background)
 
@@ -176,7 +176,7 @@ class DataRow(CallbackException):
         return self.grid_row(background=BOOKMARK_COLOUR, **kargs)
 
     def grid_row_bookmarked_selection(self, **kargs):
-        """Return self.grid_row(background=SELECTION_AND_BOOKMARK_COLOUR, **kargs)."""
+        """Return grid_row with background SELECTION_AND_BOOKMARK_COLOUR."""
         self._current_row_background = SELECTION_AND_BOOKMARK_COLOUR
         return self.grid_row(background=SELECTION_AND_BOOKMARK_COLOUR, **kargs)
 
@@ -186,7 +186,7 @@ class DataRow(CallbackException):
         return self.grid_row(background=NULL_COLOUR, **kargs)
 
     def grid_row_under_pointer(self, **kargs):
-        """Return self.grid_row(background=ROW_UNDER_POINTER_COLOUR, **kargs)."""
+        """Return grid_row with background ROW_UNDER_POINTER_COLOUR."""
         return self.grid_row(background=ROW_UNDER_POINTER_COLOUR, **kargs)
 
     def grid_row_selection(self, **kargs):

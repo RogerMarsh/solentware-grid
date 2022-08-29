@@ -73,7 +73,7 @@ class DataHeader(unittest.TestCase):
             TypeError,
             "".join(
                 (
-                    "__init__\(\) takes 1 positional argument ",
+                    r"__init__\(\) takes 1 positional argument ",
                     "but 2 were given",
                 )
             ),
@@ -86,7 +86,7 @@ class DataHeader(unittest.TestCase):
             TypeError,
             "".join(
                 (
-                    "grid_header_row\(\) missing 1 required positional ",
+                    r"grid_header_row\(\) missing 1 required positional ",
                     "argument: 'specification'",
                 )
             ),
@@ -104,7 +104,7 @@ class DataHeader(unittest.TestCase):
             TypeError,
             "".join(
                 (
-                    "make_header_widgets\(\) missing 2 required positional ",
+                    r"make_header_widgets\(\) missing 2 required positional ",
                     "arguments: 'widgetpool' and 'parent'",
                 )
             ),
@@ -185,7 +185,7 @@ class DataRow(unittest.TestCase):
             TypeError,
             "".join(
                 (
-                    "__init__\(\) takes 1 positional argument ",
+                    r"__init__\(\) takes 1 positional argument ",
                     "but 2 were given",
                 )
             ),
@@ -198,7 +198,7 @@ class DataRow(unittest.TestCase):
             TypeError,
             "".join(
                 (
-                    "set_background\(\) missing 2 required positional ",
+                    r"set_background\(\) missing 2 required positional ",
                     "arguments: 'widgets' and 'background'",
                 )
             ),
@@ -215,7 +215,7 @@ class DataRow(unittest.TestCase):
             TypeError,
             "".join(
                 (
-                    "set_background_bookmark\(\) missing 1 required ",
+                    r"set_background_bookmark\(\) missing 1 required ",
                     "positional argument: 'widgets'",
                 )
             ),
@@ -232,7 +232,7 @@ class DataRow(unittest.TestCase):
             TypeError,
             "".join(
                 (
-                    "set_background_bookmarked_selection\(\) missing 1 ",
+                    r"set_background_bookmarked_selection\(\) missing 1 ",
                     "required positional argument: 'widgets'",
                 )
             ),
@@ -252,7 +252,7 @@ class DataRow(unittest.TestCase):
             TypeError,
             "".join(
                 (
-                    "set_background_normal\(\) missing 1 ",
+                    r"set_background_normal\(\) missing 1 ",
                     "required positional argument: 'widgets'",
                 )
             ),
@@ -269,7 +269,7 @@ class DataRow(unittest.TestCase):
             TypeError,
             "".join(
                 (
-                    "set_background_row_under_pointer\(\) missing 1 ",
+                    r"set_background_row_under_pointer\(\) missing 1 ",
                     "required positional argument: 'widgets'",
                 )
             ),
@@ -289,7 +289,7 @@ class DataRow(unittest.TestCase):
             TypeError,
             "".join(
                 (
-                    "set_background_selection\(\) missing 1 ",
+                    r"set_background_selection\(\) missing 1 ",
                     "required positional argument: 'widgets'",
                 )
             ),
@@ -307,7 +307,7 @@ class DataRow(unittest.TestCase):
             TypeError,
             "".join(
                 (
-                    "set_background_selection_cycle\(\) missing 1 ",
+                    r"set_background_selection_cycle\(\) missing 1 ",
                     "required positional argument: 'widgets'",
                 )
             ),
@@ -327,7 +327,7 @@ class DataRow(unittest.TestCase):
             TypeError,
             "".join(
                 (
-                    "form_row\(\) missing 2 ",
+                    r"form_row\(\) missing 2 ",
                     "required positional arguments: 'parent' and 'rowsizer'",
                 )
             ),
@@ -347,7 +347,7 @@ class DataRow(unittest.TestCase):
             TypeError,
             "".join(
                 (
-                    "grid_row\(\) takes from 1 to 2 ",
+                    r"grid_row\(\) takes from 1 to 2 ",
                     "positional arguments but 3 were given",
                 )
             ),
@@ -368,7 +368,7 @@ class DataRow(unittest.TestCase):
             TypeError,
             "".join(
                 (
-                    "grid_row_bookmark\(\) takes 1 ",
+                    r"grid_row_bookmark\(\) takes 1 ",
                     "positional argument but 2 were given",
                 )
             ),
@@ -389,7 +389,7 @@ class DataRow(unittest.TestCase):
             TypeError,
             "".join(
                 (
-                    "grid_row_bookmarked_selection\(\) takes 1 ",
+                    r"grid_row_bookmarked_selection\(\) takes 1 ",
                     "positional argument but 2 were given",
                 )
             ),
@@ -412,7 +412,7 @@ class DataRow(unittest.TestCase):
             TypeError,
             "".join(
                 (
-                    "grid_row_normal\(\) takes 1 ",
+                    r"grid_row_normal\(\) takes 1 ",
                     "positional argument but 2 were given",
                 )
             ),
@@ -433,7 +433,7 @@ class DataRow(unittest.TestCase):
             TypeError,
             "".join(
                 (
-                    "grid_row_under_pointer\(\) takes 1 ",
+                    r"grid_row_under_pointer\(\) takes 1 ",
                     "positional argument but 2 were given",
                 )
             ),
@@ -456,7 +456,7 @@ class DataRow(unittest.TestCase):
             TypeError,
             "".join(
                 (
-                    "grid_row_selection\(\) takes 1 ",
+                    r"grid_row_selection\(\) takes 1 ",
                     "positional argument but 2 were given",
                 )
             ),
@@ -477,7 +477,7 @@ class DataRow(unittest.TestCase):
             TypeError,
             "".join(
                 (
-                    "grid_row_selection_cycle\(\) takes 1 ",
+                    r"grid_row_selection_cycle\(\) takes 1 ",
                     "positional argument but 2 were given",
                 )
             ),
@@ -500,7 +500,7 @@ class DataRow(unittest.TestCase):
             TypeError,
             "".join(
                 (
-                    "__call__\(\) takes 1 ",
+                    r"__call__\(\) takes 1 ",
                     "positional argument but 2 were given",
                 )
             ),
@@ -516,7 +516,7 @@ class DataRow(unittest.TestCase):
             TypeError,
             "".join(
                 (
-                    "make_row_widgets\(\) missing 3 required positional ",
+                    r"make_row_widgets\(\) missing 3 required positional ",
                     "arguments: 'widgetpool', 'parent', and 'items'",
                 )
             ),
@@ -556,7 +556,7 @@ class DataRow(unittest.TestCase):
             TypeError,
             "".join(
                 (
-                    "populate_widget\(\) missing 1 required positional ",
+                    r"populate_widget\(\) missing 1 required positional ",
                     "argument: 'widget'",
                 )
             ),
@@ -571,7 +571,7 @@ class DataRow(unittest.TestCase):
             TypeError,
             "".join(
                 (
-                    "highlight_row_on_pointer_enter\(\) missing 1 required ",
+                    r"highlight_row_on_pointer_enter\(\) missing 1 required ",
                     "positional argument: 'event'",
                 )
             ),
@@ -588,7 +588,7 @@ class DataRow(unittest.TestCase):
             TypeError,
             "".join(
                 (
-                    "highlight_row_on_pointer_leave\(\) missing 1 required ",
+                    r"highlight_row_on_pointer_leave\(\) missing 1 required ",
                     "positional argument: 'event'",
                 )
             ),
@@ -605,7 +605,7 @@ class DataRow(unittest.TestCase):
             TypeError,
             "".join(
                 (
-                    "set_popup_state\(\) takes from 1 to 2 ",
+                    r"set_popup_state\(\) takes from 1 to 2 ",
                     "positional arguments but 3 were given",
                 )
             ),
@@ -621,7 +621,7 @@ class DataRow(unittest.TestCase):
             TypeError,
             "".join(
                 (
-                    "is_row_under_pointer\(\) missing 2 required ",
+                    r"is_row_under_pointer\(\) missing 2 required ",
                     "positional arguments: 'pointerx' and 'pointery'",
                 )
             ),

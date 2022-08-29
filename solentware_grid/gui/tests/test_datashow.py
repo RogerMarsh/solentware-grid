@@ -91,7 +91,7 @@ class RecordShow(_DataClient):
             TypeError,
             "".join(
                 (
-                    "__init__\(\) missing 1 required positional argument: ",
+                    r"__init__\(\) missing 1 required positional argument: ",
                     "'instance'",
                 )
             ),
@@ -103,8 +103,8 @@ class RecordShow(_DataClient):
             TypeError,
             "".join(
                 (
-                    "on_data_change\(\) missing 1 required positional argument: ",
-                    "'instance'",
+                    r"on_data_change\(\) missing 1 required positional ",
+                    "argument: 'instance'",
                 )
             ),
             self.recorddelete.on_data_change,
@@ -141,7 +141,7 @@ class DataShow(_DataClient):
             TypeError,
             "".join(
                 (
-                    "__init__\(\) missing 4 required positional arguments: ",
+                    r"__init__\(\) missing 4 required positional arguments: ",
                     "'instance', 'parent', 'oldview', and 'title'",
                 )
             ),
@@ -153,7 +153,7 @@ class DataShow(_DataClient):
             TypeError,
             "".join(
                 (
-                    "dialog_clear_error_markers\(\) takes 1 positional ",
+                    r"dialog_clear_error_markers\(\) takes 1 positional ",
                     "argument but 2 were given",
                 )
             ),
@@ -169,7 +169,7 @@ class DataShow(_DataClient):
             TypeError,
             "".join(
                 (
-                    "dialog_status\(\) takes 1 positional ",
+                    r"dialog_status\(\) takes 1 positional ",
                     "argument but 2 were given",
                 )
             ),
@@ -185,7 +185,7 @@ class DataShow(_DataClient):
             TypeError,
             "".join(
                 (
-                    "on_data_change\(\) missing 1 required positional ",
+                    r"on_data_change\(\) missing 1 required positional ",
                     "argument: 'instance'",
                 )
             ),
@@ -211,7 +211,7 @@ class DataShow(_DataClient):
             TypeError,
             "".join(
                 (
-                    "dialog_ok\(\) takes 1 positional ",
+                    r"dialog_ok\(\) takes 1 positional ",
                     "argument but 2 were given",
                 )
             ),
@@ -239,7 +239,7 @@ class DataShow(_DataClient):
             TypeError,
             "".join(
                 (
-                    "dialog_on_ok\(\) takes 1 positional ",
+                    r"dialog_on_ok\(\) takes 1 positional ",
                     "argument but 2 were given",
                 )
             ),
@@ -253,8 +253,8 @@ class DataShow(_DataClient):
             TypeError,
             "".join(
                 (
-                    "ok_by_keypress_binding\(\) takes from 1 to 2 positional ",
-                    "arguments but 3 were given",
+                    r"ok_by_keypress_binding\(\) takes from 1 to 2 ",
+                    "positional arguments but 3 were given",
                 )
             ),
             self.datashow.ok_by_keypress_binding,
@@ -266,7 +266,7 @@ class DataShow(_DataClient):
             TypeError,
             "".join(
                 (
-                    "bind_buttons_to_widget\(\) takes 2 positional ",
+                    r"bind_buttons_to_widget\(\) takes 2 positional ",
                     "arguments but 3 were given",
                 )
             ),
@@ -284,7 +284,7 @@ class DataShow(_DataClient):
             TypeError,
             "".join(
                 (
-                    "on_destroy\(\) takes from 1 to 2 positional ",
+                    r"on_destroy\(\) takes from 1 to 2 positional ",
                     "arguments but 3 were given",
                 )
             ),
@@ -309,7 +309,7 @@ class DataShow(_DataClient):
             TypeError,
             "".join(
                 (
-                    "tidy_on_destroy\(\) takes 1 positional ",
+                    r"tidy_on_destroy\(\) takes 1 positional ",
                     "argument but 2 were given",
                 )
             ),

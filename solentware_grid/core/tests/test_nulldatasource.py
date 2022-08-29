@@ -39,7 +39,7 @@ class NullDataSource(_NullDataSource):
             TypeError,
             "".join(
                 (
-                    "get_cursor\(\) takes 1 positional argument ",
+                    r"get_cursor\(\) takes 1 positional argument ",
                     "but 2 were given",
                 )
             ),
@@ -60,7 +60,7 @@ class NullDataSource(_NullDataSource):
             TypeError,
             "".join(
                 (
-                    "set_recordset\(\) missing 1 required positional ",
+                    r"set_recordset\(\) missing 1 required positional ",
                     "argument: 'records'",
                 )
             ),
@@ -83,7 +83,7 @@ class CursorNull(unittest.TestCase):
             TypeError,
             "".join(
                 (
-                    "__init__\(\) takes 1 positional argument ",
+                    r"__init__\(\) takes 1 positional argument ",
                     "but 2 were given",
                 )
             ),
@@ -96,7 +96,7 @@ class CursorNull(unittest.TestCase):
             TypeError,
             "".join(
                 (
-                    "close\(\) takes 1 positional argument ",
+                    r"close\(\) takes 1 positional argument ",
                     "but 2 were given",
                 )
             ),
@@ -112,7 +112,7 @@ class CursorNull(unittest.TestCase):
             TypeError,
             "".join(
                 (
-                    "count_records\(\) takes 1 positional argument ",
+                    r"count_records\(\) takes 1 positional argument ",
                     "but 2 were given",
                 )
             ),
@@ -128,7 +128,7 @@ class CursorNull(unittest.TestCase):
             TypeError,
             "".join(
                 (
-                    "database_cursor_exists\(\) takes 1 positional argument ",
+                    r"database_cursor_exists\(\) takes 1 positional argument ",
                     "but 2 were given",
                 )
             ),
@@ -144,7 +144,7 @@ class CursorNull(unittest.TestCase):
             TypeError,
             "".join(
                 (
-                    "first\(\) takes 1 positional argument ",
+                    r"first\(\) takes 1 positional argument ",
                     "but 2 were given",
                 )
             ),
@@ -160,7 +160,7 @@ class CursorNull(unittest.TestCase):
             TypeError,
             "".join(
                 (
-                    "get_position_of_record\(\) takes 1 positional argument ",
+                    r"get_position_of_record\(\) takes 1 positional argument ",
                     "but 2 were given",
                 )
             ),
@@ -176,7 +176,7 @@ class CursorNull(unittest.TestCase):
             TypeError,
             "".join(
                 (
-                    "get_record_at_position\(\) takes 1 positional argument ",
+                    r"get_record_at_position\(\) takes 1 positional argument ",
                     "but 2 were given",
                 )
             ),
@@ -194,7 +194,7 @@ class CursorNull(unittest.TestCase):
             TypeError,
             "".join(
                 (
-                    "last\(\) takes 1 positional argument ",
+                    r"last\(\) takes 1 positional argument ",
                     "but 2 were given",
                 )
             ),
@@ -210,7 +210,7 @@ class CursorNull(unittest.TestCase):
             TypeError,
             "".join(
                 (
-                    "set_partial_key\(\) missing 1 required positional ",
+                    r"set_partial_key\(\) missing 1 required positional ",
                     "argument: 'partial'",
                 )
             ),
@@ -225,7 +225,7 @@ class CursorNull(unittest.TestCase):
             TypeError,
             "".join(
                 (
-                    "nearest\(\) missing 1 required positional ",
+                    r"nearest\(\) missing 1 required positional ",
                     "argument: 'key'",
                 )
             ),
@@ -240,7 +240,7 @@ class CursorNull(unittest.TestCase):
             TypeError,
             "".join(
                 (
-                    "next\(\) takes 1 positional argument ",
+                    r"next\(\) takes 1 positional argument ",
                     "but 2 were given",
                 )
             ),
@@ -256,7 +256,7 @@ class CursorNull(unittest.TestCase):
             TypeError,
             "".join(
                 (
-                    "prev\(\) takes 1 positional argument ",
+                    r"prev\(\) takes 1 positional argument ",
                     "but 2 were given",
                 )
             ),
@@ -272,7 +272,7 @@ class CursorNull(unittest.TestCase):
             TypeError,
             "".join(
                 (
-                    "refresh_recordset\(\) takes 1 positional argument ",
+                    r"refresh_recordset\(\) takes 1 positional argument ",
                     "but 2 were given",
                 )
             ),
@@ -288,7 +288,7 @@ class CursorNull(unittest.TestCase):
             TypeError,
             "".join(
                 (
-                    "setat\(\) missing 1 required positional ",
+                    r"setat\(\) missing 1 required positional ",
                     "argument: 'record'",
                 )
             ),

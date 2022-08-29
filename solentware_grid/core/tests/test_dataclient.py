@@ -87,7 +87,7 @@ class DataNotify(_DataNotify):
             TypeError,
             "".join(
                 (
-                    "__init__\(\) takes 1 positional argument ",
+                    r"__init__\(\) takes 1 positional argument ",
                     "but 2 were given",
                 )
             ),
@@ -126,7 +126,7 @@ class DataNotify(_DataNotify):
             TypeError,
             "".join(
                 (
-                    "set_data_source\(\) takes from 1 to 3 positional ",
+                    r"set_data_source\(\) takes from 1 to 3 positional ",
                     "arguments but 4 were given",
                 )
             ),
@@ -171,7 +171,7 @@ class DataNotify(_DataNotify):
             TypeError,
             "".join(
                 (
-                    "set_named_data_sources\(\) missing 1 required ",
+                    r"set_named_data_sources\(\) missing 1 required ",
                     "positional argument: 'sources'",
                 )
             ),
@@ -220,7 +220,7 @@ class _DataAccess(_DataNotify):
             TypeError,
             "".join(
                 (
-                    "__init__\(\) takes 1 positional argument ",
+                    r"__init__\(\) takes 1 positional argument ",
                     "but 2 were given",
                 )
             ),
@@ -233,7 +233,7 @@ class _DataAccess(_DataNotify):
             TypeError,
             "".join(
                 (
-                    "get_record\(\) missing 1 required positional ",
+                    r"get_record\(\) missing 1 required positional ",
                     "argument: 'record'",
                 )
             ),
@@ -268,7 +268,7 @@ class _DataAccess(_DataNotify):
             TypeError,
             "".join(
                 (
-                    "set_partial_key\(\) takes from 1 to 2 positional ",
+                    r"set_partial_key\(\) takes from 1 to 2 positional ",
                     "arguments but 3 were given",
                 )
             ),
@@ -297,7 +297,7 @@ class _DataAccess(_DataNotify):
             TypeError,
             "".join(
                 (
-                    "get_cursor\(\) takes 1 positional argument ",
+                    r"get_cursor\(\) takes 1 positional argument ",
                     "but 2 were given",
                 )
             ),
@@ -319,7 +319,7 @@ class _DataAccess(_DataNotify):
             TypeError,
             "".join(
                 (
-                    "get_database\(\) takes 1 positional argument ",
+                    r"get_database\(\) takes 1 positional argument ",
                     "but 2 were given",
                 )
             ),
@@ -341,7 +341,7 @@ class _DataAccess(_DataNotify):
             TypeError,
             "".join(
                 (
-                    "is_recno\(\) takes 1 positional argument ",
+                    r"is_recno\(\) takes 1 positional argument ",
                     "but 2 were given",
                 )
             ),
@@ -364,7 +364,7 @@ class _DataAccess(_DataNotify):
             TypeError,
             "".join(
                 (
-                    "new_row\(\) takes 1 positional argument ",
+                    r"new_row\(\) takes 1 positional argument ",
                     "but 2 were given",
                 )
             ),
@@ -386,7 +386,7 @@ class _DataAccess(_DataNotify):
             TypeError,
             "".join(
                 (
-                    "new_row_for_database\(\) takes 1 positional argument ",
+                    r"new_row_for_database\(\) takes 1 positional argument ",
                     "but 2 were given",
                 )
             ),
@@ -416,7 +416,7 @@ class DataClient(_DataNotify):
             TypeError,
             "".join(
                 (
-                    "__init__\(\) takes 1 positional argument ",
+                    r"__init__\(\) takes 1 positional argument ",
                     "but 2 were given",
                 )
             ),
@@ -429,7 +429,7 @@ class DataClient(_DataNotify):
             TypeError,
             "".join(
                 (
-                    "clear_client_keys\(\) takes 1 positional argument ",
+                    r"clear_client_keys\(\) takes 1 positional argument ",
                     "but 2 were given",
                 )
             ),
@@ -445,7 +445,7 @@ class DataClient(_DataNotify):
             TypeError,
             "".join(
                 (
-                    "close_client_cursor\(\) takes 1 positional argument ",
+                    r"close_client_cursor\(\) takes 1 positional argument ",
                     "but 2 were given",
                 )
             ),
@@ -468,7 +468,7 @@ class DataClient(_DataNotify):
             TypeError,
             "".join(
                 (
-                    "make_client_cursor\(\) takes from 1 to 2 positional ",
+                    r"make_client_cursor\(\) takes from 1 to 2 positional ",
                     "arguments but 3 were given",
                 )
             ),
@@ -538,7 +538,7 @@ class DataClient(_DataNotify):
             TypeError,
             "".join(
                 (
-                    "load_object\(\) missing 1 required positional ",
+                    r"load_object\(\) missing 1 required positional ",
                     "argument: 'key'",
                 )
             ),
@@ -554,7 +554,7 @@ class DataClient(_DataNotify):
             TypeError,
             "".join(
                 (
-                    "refresh_cursor\(\) takes from 1 to 2 positional ",
+                    r"refresh_cursor\(\) takes from 1 to 2 positional ",
                     "arguments but 3 were given",
                 )
             ),
@@ -575,7 +575,7 @@ class DataClient(_DataNotify):
             TypeError,
             "".join(
                 (
-                    "set_partial_key\(\) takes from 1 to 2 positional ",
+                    r"set_partial_key\(\) takes from 1 to 2 positional ",
                     "arguments but 3 were given",
                 )
             ),
@@ -602,7 +602,7 @@ class DataLookup(_DataNotify):
             TypeError,
             "".join(
                 (
-                    "__init__\(\) takes 1 positional argument ",
+                    r"__init__\(\) takes 1 positional argument ",
                     "but 2 were given",
                 )
             ),
@@ -615,7 +615,7 @@ class DataLookup(_DataNotify):
             TypeError,
             "".join(
                 (
-                    "close\(\) takes 1 positional argument ",
+                    r"close\(\) takes 1 positional argument ",
                     "but 2 were given",
                 )
             ),
@@ -631,7 +631,7 @@ class DataLookup(_DataNotify):
             TypeError,
             "".join(
                 (
-                    "load_cache\(\) missing 1 required positional ",
+                    r"load_cache\(\) missing 1 required positional ",
                     "argument: 'key'",
                 )
             ),
@@ -678,7 +678,7 @@ class DataLookup(_DataNotify):
             TypeError,
             "".join(
                 (
-                    "on_data_change\(\) missing 1 required positional ",
+                    r"on_data_change\(\) missing 1 required positional ",
                     "argument: 'instance'",
                 )
             ),
@@ -729,7 +729,7 @@ class DataSource(unittest.TestCase):
             TypeError,
             "".join(
                 (
-                    "__init__\(\) missing 3 required positional arguments: ",
+                    r"__init__\(\) missing 3 required positional arguments: ",
                     "'dbhome', 'dbset', and 'dbname'",
                 )
             ),
@@ -741,7 +741,7 @@ class DataSource(unittest.TestCase):
             TypeError,
             "".join(
                 (
-                    "__init__\(\) takes from 4 to 5 positional arguments ",
+                    r"__init__\(\) takes from 4 to 5 positional arguments ",
                     "but 6 were given",
                 )
             ),

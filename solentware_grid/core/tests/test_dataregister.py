@@ -42,7 +42,7 @@ class DataRegister(unittest.TestCase):
             TypeError,
             "".join(
                 (
-                    "__init__\(\) takes 1 positional argument ",
+                    r"__init__\(\) takes 1 positional argument ",
                     "but 2 were given",
                 )
             ),
@@ -55,7 +55,7 @@ class DataRegister(unittest.TestCase):
             TypeError,
             "".join(
                 (
-                    "refresh_at_start_of_file\(\) takes 1 positional ",
+                    r"refresh_at_start_of_file\(\) takes 1 positional ",
                     "argument but 2 were given",
                 )
             ),
@@ -76,7 +76,7 @@ class DataRegister(unittest.TestCase):
             TypeError,
             "".join(
                 (
-                    "refresh_after_update\(\) missing 2 required positional ",
+                    r"refresh_after_update\(\) missing 2 required positional ",
                     "arguments: 'dskey' and 'instance'",
                 )
             ),
@@ -100,7 +100,7 @@ class DataRegister(unittest.TestCase):
             TypeError,
             "".join(
                 (
-                    "register_in\(\) missing 2 required positional ",
+                    r"register_in\(\) missing 2 required positional ",
                     "arguments: 'client' and 'callback'",
                 )
             ),
@@ -123,7 +123,7 @@ class DataRegister(unittest.TestCase):
             TypeError,
             "".join(
                 (
-                    "register_out\(\) missing 1 required positional ",
+                    r"register_out\(\) missing 1 required positional ",
                     "argument: 'client'",
                 )
             ),

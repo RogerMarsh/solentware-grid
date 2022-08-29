@@ -39,7 +39,7 @@ class DataSourceSet(_DataSourceSet):
             TypeError,
             "".join(
                 (
-                    "__init__\(\) missing 3 required positional arguments: ",
+                    r"__init__\(\) missing 3 required positional arguments: ",
                     "'dbhome', 'dbset', and 'dbname'",
                 )
             ),
@@ -51,7 +51,7 @@ class DataSourceSet(_DataSourceSet):
             TypeError,
             "".join(
                 (
-                    "__init__\(\) takes from 4 to 5 positional arguments ",
+                    r"__init__\(\) takes from 4 to 5 positional arguments ",
                     "but 6 were given",
                 )
             ),
@@ -64,7 +64,7 @@ class DataSourceSet(_DataSourceSet):
             TypeError,
             "".join(
                 (
-                    "close\(\) takes 1 positional argument ",
+                    r"close\(\) takes 1 positional argument ",
                     "but 2 were given",
                 )
             ),
@@ -80,7 +80,7 @@ class DataSourceSet(_DataSourceSet):
             TypeError,
             "".join(
                 (
-                    "get_recordset\(\) missing 1 required positional ",
+                    r"get_recordset\(\) missing 1 required positional ",
                     "argument: 'dbname'",
                 )
             ),
@@ -92,7 +92,7 @@ class DataSourceSet(_DataSourceSet):
             TypeError,
             "".join(
                 (
-                    "get_recordset\(\) takes from 2 to 4 positional ",
+                    r"get_recordset\(\) takes from 2 to 4 positional ",
                     "arguments but 5 were given",
                 )
             ),
@@ -124,7 +124,7 @@ class DataSourceSet(_DataSourceSet):
             TypeError,
             "".join(
                 (
-                    "set_recordsets\(\) missing 1 required positional ",
+                    r"set_recordsets\(\) missing 1 required positional ",
                     "argument: 'dbname'",
                 )
             ),
@@ -136,7 +136,7 @@ class DataSourceSet(_DataSourceSet):
             TypeError,
             "".join(
                 (
-                    "set_recordsets\(\) takes from 2 to 6 positional ",
+                    r"set_recordsets\(\) takes from 2 to 6 positional ",
                     "arguments but 7 were given",
                 )
             ),
@@ -149,7 +149,7 @@ class DataSourceSet(_DataSourceSet):
             TypeError,
             "".join(
                 (
-                    "_clear_recordsets\(\) takes 1 positional argument ",
+                    r"_clear_recordsets\(\) takes 1 positional argument ",
                     "but 2 were given",
                 )
             ),

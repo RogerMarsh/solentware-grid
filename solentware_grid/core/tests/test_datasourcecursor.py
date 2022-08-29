@@ -68,7 +68,7 @@ class DataSourceCursor(_DataSourceCursor):
             TypeError,
             "".join(
                 (
-                    "__init__\(\) missing 3 required positional arguments: ",
+                    r"__init__\(\) missing 3 required positional arguments: ",
                     "'dbhome', 'dbset', and 'dbname'",
                 )
             ),
@@ -80,7 +80,7 @@ class DataSourceCursor(_DataSourceCursor):
             TypeError,
             "".join(
                 (
-                    "__init__\(\) takes from 4 to 5 positional arguments ",
+                    r"__init__\(\) takes from 4 to 5 positional arguments ",
                     "but 6 were given",
                 )
             ),
@@ -93,7 +93,7 @@ class DataSourceCursor(_DataSourceCursor):
             TypeError,
             "".join(
                 (
-                    "get_cursor\(\) takes 1 positional argument ",
+                    r"get_cursor\(\) takes 1 positional argument ",
                     "but 2 were given",
                 )
             ),
@@ -131,7 +131,7 @@ class DataSourceCursor(_DataSourceCursor):
             TypeError,
             "".join(
                 (
-                    "set_recordset\(\) missing 1 required positional ",
+                    r"set_recordset\(\) missing 1 required positional ",
                     "argument: 'recordset'",
                 )
             ),
@@ -143,7 +143,7 @@ class DataSourceCursor(_DataSourceCursor):
             TypeError,
             "".join(
                 (
-                    "set_recordset\(\) takes 2 positional arguments ",
+                    r"set_recordset\(\) takes 2 positional arguments ",
                     "but 3 were given",
                 )
             ),

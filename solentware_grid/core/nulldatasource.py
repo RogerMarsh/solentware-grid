@@ -28,7 +28,7 @@ class NullDataSource(DataSource):
 
 
 class CursorNull(Cursor):
-    """A null cursor - methods return None, 0, or False, after doing nothing."""
+    """A null cursor - methods do nothing then return None, 0, or False."""
 
     def __init__(self):
         """Define a cursor to access a null database."""

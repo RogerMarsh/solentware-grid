@@ -142,7 +142,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "__init__\(\) missing 1 required positional argument: ",
+                    r"__init__\(\) missing 1 required positional argument: ",
                     "'parent'",
                 )
             ),
@@ -154,8 +154,8 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "add_bookmark\(\) missing 1 required positional argument: ",
-                    "'key'",
+                    r"add_bookmark\(\) missing 1 required ",
+                    "positional argument: 'key'",
                 )
             ),
             self.datagridbase.add_bookmark,
@@ -191,7 +191,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "add_selection_bookmark\(\) takes 1 positional argument ",
+                    r"add_selection_bookmark\(\) takes 1 positional argument ",
                     "but 2 were given",
                 )
             ),
@@ -214,7 +214,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "_add_record_to_view\(\) takes 1 positional argument ",
+                    r"_add_record_to_view\(\) takes 1 positional argument ",
                     "but 2 were given",
                 )
             ),
@@ -231,7 +231,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "add_widget_to_spare_pool\(\) missing 1 required ",
+                    r"add_widget_to_spare_pool\(\) missing 1 required ",
                     "positional argument: 'widget'",
                 )
             ),
@@ -256,7 +256,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "bind_off\(\) takes 1 positional argument ",
+                    r"bind_off\(\) takes 1 positional argument ",
                     "but 2 were given",
                 )
             ),
@@ -272,7 +272,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "bind_on\(\) takes 1 positional argument ",
+                    r"bind_on\(\) takes 1 positional argument ",
                     "but 2 were given",
                 )
             ),
@@ -288,7 +288,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "__bind_on\(\) takes 1 positional argument ",
+                    r"__bind_on\(\) takes 1 positional argument ",
                     "but 2 were given",
                 )
             ),
@@ -304,7 +304,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "bookmark_down\(\) takes 1 positional argument ",
+                    r"bookmark_down\(\) takes 1 positional argument ",
                     "but 2 were given",
                 )
             ),
@@ -327,7 +327,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "bookmark_up\(\) takes 1 positional argument ",
+                    r"bookmark_up\(\) takes 1 positional argument ",
                     "but 2 were given",
                 )
             ),
@@ -350,7 +350,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "cancel_selection_bookmark\(\) takes 1 positional ",
+                    r"cancel_selection_bookmark\(\) takes 1 positional ",
                     "argument but 2 were given",
                 )
             ),
@@ -371,7 +371,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "cancel_bookmark\(\) missing 1 required positional ",
+                    r"cancel_bookmark\(\) missing 1 required positional ",
                     "argument: 'key'",
                 )
             ),
@@ -403,7 +403,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "cancel_selection\(\) takes 1 positional ",
+                    r"cancel_selection\(\) takes 1 positional ",
                     "argument but 2 were given",
                 )
             ),
@@ -424,7 +424,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "cancel_visible_selection\(\) missing 1 required ",
+                    r"cancel_visible_selection\(\) missing 1 required ",
                     "positional argument: 'key'",
                 )
             ),
@@ -452,7 +452,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "clear_client_keys\(\) takes 1 positional ",
+                    r"clear_client_keys\(\) takes 1 positional ",
                     "argument but 2 were given",
                 )
             ),
@@ -468,7 +468,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "clear_grid_description\(\) takes 1 positional ",
+                    r"clear_grid_description\(\) takes 1 positional ",
                     "argument but 2 were given",
                 )
             ),
@@ -484,7 +484,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "clear_grid_keys\(\) takes 1 positional ",
+                    r"clear_grid_keys\(\) takes 1 positional ",
                     "argument but 2 were given",
                 )
             ),
@@ -500,7 +500,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "fill_data_grid\(\) takes 1 positional argument ",
+                    r"fill_data_grid\(\) takes 1 positional argument ",
                     "but 2 were given",
                 )
             ),
@@ -513,7 +513,7 @@ class DataGridBase(_DataGridBase):
     def test_019_fill_view_001(self):
         self.assertRaisesRegex(
             TypeError,
-            "fill_view\(\) got an unexpected keyword argument 'badkey'",
+            r"fill_view\(\) got an unexpected keyword argument 'badkey'",
             self.datagridbase.fill_view,
             **dict(
                 currentkey=None,
@@ -529,7 +529,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "fill_view_from_bottom\(\) takes 1 positional ",
+                    r"fill_view_from_bottom\(\) takes 1 positional ",
                     "argument but 2 were given",
                 )
             ),
@@ -542,7 +542,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "fill_view_from_item_index\(\) missing 1 required ",
+                    r"fill_view_from_item_index\(\) missing 1 required ",
                     "positional argument: 'index'",
                 )
             ),
@@ -554,7 +554,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "fill_view_from_position\(\) missing 1 required ",
+                    r"fill_view_from_position\(\) missing 1 required ",
                     "positional argument: 'position'",
                 )
             ),
@@ -566,7 +566,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "fill_view_from_record\(\) missing 1 required ",
+                    r"fill_view_from_record\(\) missing 1 required ",
                     "positional argument: 'record'",
                 )
             ),
@@ -578,7 +578,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "fill_view_from_top\(\) takes 1 positional ",
+                    r"fill_view_from_top\(\) takes 1 positional ",
                     "argument but 2 were given",
                 )
             ),
@@ -591,7 +591,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "fill_view_to_item_index\(\) missing 1 required ",
+                    r"fill_view_to_item_index\(\) missing 1 required ",
                     "positional argument: 'index'",
                 )
             ),
@@ -603,7 +603,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "fill_view_to_position\(\) missing 1 required ",
+                    r"fill_view_to_position\(\) missing 1 required ",
                     "positional argument: 'position'",
                 )
             ),
@@ -615,7 +615,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "fill_view_to_record\(\) missing 1 required ",
+                    r"fill_view_to_record\(\) missing 1 required ",
                     "positional argument: 'record'",
                 )
             ),
@@ -627,7 +627,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "fill_view_to_top\(\) takes 1 positional ",
+                    r"fill_view_to_top\(\) takes 1 positional ",
                     "argument but 2 were given",
                 )
             ),
@@ -638,7 +638,7 @@ class DataGridBase(_DataGridBase):
     def test_029_focus_set_frame_001(self):
         self.assertRaisesRegex(
             TypeError,
-            "focus_set_frame\(\) got an unexpected keyword argument 'badkey'",
+            r"focus_set_frame\(\) got an unexpected keyword argument 'badkey'",
             self.datagridbase.focus_set_frame,
             **dict(event=None, badkey=None),
         )
@@ -651,7 +651,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "focus_set_grid_on_click_child_widget\(\) missing 1 ",
+                    r"focus_set_grid_on_click_child_widget\(\) missing 1 ",
                     "required positional argument: 'widget'",
                 )
             ),
@@ -671,8 +671,8 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "get_client_item_and_record_counts\(\) takes 1 positional ",
-                    "argument but 2 were given",
+                    r"get_client_item_and_record_counts\(\) takes ",
+                    "1 positional argument but 2 were given",
                 )
             ),
             self.datagridbase.get_client_item_and_record_counts,
@@ -690,7 +690,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "get_client_item_count\(\) takes 1 positional ",
+                    r"get_client_item_count\(\) takes 1 positional ",
                     "argument but 2 were given",
                 )
             ),
@@ -706,7 +706,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "get_row_widgets\(\) missing 1 required ",
+                    r"get_row_widgets\(\) missing 1 required ",
                     "positional argument: 'key'",
                 )
             ),
@@ -727,7 +727,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "get_data_canvas\(\) takes 1 positional ",
+                    r"get_data_canvas\(\) takes 1 positional ",
                     "argument but 2 were given",
                 )
             ),
@@ -745,7 +745,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "get_data_frame\(\) takes 1 positional ",
+                    r"get_data_frame\(\) takes 1 positional ",
                     "argument but 2 were given",
                 )
             ),
@@ -763,7 +763,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "get_frame\(\) takes 1 positional ",
+                    r"get_frame\(\) takes 1 positional ",
                     "argument but 2 were given",
                 )
             ),
@@ -779,7 +779,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "get_horizontal_scrollbar\(\) takes 1 positional ",
+                    r"get_horizontal_scrollbar\(\) takes 1 positional ",
                     "argument but 2 were given",
                 )
             ),
@@ -798,7 +798,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "get_selected_record\(\) takes 1 positional ",
+                    r"get_selected_record\(\) takes 1 positional ",
                     "argument but 2 were given",
                 )
             ),
@@ -826,7 +826,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "get_spare_row_widget\(\) got an unexpected keyword ",
+                    r"get_spare_row_widget\(\) got an unexpected keyword ",
                     "argument 'badkey'",
                 )
             ),
@@ -849,7 +849,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "get_vertical_scrollbar\(\) takes 1 positional ",
+                    r"get_vertical_scrollbar\(\) takes 1 positional ",
                     "argument but 2 were given",
                 )
             ),
@@ -867,7 +867,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "get_visible_key\(\) missing 1 required ",
+                    r"get_visible_key\(\) missing 1 required ",
                     "positional argument: 'key'",
                 )
             ),
@@ -887,7 +887,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "get_visible_record\(\) missing 1 required ",
+                    r"get_visible_record\(\) missing 1 required ",
                     "positional argument: 'key'",
                 )
             ),
@@ -908,7 +908,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "get_visible_selected_key\(\) takes 1 positional ",
+                    r"get_visible_selected_key\(\) takes 1 positional ",
                     "argument but 2 were given",
                 )
             ),
@@ -935,7 +935,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "is_load_direction_down\(\) takes 1 positional ",
+                    r"is_load_direction_down\(\) takes 1 positional ",
                     "argument but 2 were given",
                 )
             ),
@@ -951,7 +951,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "load_data_change\(\) missing 2 required ",
+                    r"load_data_change\(\) missing 2 required ",
                     "positional arguments: 'oldkeys' and 'newkeys'",
                 )
             ),
@@ -969,7 +969,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "load_new_index\(\) takes 1 positional ",
+                    r"load_new_index\(\) takes 1 positional ",
                     "argument but 2 were given",
                 )
             ),
@@ -987,7 +987,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "load_new_partial_key\(\) missing 1 required ",
+                    r"load_new_partial_key\(\) missing 1 required ",
                     "positional argument: 'key'",
                 )
             ),
@@ -1003,7 +1003,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "make_header\(\) missing 1 required ",
+                    r"make_header\(\) missing 1 required ",
                     "positional argument: 'specification'",
                 )
             ),
@@ -1030,7 +1030,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "make_row\(\) missing 1 required ",
+                    r"make_row\(\) missing 1 required ",
                     "positional argument: 'record'",
                 )
             ),
@@ -1053,7 +1053,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "move_slider\(\) got an unexpected keyword ",
+                    r"move_slider\(\) got an unexpected keyword ",
                     "argument 'badkey'",
                 )
             ),
@@ -1070,7 +1070,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "encode_navigate_grid_key\(\) missing 1 required ",
+                    r"encode_navigate_grid_key\(\) missing 1 required ",
                     "positional argument: 'key'",
                 )
             ),
@@ -1082,7 +1082,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "encode_navigate_grid_key\(\) got an unexpected keyword ",
+                    r"encode_navigate_grid_key\(\) got an unexpected keyword ",
                     "argument 'badkey'",
                 )
             ),
@@ -1106,7 +1106,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "navigate_grid_by_key\(\) got an unexpected keyword ",
+                    r"navigate_grid_by_key\(\) got an unexpected keyword ",
                     "argument 'badkey'",
                 )
             ),
@@ -1149,7 +1149,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "move_to_row_in_grid\(\) missing 1 required ",
+                    r"move_to_row_in_grid\(\) missing 1 required ",
                     "positional argument: 'key'",
                 )
             ),
@@ -1174,7 +1174,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "on_configure_canvas\(\) got an unexpected keyword ",
+                    r"on_configure_canvas\(\) got an unexpected keyword ",
                     "argument 'badkey'",
                 )
             ),
@@ -1192,7 +1192,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "on_data_change\(\) missing 1 required ",
+                    r"on_data_change\(\) missing 1 required ",
                     "positional argument: 'instance'",
                 )
             ),
@@ -1246,7 +1246,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "reverse_add_record_direction\(\) takes 1 positional ",
+                    r"reverse_add_record_direction\(\) takes 1 positional ",
                     "argument but 2 were given",
                 )
             ),
@@ -1289,7 +1289,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "scroll_grid_down_one_line\(\) takes 1 positional ",
+                    r"scroll_grid_down_one_line\(\) takes 1 positional ",
                     "argument but 2 were given",
                 )
             ),
@@ -1307,7 +1307,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "scroll_grid_up_one_line\(\) takes 1 positional ",
+                    r"scroll_grid_up_one_line\(\) takes 1 positional ",
                     "argument but 2 were given",
                 )
             ),
@@ -1325,7 +1325,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "select_cycle_down\(\) takes 1 positional ",
+                    r"select_cycle_down\(\) takes 1 positional ",
                     "argument but 2 were given",
                 )
             ),
@@ -1357,7 +1357,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "select_cycle_up\(\) takes 1 positional ",
+                    r"select_cycle_up\(\) takes 1 positional ",
                     "argument but 2 were given",
                 )
             ),
@@ -1389,7 +1389,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "select_down\(\) takes 1 positional ",
+                    r"select_down\(\) takes 1 positional ",
                     "argument but 2 were given",
                 )
             ),
@@ -1408,7 +1408,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "select_up\(\) takes 1 positional ",
+                    r"select_up\(\) takes 1 positional ",
                     "argument but 2 were given",
                 )
             ),
@@ -1427,7 +1427,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "set_data_header\(\) got an unexpected keyword ",
+                    r"set_data_header\(\) got an unexpected keyword ",
                     "argument 'badkey'",
                 )
             ),
@@ -1443,7 +1443,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "set_fill_parameters\(\) got an unexpected keyword ",
+                    r"set_fill_parameters\(\) got an unexpected keyword ",
                     "argument 'badkey'",
                 )
             ),
@@ -1575,7 +1575,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "set_grid_properties\(\) takes 1 positional ",
+                    r"set_grid_properties\(\) takes 1 positional ",
                     "argument but 2 were given",
                 )
             ),
@@ -1594,7 +1594,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "set_properties\(\) missing 1 required ",
+                    r"set_properties\(\) missing 1 required ",
                     "positional argument: 'key'",
                 )
             ),
@@ -1606,7 +1606,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "set_properties\(\) got an unexpected ",
+                    r"set_properties\(\) got an unexpected ",
                     "keyword argument 'badkey'",
                 )
             ),
@@ -1635,8 +1635,8 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "set_row_under_pointer_background\(\) missing 1 required ",
-                    "positional argument: 'key'",
+                    r"set_row_under_pointer_background\(\) missing ",
+                    "1 required positional argument: 'key'",
                 )
             ),
             self.datagridbase.set_row_under_pointer_background,
@@ -1665,7 +1665,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "set_row\(\) missing 1 required ",
+                    r"set_row\(\) missing 1 required ",
                     "positional argument: 'key'",
                 )
             ),
@@ -1677,7 +1677,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "set_row\(\) got multiple values for ",
+                    r"set_row\(\) got multiple values for ",
                     "argument 'dodefaultaction'",
                 )
             ),
@@ -1705,7 +1705,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "set_selection\(\) missing 1 required ",
+                    r"set_selection\(\) missing 1 required ",
                     "positional argument: 'key'",
                 )
             ),
@@ -1727,7 +1727,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "set_yscrollbar\(\) takes 1 positional argument ",
+                    r"set_yscrollbar\(\) takes 1 positional argument ",
                     "but 2 were given",
                 )
             ),
@@ -1748,7 +1748,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "set_xview\(\) got an unexpected keyword ",
+                    r"set_xview\(\) got an unexpected keyword ",
                     "argument 'badkey'",
                 )
             ),
@@ -1764,7 +1764,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "set_yview\(\) got an unexpected keyword ",
+                    r"set_yview\(\) got an unexpected keyword ",
                     "argument 'badkey'",
                 )
             ),
@@ -1786,7 +1786,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "int\(\) argument must be a string, a bytes-like object ",
+                    r"int\(\) argument must be a string, a bytes-like object ",
                     "or a number, not 'NoneType'",
                 )
             ),
@@ -1861,7 +1861,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "select_row_by_click\(\) got an unexpected keyword ",
+                    r"select_row_by_click\(\) got an unexpected keyword ",
                     "argument 'badkey'",
                 )
             ),
@@ -1896,7 +1896,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "show_popup_menu\(\) takes 1 positional ",
+                    r"show_popup_menu\(\) takes 1 positional ",
                     "argument but 2 were given",
                 )
             ),
@@ -1912,7 +1912,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "show_popup_menu_no_row\(\) got an unexpected keyword ",
+                    r"show_popup_menu_no_row\(\) got an unexpected keyword ",
                     "argument 'badkey'",
                 )
             ),
@@ -1929,8 +1929,8 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "show_grid_or_row_popup_menu_at_top_left_by_keypress",
-                    "\(\) got an unexpected keyword argument 'badkey'",
+                    r"show_grid_or_row_popup_menu_at_top_left_by_keypress",
+                    r"\(\) got an unexpected keyword argument 'badkey'",
                 )
             ),
             dgb.show_grid_or_row_popup_menu_at_top_left_by_keypress,
@@ -1945,8 +1945,8 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "show_grid_or_row_popup_menu_at_pointer_by_keypress",
-                    "\(\) got an unexpected keyword argument 'badkey'",
+                    r"show_grid_or_row_popup_menu_at_pointer_by_keypress",
+                    r"\(\) got an unexpected keyword argument 'badkey'",
                 )
             ),
             dgb.show_grid_or_row_popup_menu_at_pointer_by_keypress,
@@ -1960,7 +1960,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "move_selection_to_popup_selection\(\) takes 1 ",
+                    r"move_selection_to_popup_selection\(\) takes 1 ",
                     "positional argument but 2 were given",
                 )
             ),
@@ -1993,7 +1993,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "exit_popup\(\) got an unexpected keyword ",
+                    r"exit_popup\(\) got an unexpected keyword ",
                     "argument 'badkey'",
                 )
             ),
@@ -2011,7 +2011,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "enter_popup\(\) got an unexpected keyword ",
+                    r"enter_popup\(\) got an unexpected keyword ",
                     "argument 'badkey'",
                 )
             ),
@@ -2029,7 +2029,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "get_pointerxy\(\) takes 1 ",
+                    r"get_pointerxy\(\) takes 1 ",
                     "positional argument but 2 were given",
                 )
             ),
@@ -2049,7 +2049,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "_fill_down\(\) missing 2 required ",
+                    r"_fill_down\(\) missing 2 required ",
                     "positional arguments: 'rows' and 'cheight'",
                 )
             ),
@@ -2063,7 +2063,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "_fill_up\(\) missing 2 required ",
+                    r"_fill_up\(\) missing 2 required ",
                     "positional arguments: 'rows' and 'cheight'",
                 )
             ),
@@ -2077,7 +2077,7 @@ class DataGridBase(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "_get_row_reqheight\(\) missing 1 required ",
+                    r"_get_row_reqheight\(\) missing 1 required ",
                     "positional argument: 'rows'",
                 )
             ),
@@ -2888,7 +2888,7 @@ class DataGridReadOnly(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "__init__\(\) missing 1 required positional argument: ",
+                    r"__init__\(\) missing 1 required positional argument: ",
                     "'parent'",
                 )
             ),
@@ -2900,7 +2900,7 @@ class DataGridReadOnly(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "bind_off\(\) takes 1 ",
+                    r"bind_off\(\) takes 1 ",
                     "positional argument but 2 were given",
                 )
             ),
@@ -2916,7 +2916,7 @@ class DataGridReadOnly(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "bind_on\(\) takes 1 ",
+                    r"bind_on\(\) takes 1 ",
                     "positional argument but 2 were given",
                 )
             ),
@@ -2932,7 +2932,7 @@ class DataGridReadOnly(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "__bind_on\(\) takes 1 ",
+                    r"__bind_on\(\) takes 1 ",
                     "positional argument but 2 were given",
                 )
             ),
@@ -2948,7 +2948,7 @@ class DataGridReadOnly(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "up_one_page\(\) missing 1 required ",
+                    r"up_one_page\(\) missing 1 required ",
                     "positional argument: 'event'",
                 )
             ),
@@ -2962,7 +2962,7 @@ class DataGridReadOnly(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "down_one_page\(\) missing 1 required ",
+                    r"down_one_page\(\) missing 1 required ",
                     "positional argument: 'event'",
                 )
             ),
@@ -2976,7 +2976,7 @@ class DataGridReadOnly(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "down_all\(\) got an unexpected keyword ",
+                    r"down_all\(\) got an unexpected keyword ",
                     "argument 'badkey'",
                 )
             ),
@@ -2991,7 +2991,7 @@ class DataGridReadOnly(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "up_all\(\) got an unexpected keyword ",
+                    r"up_all\(\) got an unexpected keyword ",
                     "argument 'badkey'",
                 )
             ),
@@ -3006,7 +3006,7 @@ class DataGridReadOnly(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "up_one_line\(\) missing 1 required ",
+                    r"up_one_line\(\) missing 1 required ",
                     "positional argument: 'event'",
                 )
             ),
@@ -3020,7 +3020,7 @@ class DataGridReadOnly(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "up_one_line_selection\(\) missing 1 required ",
+                    r"up_one_line_selection\(\) missing 1 required ",
                     "positional argument: 'event'",
                 )
             ),
@@ -3034,7 +3034,7 @@ class DataGridReadOnly(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "down_one_line\(\) missing 1 required ",
+                    r"down_one_line\(\) missing 1 required ",
                     "positional argument: 'event'",
                 )
             ),
@@ -3048,7 +3048,7 @@ class DataGridReadOnly(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "down_one_line_selection\(\) missing 1 required ",
+                    r"down_one_line_selection\(\) missing 1 required ",
                     "positional argument: 'event'",
                 )
             ),
@@ -3062,7 +3062,7 @@ class DataGridReadOnly(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "select_bookmark_up_one_line\(\) missing 1 required ",
+                    r"select_bookmark_up_one_line\(\) missing 1 required ",
                     "positional argument: 'event'",
                 )
             ),
@@ -3076,7 +3076,7 @@ class DataGridReadOnly(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "select_up_one_line_shift\(\) missing 1 required ",
+                    r"select_up_one_line_shift\(\) missing 1 required ",
                     "positional argument: 'event'",
                 )
             ),
@@ -3090,7 +3090,7 @@ class DataGridReadOnly(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "select_up_one_line\(\) got an unexpected keyword ",
+                    r"select_up_one_line\(\) got an unexpected keyword ",
                     "argument 'badkey'",
                 )
             ),
@@ -3105,7 +3105,7 @@ class DataGridReadOnly(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "select_up_one_line_control\(\) got an unexpected ",
+                    r"select_up_one_line_control\(\) got an unexpected ",
                     "keyword argument 'badkey'",
                 )
             ),
@@ -3120,7 +3120,7 @@ class DataGridReadOnly(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "select_bookmark_down_one_line\(\) missing 1 required ",
+                    r"select_bookmark_down_one_line\(\) missing 1 required ",
                     "positional argument: 'event'",
                 )
             ),
@@ -3134,7 +3134,7 @@ class DataGridReadOnly(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "select_down_one_line_shift\(\) missing 1 required ",
+                    r"select_down_one_line_shift\(\) missing 1 required ",
                     "positional argument: 'event'",
                 )
             ),
@@ -3148,7 +3148,7 @@ class DataGridReadOnly(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "select_down_one_line\(\) got an unexpected keyword ",
+                    r"select_down_one_line\(\) got an unexpected keyword ",
                     "argument 'badkey'",
                 )
             ),
@@ -3163,7 +3163,7 @@ class DataGridReadOnly(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "select_down_one_line_control\(\) got an unexpected ",
+                    r"select_down_one_line_control\(\) got an unexpected ",
                     "keyword argument 'badkey'",
                 )
             ),
@@ -3178,7 +3178,7 @@ class DataGridReadOnly(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "add_bookmark_event\(\) missing 1 required ",
+                    r"add_bookmark_event\(\) missing 1 required ",
                     "positional argument: 'event'",
                 )
             ),
@@ -3193,7 +3193,7 @@ class DataGridReadOnly(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "cancel_bookmark_event\(\) missing 1 required ",
+                    r"cancel_bookmark_event\(\) missing 1 required ",
                     "positional argument: 'event'",
                 )
             ),
@@ -3210,7 +3210,7 @@ class DataGridReadOnly(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "cancel_selection_event\(\) missing 1 required ",
+                    r"cancel_selection_event\(\) missing 1 required ",
                     "positional argument: 'event'",
                 )
             ),
@@ -3421,7 +3421,7 @@ class DataGrid(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "__init__\(\) missing 1 required positional argument: ",
+                    r"__init__\(\) missing 1 required positional argument: ",
                     "'parent'",
                 )
             ),
@@ -3433,7 +3433,7 @@ class DataGrid(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "bind_off\(\) takes 1 ",
+                    r"bind_off\(\) takes 1 ",
                     "positional argument but 2 were given",
                 )
             ),
@@ -3449,7 +3449,7 @@ class DataGrid(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "bind_on\(\) takes 1 ",
+                    r"bind_on\(\) takes 1 ",
                     "positional argument but 2 were given",
                 )
             ),
@@ -3465,7 +3465,7 @@ class DataGrid(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "__bind_on\(\) takes 1 ",
+                    r"__bind_on\(\) takes 1 ",
                     "positional argument but 2 were given",
                 )
             ),
@@ -3481,7 +3481,7 @@ class DataGrid(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "create_delete_dialog\(\) missing 3 required positional ",
+                    r"create_delete_dialog\(\) missing 3 required positional ",
                     "arguments: 'instance', 'oldobject', and 'modal'",
                 )
             ),
@@ -3493,7 +3493,7 @@ class DataGrid(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "create_delete_dialog\(\) got an unexpected keyword ",
+                    r"create_delete_dialog\(\) got an unexpected keyword ",
                     "argument 'badkey'",
                 )
             ),
@@ -3513,7 +3513,7 @@ class DataGrid(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "create_edit_dialog\(\) missing 5 required positional ",
+                    r"create_edit_dialog\(\) missing 5 required positional ",
                     "arguments: 'instance', 'newobject', 'oldobject', ",
                     "'showinitial', and 'modal'",
                 )
@@ -3526,7 +3526,7 @@ class DataGrid(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "create_edit_dialog\(\) got an unexpected keyword ",
+                    r"create_edit_dialog\(\) got an unexpected keyword ",
                     "argument 'badkey'",
                 )
             ),
@@ -3548,7 +3548,7 @@ class DataGrid(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "create_show_dialog\(\) missing 3 required positional ",
+                    r"create_show_dialog\(\) missing 3 required positional ",
                     "arguments: 'instance', 'oldobject', and 'modal'",
                 )
             ),
@@ -3560,7 +3560,7 @@ class DataGrid(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "create_show_dialog\(\) got an unexpected keyword ",
+                    r"create_show_dialog\(\) got an unexpected keyword ",
                     "argument 'badkey'",
                 )
             ),
@@ -3579,7 +3579,7 @@ class DataGrid(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "edit_dialog\(\) missing 2 required positional ",
+                    r"edit_dialog\(\) missing 2 required positional ",
                     "arguments: 'key' and 'event'",
                 )
             ),
@@ -3591,7 +3591,7 @@ class DataGrid(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "edit_dialog\(\) got an unexpected keyword ",
+                    r"edit_dialog\(\) got an unexpected keyword ",
                     "argument 'badkey'",
                 )
             ),
@@ -3628,7 +3628,7 @@ class DataGrid(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "edit_dialog_event\(\) missing 1 required positional ",
+                    r"edit_dialog_event\(\) missing 1 required positional ",
                     "argument: 'event'",
                 )
             ),
@@ -3648,7 +3648,7 @@ class DataGrid(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "delete_dialog\(\) missing 2 required positional ",
+                    r"delete_dialog\(\) missing 2 required positional ",
                     "arguments: 'key' and 'event'",
                 )
             ),
@@ -3660,7 +3660,7 @@ class DataGrid(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "delete_dialog\(\) got an unexpected keyword ",
+                    r"delete_dialog\(\) got an unexpected keyword ",
                     "argument 'badkey'",
                 )
             ),
@@ -3686,7 +3686,7 @@ class DataGrid(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "delete_dialog_event\(\) missing 1 required positional ",
+                    r"delete_dialog_event\(\) missing 1 required positional ",
                     "argument: 'event'",
                 )
             ),
@@ -3706,7 +3706,7 @@ class DataGrid(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "show_dialog\(\) missing 2 required positional ",
+                    r"show_dialog\(\) missing 2 required positional ",
                     "arguments: 'key' and 'event'",
                 )
             ),
@@ -3718,7 +3718,7 @@ class DataGrid(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "show_dialog\(\) got an unexpected keyword ",
+                    r"show_dialog\(\) got an unexpected keyword ",
                     "argument 'badkey'",
                 )
             ),
@@ -3742,7 +3742,7 @@ class DataGrid(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "show_dialog_event\(\) missing 1 required positional ",
+                    r"show_dialog_event\(\) missing 1 required positional ",
                     "argument: 'event'",
                 )
             ),
@@ -3762,7 +3762,7 @@ class DataGrid(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "delete_from_popup\(\) takes 1 ",
+                    r"delete_from_popup\(\) takes 1 ",
                     "positional argument but 2 were given",
                 )
             ),
@@ -3780,7 +3780,7 @@ class DataGrid(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "edit_from_popup\(\) takes 1 ",
+                    r"edit_from_popup\(\) takes 1 ",
                     "positional argument but 2 were given",
                 )
             ),
@@ -3798,7 +3798,7 @@ class DataGrid(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "edit_show_from_popup\(\) takes 1 ",
+                    r"edit_show_from_popup\(\) takes 1 ",
                     "positional argument but 2 were given",
                 )
             ),
@@ -3816,7 +3816,7 @@ class DataGrid(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "insert_from_popup\(\) takes 1 ",
+                    r"insert_from_popup\(\) takes 1 ",
                     "positional argument but 2 were given",
                 )
             ),
@@ -3834,7 +3834,7 @@ class DataGrid(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "show_from_popup\(\) takes 1 ",
+                    r"show_from_popup\(\) takes 1 ",
                     "positional argument but 2 were given",
                 )
             ),
@@ -3852,7 +3852,7 @@ class DataGrid(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "launch_edit_record\(\) missing 1 required positional ",
+                    r"launch_edit_record\(\) missing 1 required positional ",
                     "argument: 'key'",
                 )
             ),
@@ -3864,7 +3864,7 @@ class DataGrid(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "launch_edit_record\(\) got an unexpected keyword ",
+                    r"launch_edit_record\(\) got an unexpected keyword ",
                     "argument 'badkey'",
                 )
             ),
@@ -3882,7 +3882,7 @@ class DataGrid(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "launch_edit_show_record\(\) missing 1 required ",
+                    r"launch_edit_show_record\(\) missing 1 required ",
                     "positional argument: 'key'",
                 )
             ),
@@ -3894,7 +3894,7 @@ class DataGrid(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "launch_edit_show_record\(\) got an unexpected keyword ",
+                    r"launch_edit_show_record\(\) got an unexpected keyword ",
                     "argument 'badkey'",
                 )
             ),
@@ -3912,7 +3912,7 @@ class DataGrid(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "launch_insert_new_record\(\) got an unexpected keyword ",
+                    r"launch_insert_new_record\(\) got an unexpected keyword ",
                     "argument 'badkey'",
                 )
             ),
@@ -3928,7 +3928,7 @@ class DataGrid(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "launch_show_record\(\) missing 1 required ",
+                    r"launch_show_record\(\) missing 1 required ",
                     "positional argument: 'key'",
                 )
             ),
@@ -3940,7 +3940,7 @@ class DataGrid(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    "launch_show_record\(\) got an unexpected keyword ",
+                    r"launch_show_record\(\) got an unexpected keyword ",
                     "argument 'badkey'",
                 )
             ),

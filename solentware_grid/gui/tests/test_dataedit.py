@@ -105,7 +105,7 @@ class RecordEdit(_DataClient):
             TypeError,
             "".join(
                 (
-                    "__init__\(\) missing 2 required positional arguments: ",
+                    r"__init__\(\) missing 2 required positional arguments: ",
                     "'newobject' and 'oldobject'",
                 )
             ),
@@ -117,7 +117,7 @@ class RecordEdit(_DataClient):
             TypeError,
             "".join(
                 (
-                    "edit\(\) takes from 1 to 2 positional arguments ",
+                    r"edit\(\) takes from 1 to 2 positional arguments ",
                     "but 3 were given",
                 )
             ),
@@ -136,8 +136,8 @@ class RecordEdit(_DataClient):
             TypeError,
             "".join(
                 (
-                    "on_data_change\(\) missing 1 required positional argument: ",
-                    "'instance'",
+                    r"on_data_change\(\) missing 1 required ",
+                    "positional argument: 'instance'",
                 )
             ),
             self.recordedit.on_data_change,
@@ -158,7 +158,7 @@ class RecordEdit(_DataClient):
             TypeError,
             "".join(
                 (
-                    "put\(\) takes from 1 to 2 positional arguments ",
+                    r"put\(\) takes from 1 to 2 positional arguments ",
                     "but 3 were given",
                 )
             ),
@@ -199,7 +199,7 @@ class DataEdit(_DataClient):
             TypeError,
             "".join(
                 (
-                    "__init__\(\) missing 5 required positional arguments: ",
+                    r"__init__\(\) missing 5 required positional arguments: ",
                     "'newobject', 'parent', 'oldobject', 'newview', ",
                     "and 'title'",
                 )
@@ -212,7 +212,7 @@ class DataEdit(_DataClient):
             TypeError,
             "".join(
                 (
-                    "__init__\(\) takes from 6 to 7 positional arguments ",
+                    r"__init__\(\) takes from 6 to 7 positional arguments ",
                     "but 8 were given",
                 )
             ),
@@ -240,7 +240,7 @@ class DataEdit(_DataClient):
             TypeError,
             "".join(
                 (
-                    "dialog_clear_error_markers\(\) takes 1 positional ",
+                    r"dialog_clear_error_markers\(\) takes 1 positional ",
                     "argument but 2 were given",
                 )
             ),
@@ -257,7 +257,7 @@ class DataEdit(_DataClient):
             TypeError,
             "".join(
                 (
-                    "dialog_on_cancel\(\) takes 1 positional ",
+                    r"dialog_on_cancel\(\) takes 1 positional ",
                     "argument but 2 were given",
                 )
             ),
@@ -270,7 +270,7 @@ class DataEdit(_DataClient):
             TypeError,
             "".join(
                 (
-                    "dialog_status\(\) takes 1 positional ",
+                    r"dialog_status\(\) takes 1 positional ",
                     "argument but 2 were given",
                 )
             ),
@@ -286,7 +286,7 @@ class DataEdit(_DataClient):
             TypeError,
             "".join(
                 (
-                    "on_data_change\(\) missing 1 required positional ",
+                    r"on_data_change\(\) missing 1 required positional ",
                     "argument: 'instance'",
                 )
             ),
@@ -312,7 +312,7 @@ class DataEdit(_DataClient):
             TypeError,
             "".join(
                 (
-                    "dialog_on_ok\(\) takes 1 positional ",
+                    r"dialog_on_ok\(\) takes 1 positional ",
                     "argument but 2 were given",
                 )
             ),
@@ -351,7 +351,7 @@ class DataEdit(_DataClient):
             TypeError,
             "".join(
                 (
-                    "dialog_ok\(\) takes 1 positional ",
+                    r"dialog_ok\(\) takes 1 positional ",
                     "argument but 2 were given",
                 )
             ),
@@ -398,8 +398,8 @@ class DataEdit(_DataClient):
             TypeError,
             "".join(
                 (
-                    "ok_by_keypress_binding\(\) takes from 1 to 2 positional ",
-                    "arguments but 3 were given",
+                    r"ok_by_keypress_binding\(\) takes from 1 to 2 ",
+                    "positional arguments but 3 were given",
                 )
             ),
             self.dataedit.ok_by_keypress_binding,
@@ -417,7 +417,7 @@ class DataEdit(_DataClient):
             TypeError,
             "".join(
                 (
-                    "cancel_by_keypress_binding\(\) takes from 1 to 2 ",
+                    r"cancel_by_keypress_binding\(\) takes from 1 to 2 ",
                     "positional arguments but 3 were given",
                 )
             ),
@@ -430,7 +430,7 @@ class DataEdit(_DataClient):
             TypeError,
             "".join(
                 (
-                    "bind_buttons_to_widget\(\) takes 2 positional ",
+                    r"bind_buttons_to_widget\(\) takes 2 positional ",
                     "arguments but 3 were given",
                 )
             ),
@@ -448,7 +448,7 @@ class DataEdit(_DataClient):
             TypeError,
             "".join(
                 (
-                    "on_destroy\(\) takes from 1 to 2 positional ",
+                    r"on_destroy\(\) takes from 1 to 2 positional ",
                     "arguments but 3 were given",
                 )
             ),
@@ -473,7 +473,7 @@ class DataEdit(_DataClient):
             TypeError,
             "".join(
                 (
-                    "tidy_on_destroy\(\) takes 1 positional ",
+                    r"tidy_on_destroy\(\) takes 1 positional ",
                     "argument but 2 were given",
                 )
             ),
