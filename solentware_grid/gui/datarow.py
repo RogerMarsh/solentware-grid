@@ -107,6 +107,10 @@ class DataRow(CallbackException):
         self._current_row_background = NULL_COLOUR
         self._pointer_popup_active = False
 
+    def set_current_row_background(self, value):
+        """Set colour used to set backgound colour for a row to value."""
+        self._current_row_background = value
+
     def set_background(self, widgets, background):
         """Set background colour of widgets.
 
