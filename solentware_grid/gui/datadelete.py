@@ -131,6 +131,14 @@ class DataDelete(RecordDelete):
                 self.ok.destroy()
                 self.ok = None
 
+    # Method added to allow subclasses direct use of action.
+    def destroy_dialog_on_ok_and_blockchange(self):
+        """Destroy dialogue and inhibit future attempts to change."""
+        if self.ok:
+            self.ok.destroy()
+            self.ok = None
+        self.blockchange = True
+
     def dialog_ok(self):
         """Delete record and return delete action response (True for deleted).
 
@@ -147,10 +155,7 @@ class DataDelete(RecordDelete):
             self.status.configure(
                 text="Cannot delete because original database was closed"
             )
-            if self.ok:
-                self.ok.destroy()
-                self.ok = None
-            self.blockchange = True
+            self.destroy_dialog_on_ok_and_blockchange()
             return False
         return None
 

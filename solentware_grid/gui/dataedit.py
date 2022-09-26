@@ -222,6 +222,14 @@ class DataEdit(RecordEdit):
                 )
             )
 
+    # Method added to allow subclasses direct use of action.
+    def destroy_dialog_on_ok_and_blockchange(self):
+        """Destroy dialogue and inhibit future attempts to change."""
+        if self.ok:
+            self.ok.destroy()
+            self.ok = None
+        self.blockchange = True
+
     def dialog_ok(self):
         """Update record and return update action response (True for updated).
 
@@ -236,10 +244,7 @@ class DataEdit(RecordEdit):
             self.status.configure(
                 text="Cannot update because original database was closed"
             )
-            if self.ok:
-                self.ok.destroy()
-                self.ok = None
-            self.blockchange = True
+            self.destroy_dialog_on_ok_and_blockchange()
             return False
         if self.oldobject is not None:
             if self.newobject == self.oldobject:

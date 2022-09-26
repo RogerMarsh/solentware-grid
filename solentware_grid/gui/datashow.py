@@ -97,6 +97,14 @@ class DataShow(RecordShow):
                 self.ok.destroy()
                 self.ok = None
 
+    # Method added to allow subclasses direct use of action.
+    def destroy_dialog_on_ok_and_blockchange(self):
+        """Destroy dialogue and inhibit future attempts to change."""
+        if self.ok:
+            self.ok.destroy()
+            self.ok = None
+        self.blockchange = True
+
     def dialog_ok(self):
         """Delete record and return show action response."""
         if self.datasource is not None:
@@ -104,10 +112,7 @@ class DataShow(RecordShow):
                 self.datasource.dbset
             ):
                 return True
-            if self.ok:
-                self.ok.destroy()
-                self.ok = None
-            self.blockchange = True
+            self.destroy_dialog_on_ok_and_blockchange()
             return False
         return None
 
