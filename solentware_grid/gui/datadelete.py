@@ -73,7 +73,7 @@ class RecordDelete(DataClient):
 class DataDelete(RecordDelete):
     """A delete record dialogue."""
 
-    def __init__(self, instance, parent, oldview, title):
+    def __init__(self, instance=None, parent=None, oldview=None, title=None):
         """Delegate to superclass then create the dialogue.
 
         instance - passed to superclass as instance argument

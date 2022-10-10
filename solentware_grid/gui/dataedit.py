@@ -104,11 +104,11 @@ class DataEdit(RecordEdit):
 
     def __init__(
         self,
-        newobject,
-        parent,
-        oldobject,
-        newview,
-        title,
+        newobject=None,
+        parent=None,
+        oldobject=None,
+        newview=None,
+        title=None,
         oldview=None,
     ):
         """Delegate to superclass then create the dialogue.

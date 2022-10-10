@@ -17,7 +17,7 @@ MINIMUM_HEIGHT = 200
 class RecordShow(DataClient):
     """Show a database record."""
 
-    def __init__(self, instance):
+    def __init__(self, instance=None):
         """Delegate to superclass then set number of rows to 1.
 
         instance - the record to be displayed
@@ -50,7 +50,7 @@ class RecordShow(DataClient):
 class DataShow(RecordShow):
     """A show record dialogue."""
 
-    def __init__(self, instance, parent, oldview, title):
+    def __init__(self, instance=None, parent=None, oldview=None, title=None):
         """Delegate to superclass then create the dialogue.
 
         instance - passed to superclass as instance argument
