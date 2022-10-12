@@ -21,9 +21,9 @@ from .dataclient import DataSource
 class DataSourceSet(DataSource):
     """Provide bsddb3 style cursor access to a sequence of recordsets."""
 
-    def __init__(self, dbhome, dbset, dbname, newrow=None):
+    def __init__(self, **kwargs):
         """Delegate then initialise key_sets and recordsets attributes."""
-        super().__init__(dbhome, dbset, dbname, newrow=newrow)
+        super().__init__(**kwargs)
 
         self.key_sets = []
         self.recordsets = dict()

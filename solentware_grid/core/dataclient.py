@@ -41,8 +41,9 @@ class DataNotify:
 
     """
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         """Create null datasource and dictionary for datasource choices."""
+        super().__init__(**kwargs)
         self.datasource = None
         self._datasources = dict()
 
@@ -125,9 +126,9 @@ class _DataAccess(DataNotify):
 
     """
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         """Extend with cursor and partial key."""
-        super().__init__()
+        super().__init__(**kwargs)
         self.cursor = None  # should this be in DataClient?
         self.partial = None
 
@@ -213,7 +214,7 @@ class DataClient(_DataAccess):
 
     """
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         """Extend _DataAccess with variable set of contiguous records.
 
         self.keys: the variable contiguous set of record keys
@@ -225,7 +226,7 @@ class DataClient(_DataAccess):
                     {(pkey, value) : literal_eval(value), ...}
 
         """
-        super().__init__()
+        super().__init__(**kwargs)
         self.keys = []
         self.rows = 0
         self.objects = dict()
@@ -299,7 +300,7 @@ class DataLookup(_DataAccess):
 
     """
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         """Extend _DataAccess with cache of records read from database.
 
         self.keys: the variable set of record keys.
@@ -312,7 +313,7 @@ class DataLookup(_DataAccess):
                    {skey : unpickled primary value, ...}
 
         """
-        super().__init__()
+        super().__init__(**kwargs)
         self.keys = []
         self.rowmax = 100
         self.rowmin = 10
@@ -367,7 +368,9 @@ class DataSource:
 
     """
 
-    def __init__(self, dbhome, dbset, dbname, newrow=None):
+    def __init__(
+        self, dbhome=None, dbset=None, dbname=None, newrow=None, **kwargs
+    ):
         """Define a DataSource on a database.
 
         dbhome = instance of a subclass of Database.
@@ -376,6 +379,7 @@ class DataSource:
         newrow = class used to generate new records in dbname database.
 
         """
+        super().__init__(**kwargs)
         self.clients = {}
         if dbhome.exists(dbset, dbname):
             self.dbhome = dbhome

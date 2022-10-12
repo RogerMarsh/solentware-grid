@@ -24,7 +24,7 @@ class DataRegister:
 
     def __init__(self, **kargs):
         """Create an empty register of datasources."""
-        super().__init__()
+        super().__init__(**kargs)
         self.datasources = dict()
 
     def refresh_at_start_of_file(self):

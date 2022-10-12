@@ -61,7 +61,7 @@ class DataGridBase(DataClient, CallbackException):
 
     """
 
-    def __init__(self, parent):
+    def __init__(self, parent=None, **kwargs):
         """Delegate to superclass then create grid widget.
 
         parent - passed to top tkinter.Frame in grid widget as master argument.
@@ -71,7 +71,7 @@ class DataGridBase(DataClient, CallbackException):
         vertical scrollbar for the data row.
 
         """
-        super().__init__()
+        super().__init__(**kwargs)
 
         self.parent = parent
         # _spare_rows use becomes uncertain in presence of gridrows_for_key
@@ -1439,9 +1439,9 @@ class DataGridBase(DataClient, CallbackException):
 class DataGridReadOnly(DataGridBase):
     """Data grid defining all read-only navigation."""
 
-    def __init__(self, parent):
+    def __init__(self, **kwargs):
         """Delegate to superclass then enable event bindings for this class."""
-        super().__init__(parent)
+        super().__init__(**kwargs)
         self.__bind_on()
 
     def bind_off(self):
@@ -1643,9 +1643,9 @@ class DataGridReadOnly(DataGridBase):
 class DataGrid(DataGridReadOnly):
     """Data grid defining all update navigation."""
 
-    def __init__(self, parent):
+    def __init__(self, **kwargs):
         """Delegate to superclass then enable event bindings for this class."""
-        super().__init__(parent)
+        super().__init__(**kwargs)
         self.__bind_on()
         for function, accelerator in (
             (self.show_from_popup, EventSpec.launch_show_dialog),
