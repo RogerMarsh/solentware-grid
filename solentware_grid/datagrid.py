@@ -7,8 +7,9 @@
 import tkinter
 from bisect import insort, bisect_left, bisect_right
 
+from solentware_bind.gui.exceptionhandler import ExceptionHandler
+
 from .gui.constants import SHIFTDOWN, CONTROLDOWN
-from .gui.callbackexception import CallbackException
 from .core.dataclient import DataClient
 from .gui.datarow import DataHeader
 from .gui.eventspec import EventSpec
@@ -47,7 +48,7 @@ class GridBaseError(Exception):
     """Exception for DataGridBase class."""
 
 
-class DataGridBase(DataClient, CallbackException):
+class DataGridBase(DataClient, ExceptionHandler):
     """Display records as rows in a scrollable grid.
 
     The row definition class given to the DataClient via
