@@ -4,7 +4,7 @@
 
 """Base classes to display a database record in a row of a datagrid."""
 
-from solentware_bind.gui.exceptionhandler import ExceptionHandler
+from solentware_bind.gui.bindings import Bindings
 
 NULL_COLOUR = "#d9d9d9"  # system backgound.
 SELECTION_COLOUR = "#76d9d9"  # a light blue.
@@ -83,7 +83,7 @@ class DataHeader:
         return (row,)
 
 
-class DataRow(ExceptionHandler):
+class DataRow(Bindings):
     """Provide methods to create a new row and set background colour of a row.
 
     Set row properties based on selection status.
