@@ -614,12 +614,12 @@ class DataGridBase(DataClient, Bindings):
         self.bind(
             widget,
             EventSpec.give_focus_to_datagridbase,
-            function=self.focus_set_frame
+            function=self.focus_set_frame,
         )
         self.bind(
             widget,
             EventSpec.select_row_in_datagridbase,
-            function=self.select_row_by_click
+            function=self.select_row_by_click,
         )
         for child in widget.winfo_children():
             self.focus_set_grid_on_click_child_widget(child)

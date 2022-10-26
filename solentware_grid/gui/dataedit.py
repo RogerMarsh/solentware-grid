@@ -6,6 +6,8 @@
 
 import tkinter
 
+from solentware_bind.gui.bindings import Bindings
+
 from ..core.dataclient import DataClient
 
 # minimum_width and minimum_height arguments for wm_minsize() calls
@@ -99,7 +101,7 @@ class RecordEdit(DataClient):
         self.datasource.refresh_widgets(self.newobject)
 
 
-class DataEdit(RecordEdit):
+class DataEdit(RecordEdit, Bindings):
     """An edit and insert record dialogue."""
 
     def __init__(
@@ -124,7 +126,7 @@ class DataEdit(RecordEdit):
         self.parent = parent
         self.newview = newview
         self.oldview = oldview
-        parent.bind("<Destroy>", self.on_destroy)
+        self.bind(parent, "<Destroy>", function=self.on_destroy)
         parent.wm_title(title)
         parent.wm_minsize(width=MINIMUM_WIDTH, height=MINIMUM_HEIGHT)
         if oldview:
@@ -272,11 +274,12 @@ class DataEdit(RecordEdit):
             (self.cancel, 0, self.cancel_by_keypress_binding),
         ):
             button.configure(underline=underline)
-            widget.bind(
+            self.bind(
+                widget,
                 button.configure("text")[-1][underline]
                 .lower()
                 .join(("<Alt-", ">")),
-                self.try_event(method),
+                function=method,
             )
 
     def on_destroy(self, event=None):

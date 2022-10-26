@@ -6,6 +6,8 @@
 
 import tkinter
 
+from solentware_bind.gui.bindings import Bindings
+
 from ..core.dataclient import DataClient
 
 # minimum_width and minimum_height arguments for wm_minsize() calls
@@ -70,7 +72,7 @@ class RecordDelete(DataClient):
             self.blockchange = True
 
 
-class DataDelete(RecordDelete):
+class DataDelete(RecordDelete, Bindings):
     """A delete record dialogue."""
 
     def __init__(self, instance=None, parent=None, oldview=None, title=None):
@@ -84,7 +86,7 @@ class DataDelete(RecordDelete):
         super().__init__(instance)
         self.parent = parent
         self.oldview = oldview
-        parent.bind("<Destroy>", self.on_destroy)
+        self.bind(parent, "<Destroy>", function=self.on_destroy)
         oldview.get_top_widget().pack(fill=tkinter.BOTH, expand=tkinter.TRUE)
         oldview.get_top_widget().pack_propagate(False)
         oldview.takefocus_widget.configure(takefocus=tkinter.TRUE)
@@ -205,11 +207,12 @@ class DataDelete(RecordDelete):
             (self.cancel, 0, self.cancel_by_keypress_binding),
         ):
             button.configure(underline=underline)
-            widget.bind(
+            self.bind(
+                widget,
                 button.configure("text")[-1][underline]
                 .lower()
                 .join(("<Alt-", ">")),
-                self.try_event(method),
+                function=method,
             )
 
     def on_destroy(self, event=None):
