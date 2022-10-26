@@ -114,7 +114,7 @@ class DataGridBase(DataClient, Bindings):
         self.vsbar = tkinter.Scrollbar(self.frame, orient=tkinter.VERTICAL)
         self.vsbar.grid(column=1, row=1, sticky=tkinter.NSEW)
         self.vsbar_number = None
-        self.vsbar.bind("<ButtonRelease-1>", self.try_event(self.move_slider))
+        self.bind(self.vsbar, "<ButtonRelease-1>", function=self.move_slider)
 
         # Horizontal scrollbar for header and data canvases.
         self.hsbar = tkinter.Scrollbar(self.frame, orient=tkinter.HORIZONTAL)
@@ -171,8 +171,8 @@ class DataGridBase(DataClient, Bindings):
 
         # The popup menu for the row under the pointer
         self.menupopup = tkinter.Menu(master=self.data, tearoff=False)
-        self.menupopup.bind("<Unmap>", self.try_event(self.exit_popup))
-        self.menupopup.bind("<Map>", self.try_event(self.enter_popup))
+        self.bind(self.menupopup, "<Unmap>", function=self.exit_popup)
+        self.bind(self.menupopup, "<Map>", function=self.enter_popup)
 
         # Click to focus and popup menu bindings for empty areas of grid.
         # Added April 2016 and some subclasses may have to suppress actions.
@@ -181,13 +181,15 @@ class DataGridBase(DataClient, Bindings):
         self.menupopupnorow = tkinter.Menu(master=self.data, tearoff=False)
 
         for widget in self.gcanvas, self.data:
-            widget.bind(
+            self.bind(
+                widget,
                 EventSpec.give_focus_to_datagridbase,
-                self.try_event(self.focus_set_frame),
+                function=self.focus_set_frame,
             )
-            widget.bind(
+            self.bind(
+                widget,
                 EventSpec.insert_row_in_datagrid,
-                self.try_event(self.show_popup_menu_no_row),
+                function=self.show_popup_menu_no_row,
             )
 
         # Selection and pointer location when popup invoked.
@@ -286,7 +288,7 @@ class DataGridBase(DataClient, Bindings):
 
     def bind_off(self):
         """Disable all bindings."""
-        self.gcanvas.bind("<Configure>", "")
+        self.bind(self.gcanvas, "<Configure>", function="")
 
     def bind_on(self):
         """Enable all bindings."""
@@ -294,8 +296,8 @@ class DataGridBase(DataClient, Bindings):
 
     def __bind_on(self):
         """Enable all bindings."""
-        self.gcanvas.bind(
-            "<Configure>", self.try_event(self.on_configure_canvas)
+        self.bind(
+            self.gcanvas, "<Configure>", function=self.on_configure_canvas
         )
 
     def bookmark_down(self):
@@ -609,13 +611,15 @@ class DataGridBase(DataClient, Bindings):
 
     def focus_set_grid_on_click_child_widget(self, widget):
         """Bind button1 to focus_set_frame for widget and all child widgets."""
-        widget.bind(
+        self.bind(
+            widget,
             EventSpec.give_focus_to_datagridbase,
-            self.try_event(self.focus_set_frame),
+            function=self.focus_set_frame
         )
-        widget.bind(
+        self.bind(
+            widget,
             EventSpec.select_row_in_datagridbase,
-            self.try_event(self.select_row_by_click),
+            function=self.select_row_by_click
         )
         for child in widget.winfo_children():
             self.focus_set_grid_on_click_child_widget(child)
@@ -1469,9 +1473,7 @@ class DataGridReadOnly(DataGridBase):
             (EventSpec.remove_selected_line_from_bookmark, ""),
             (EventSpec.remove_selected_line_from_selection, ""),
         ):
-            if function:
-                function = self.try_event(function)
-            self.frame.bind(sequence[0], function)
+            self.bind(self.frame, sequence[0], function=function)
 
     def bind_on(self):
         """Enable all bindings."""
@@ -1534,9 +1536,7 @@ class DataGridReadOnly(DataGridBase):
                 self.cancel_selection_event,
             ),
         ):
-            if function:
-                function = self.try_event(function)
-            self.frame.bind(sequence[0], function)
+            self.bind(self.frame, sequence[0], function=function)
 
     def up_one_page(self, event):
         """Scroll grid up one page of rows."""
@@ -1735,9 +1735,7 @@ class DataGrid(DataGridReadOnly):
             (EventSpec.launch_insert_dialog, ""),
             (EventSpec.launch_delete_dialog, ""),
         ):
-            if function:
-                function = self.try_event(function)
-            self.frame.bind(sequence[0], function)
+            self.bind(self.frame, sequence[0], function=function)
 
     def bind_on(self):
         """Enable all bindings."""
@@ -1751,9 +1749,7 @@ class DataGrid(DataGridReadOnly):
             (EventSpec.launch_insert_dialog, self.edit_dialog_event),
             (EventSpec.launch_delete_dialog, self.delete_dialog_event),
         ):
-            if function:
-                function = self.try_event(function)
-            self.frame.bind(sequence[0], function)
+            self.bind(self.frame, sequence[0], function=function)
 
     def create_delete_dialog(
         self, instance, oldobject, modal, title="Delete record"
