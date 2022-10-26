@@ -27,7 +27,7 @@ class DataRowError(Exception):
     """Exception for DataRow class."""
 
 
-class DataHeader:
+class DataHeader(Bindings):
     """Provide methods to create a new header and configure its widgets."""
 
     def __init__(self):
@@ -72,8 +72,8 @@ class DataHeader:
             widget = widgetpool(spec[WIDGET])
             if widget is None:
                 widget = spec[WIDGET](master=parent)
-            widget.bind("<Enter>", "")
-            widget.bind("<Leave>", "")
+            self.bind(widget, "<Enter>", function="")
+            self.bind(widget, "<Leave>", function="")
             widget.configure(background=NULL_COLOUR, **wconf)
             widget.grid_configure(spec[GRID_CONFIGURE])
             parent.grid_columnconfigure(
@@ -227,11 +227,11 @@ class DataRow(Bindings):
             widget = widgetpool(spec[WIDGET])
             if widget is None:
                 widget = spec[WIDGET](master=parent)
-            widget.bind(
-                "<Enter>", self.try_event(self.highlight_row_on_pointer_enter)
+            self.bind(
+                widget, "<Enter>", function=self.highlight_row_on_pointer_enter
             )
-            widget.bind(
-                "<Leave>", self.try_event(self.highlight_row_on_pointer_leave)
+            self.bind(
+                widget, "<Leave>", function=self.highlight_row_on_pointer_leave
             )
             # populate_widget is Tkinter.Label.configure by default
             # Typical subclass override is populate and format the Text widget
