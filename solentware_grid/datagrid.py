@@ -42,6 +42,15 @@ from .gui.eventspec import EventSpec
 # The Wine problem is fixed by changing DataGridBase.add_widget_to_spare_pool
 # to destroy the widget.  But this brings back the problem with drag resizing
 # the application on Windows 7 (Vista and XP also I assume).
+# The Microsoft Windows problem does not occur at Windows 11 with Python 3.9
+# or 3.10 which is fortunate because disabling the spare widget pool by
+# destroying the widget in method add_widget_to_spare_pool fixes the problem
+# introduced by plugging the memory leak described in the tkinter.Misc.bind
+# docstring.  See methods make_header_widgets and make_row_widgets in the
+# gui.datarow module.  The problem is highlighting apparently random cells
+# in the datagrid when the pointer is over a header row: it is assumed the
+# highlighted cells were all in the same row before the application was
+# resized.
 
 
 class GridBaseError(Exception):
@@ -281,10 +290,11 @@ class DataGridBase(DataClient, Bindings):
         datagrid.py
 
         """
-        try:
-            self._spare_rows[widget.__class__].add(widget)
-        except KeyError:
-            self._spare_rows[widget.__class__] = {widget}
+        # try:
+        #     self._spare_rows[widget.__class__].add(widget)
+        # except KeyError:
+        #     self._spare_rows[widget.__class__] = {widget}
+        widget.destroy()
 
     def bind_off(self):
         """Disable all bindings."""
