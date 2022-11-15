@@ -42,7 +42,7 @@ from .gui.eventspec import EventSpec
 # The Wine problem is fixed by changing DataGridBase.add_widget_to_spare_pool
 # to destroy the widget.  But this brings back the problem with drag resizing
 # the application on Windows 7 (Vista and XP also I assume).
-# The Microsoft Windows problem does not occur at Windows 11 with Python 3.9
+# The Microsoft Windows problem does not occur at Windows 10 with Python 3.9
 # or 3.10 which is fortunate because disabling the spare widget pool by
 # destroying the widget in method add_widget_to_spare_pool fixes the problem
 # introduced by plugging the memory leak described in the tkinter.Misc.bind

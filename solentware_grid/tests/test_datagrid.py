@@ -115,7 +115,8 @@ class _DataGridBase(unittest.TestCase):
         self.Datarow = Datarow
 
         class Widget:
-            pass
+            def destroy(self):
+                pass
 
         self.Widget = Widget
 
@@ -135,18 +136,19 @@ class _DataGridBase(unittest.TestCase):
 class DataGridBase(_DataGridBase):
     def setUp(self):
         super().setUp()
-        self.datagridbase = datagrid.DataGridBase(self.parent)
+        self.datagridbase = datagrid.DataGridBase(parent=self.parent)
 
     def test_001___init___001(self):
         self.assertRaisesRegex(
             TypeError,
             "".join(
                 (
-                    r"__init__\(\) missing 1 required positional argument: ",
-                    "'parent'",
+                    r"__init__\(\) takes from 1 to 2 positional arguments ",
+                    "but 3 were given",
                 )
             ),
             datagrid.DataGridBase,
+            *(None, None),
         )
 
     def test_002_add_bookmark_001(self):
@@ -238,18 +240,23 @@ class DataGridBase(_DataGridBase):
             self.datagridbase.add_widget_to_spare_pool,
         )
 
+    # spare widget pool disabled so len(_spare_rows) always 0.
     def test_005_add_widget_to_spare_pool_002(self):
         self.assertEqual(self.datagridbase._spare_rows, {})
         self.assertEqual(
             self.datagridbase.add_widget_to_spare_pool(self.Widget()), None
         )
-        self.assertEqual(len(self.datagridbase._spare_rows), 1)
-        self.assertEqual(len(self.datagridbase._spare_rows[self.Widget]), 1)
+        # self.assertEqual(len(self.datagridbase._spare_rows), 1)
+        # self.assertEqual(len(self.datagridbase._spare_rows[self.Widget]), 1)
+        self.assertEqual(len(self.datagridbase._spare_rows), 0)
+        self.assertEqual(self.Widget in self.datagridbase._spare_rows, False)
         self.assertEqual(
             self.datagridbase.add_widget_to_spare_pool(self.Widget()), None
         )
-        self.assertEqual(len(self.datagridbase._spare_rows), 1)
-        self.assertEqual(len(self.datagridbase._spare_rows[self.Widget]), 2)
+        # self.assertEqual(len(self.datagridbase._spare_rows), 1)
+        # self.assertEqual(len(self.datagridbase._spare_rows[self.Widget]), 2)
+        self.assertEqual(len(self.datagridbase._spare_rows), 0)
+        self.assertEqual(self.Widget in self.datagridbase._spare_rows, False)
 
     def test_006_bind_off_001(self):
         self.assertRaisesRegex(
@@ -2881,18 +2888,19 @@ class DataGridBase_move_slider(_DataGridBase):
 class DataGridReadOnly(_DataGridBase):
     def setUp(self):
         super().setUp()
-        self.datagridreadonly = datagrid.DataGridReadOnly(self.parent)
+        self.datagridreadonly = datagrid.DataGridReadOnly(parent=self.parent)
 
     def test_501___init___001(self):
         self.assertRaisesRegex(
             TypeError,
             "".join(
                 (
-                    r"__init__\(\) missing 1 required positional argument: ",
-                    "'parent'",
+                    r"__init__\(\) takes 1 positional argument but ",
+                    "2 were given",
                 )
             ),
             datagrid.DataGridReadOnly,
+            *(None,),
         )
 
     def test_501_bind_off_001(self):
@@ -3226,7 +3234,7 @@ class DataGridReadOnly(_DataGridBase):
 class DataGridReadOnly_dummy_fill_view(_DataGridBase):
     def setUp(self):
         super().setUp()
-        self.datagridreadonly = datagrid.DataGridReadOnly(self.parent)
+        self.datagridreadonly = datagrid.DataGridReadOnly(parent=self.parent)
         self.datagridreadonly.fill_view = self.null_method
 
     def test_504_up_one_page_002(self):
@@ -3413,7 +3421,7 @@ class DataGrid(_DataGridBase):
             state = 0
 
         self.Event = Event
-        self.datagrid = datagrid.DataGrid(self.parent)
+        self.datagrid = datagrid.DataGrid(parent=self.parent)
         self.datagrid.datasource = self.Datasource()
 
     def test_701___init___001(self):
@@ -3421,11 +3429,12 @@ class DataGrid(_DataGridBase):
             TypeError,
             "".join(
                 (
-                    r"__init__\(\) missing 1 required positional argument: ",
-                    "'parent'",
+                    r"__init__\(\) takes 1 positional argument but ",
+                    "2 were given",
                 )
             ),
             datagrid.DataGrid,
+            *(None,),
         )
 
     def test_701_bind_off_001(self):

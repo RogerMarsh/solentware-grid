@@ -729,19 +729,7 @@ class DataSource(unittest.TestCase):
             TypeError,
             "".join(
                 (
-                    r"__init__\(\) missing 3 required positional arguments: ",
-                    "'dbhome', 'dbset', and 'dbname'",
-                )
-            ),
-            dataclient.DataSource,
-        )
-
-    def test_001___init___002(self):
-        self.assertRaisesRegex(
-            TypeError,
-            "".join(
-                (
-                    r"__init__\(\) takes from 4 to 5 positional arguments ",
+                    r"__init__\(\) takes from 1 to 5 positional arguments ",
                     "but 6 were given",
                 )
             ),

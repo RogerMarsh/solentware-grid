@@ -6,16 +6,15 @@
 
 Nothing significant is implemented.
 
-A recordset holds all the selected records in the order they appear on the
-database.  The sequence of recordsets allows the records to be presented in
-arbitrary order.
-
-An obvious use is to display records in some sorted order: the records for each
-sorted value are presented in the order they appear in the database.
+Would follow dpt.dptdatasourceset.DataSourceSet class if implemented.
 
 """
 
 from .dataclient import DataSource
+
+
+class DataSourceSetNotImplemented(Exception):
+    """Raise when an attempt to call a method not yet implemented is done."""
 
 
 class DataSourceSet(DataSource):
@@ -32,22 +31,19 @@ class DataSourceSet(DataSource):
         """Close resources."""
         self._clear_recordsets()
 
-    def get_recordset(self, dbname, key=None, from_=None):
-        """Create a recordset and add it to the dictionary of recorsets.
+    def get_cursor(self):
+        """Return cursor on record set, or list, associated with datasource.
 
-        dbname - index used to partition records
-        key - find records with value key on dbname,
-            when key=None find all records in from_
-        from_: find records in record set from_ or record list from_,
-            when from_=None find from all records in file.
+        Not implemented.
         """
-        if key is None:
-            if from_ is None:
-                return self._find_all_records()
-            return self._in_recordset_find(dbname, from_)
-        if from_ is None:
-            return self._find_field_equals_value(dbname, key)
-        return self._in_recordset_field_equals_value(dbname, from_, key)
+        raise DataSourceSetNotImplemented("'get_cursor()' not implemented")
+
+    def get_recordset(self, dbname, key=None, from_=None):
+        """Create a recordset of records with key==key.
+
+        Not implemented.
+        """
+        raise DataSourceSetNotImplemented("'get_recordset()' not implemented")
 
     def set_recordsets(
         self,
@@ -57,19 +53,11 @@ class DataSourceSet(DataSource):
         include_without_constant_keys=False,
         population=None,
     ):
-        """To be defined.
+        """Create all combinations of partial keys.
 
-        dbname: index containing partial key values
-        partial_keys: all combinations used as a partial key
-        constant_keys: values added to each combintion
-        include_without_constant_keys: all combinations without constant_keys
-                                    added, as well, if True
-        population: subset of records to partition by partial_keys.  Use all
-                    records if None
+        Not implemented.
         """
-        # maybe method _position_identified_players_display_at_selection from
-        # playergrids needs to be changed so fill_view can be called in this
-        # method
+        raise DataSourceSetNotImplemented("'set_recordsets()' not implemented")
 
     def _clear_recordsets(self):
         """Destroy all recordsets."""

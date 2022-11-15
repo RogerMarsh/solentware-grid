@@ -31,7 +31,7 @@ class DataSourceSet(_DataSourceSet):
     def setUp(self):
         super().setUp()
         self.datasourceset = datasourceset.DataSourceSet(
-            self.dbhome, "dbset", "dbname"
+            dbhome=self.dbhome, dbset="dbset", dbname="dbname"
         )
 
     def test_001___init___001(self):
@@ -39,19 +39,7 @@ class DataSourceSet(_DataSourceSet):
             TypeError,
             "".join(
                 (
-                    r"__init__\(\) missing 3 required positional arguments: ",
-                    "'dbhome', 'dbset', and 'dbname'",
-                )
-            ),
-            datasourceset.DataSourceSet,
-        )
-
-    def test_001___init___002(self):
-        self.assertRaisesRegex(
-            TypeError,
-            "".join(
-                (
-                    r"__init__\(\) takes from 4 to 5 positional arguments ",
+                    r"__init__\(\) takes 1 positional argument ",
                     "but 6 were given",
                 )
             ),
@@ -101,22 +89,38 @@ class DataSourceSet(_DataSourceSet):
         )
 
     def test_003_get_recordset_003(self):
-        self.assertEqual(self.datasourceset.get_recordset("dbname"), None)
+        self.assertRaisesRegex(
+            datasourceset.DataSourceSetNotImplemented,
+            "'get_recordset\(\)' not implemented",
+            self.datasourceset.get_recordset,
+            *("dbname",),
+        )
 
     def test_003_get_recordset_004(self):
-        self.assertEqual(
-            self.datasourceset.get_recordset("dbname", from_="k"), None
+        self.assertRaisesRegex(
+            datasourceset.DataSourceSetNotImplemented,
+            "'get_recordset\(\)' not implemented",
+            self.datasourceset.get_recordset,
+            *("dbname",),
+            **dict(from_="k"),
         )
 
     def test_003_get_recordset_005(self):
-        self.assertEqual(
-            self.datasourceset.get_recordset("dbname", key="k"), None
+        self.assertRaisesRegex(
+            datasourceset.DataSourceSetNotImplemented,
+            "'get_recordset\(\)' not implemented",
+            self.datasourceset.get_recordset,
+            *("dbname",),
+            **dict(key="k"),
         )
 
     def test_003_get_recordset_006(self):
-        self.assertEqual(
-            self.datasourceset.get_recordset("dbname", key="k", from_="k"),
-            None,
+        self.assertRaisesRegex(
+            datasourceset.DataSourceSetNotImplemented,
+            "'get_recordset\(\)' not implemented",
+            self.datasourceset.get_recordset,
+            *("dbname",),
+            **dict(from_="k", key="k"),
         )
 
     def test_004_set_recordsets_001(self):
@@ -159,6 +163,26 @@ class DataSourceSet(_DataSourceSet):
 
     def test_005__clear_recordsets_002(self):
         self.assertEqual(self.datasourceset._clear_recordsets() is None, True)
+
+    def test_006_get_cursor_001(self):
+        self.assertRaisesRegex(
+            TypeError,
+            "".join(
+                (
+                    r"get_cursor\(\) takes 1 positional argument ",
+                    "but 2 were given",
+                )
+            ),
+            self.datasourceset.get_cursor,
+            *(None,),
+        )
+
+    def test_006_get_cursor_002(self):
+        self.assertRaisesRegex(
+            datasourceset.DataSourceSetNotImplemented,
+            "'get_cursor\(\)' not implemented",
+            self.datasourceset.get_cursor,
+        )
 
 
 if __name__ == "__main__":
