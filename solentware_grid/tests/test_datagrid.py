@@ -6,6 +6,7 @@
 
 import unittest
 import tkinter
+import sys
 
 from .. import datagrid
 
@@ -1788,13 +1789,17 @@ class DataGridBase(_DataGridBase):
         self.assertEqual(self.datagridbase.set_yview(), None)
 
     def test_072_set_yview_004(self):
+        if sys.version_info.major == 3 and sys.version_info.minor < 10:
+            number = "number"
+        else:
+            number = "real number"
         self.datagridbase.keys.append("keys")
         self.assertRaisesRegex(
             TypeError,
             "".join(
                 (
                     r"int\(\) argument must be a string, a bytes-like object ",
-                    "or a number, not 'NoneType'",
+                    number.join(("or a ", ", not 'NoneType'")),
                 )
             ),
             self.datagridbase.set_yview,

@@ -160,11 +160,12 @@ class DataDelete(_DataClient):
             TypeError,
             "".join(
                 (
-                    r"__init__\(\) missing 4 required positional arguments: ",
-                    "'instance', 'parent', 'oldview', and 'title'",
+                    r"__init__\(\) takes from 1 to 5 positional arguments ",
+                    "but 6 were given",
                 )
             ),
             datadelete.DataDelete,
+            *(None, None, None, None, None),
         )
 
     def test_002_dialog_clear_error_markers_001(self):

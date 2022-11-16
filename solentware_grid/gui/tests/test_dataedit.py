@@ -199,20 +199,7 @@ class DataEdit(_DataClient):
             TypeError,
             "".join(
                 (
-                    r"__init__\(\) missing 5 required positional arguments: ",
-                    "'newobject', 'parent', 'oldobject', 'newview', ",
-                    "and 'title'",
-                )
-            ),
-            dataedit.DataEdit,
-        )
-
-    def test_001___init___002(self):
-        self.assertRaisesRegex(
-            TypeError,
-            "".join(
-                (
-                    r"__init__\(\) takes from 6 to 7 positional arguments ",
+                    r"__init__\(\) takes from 1 to 7 positional arguments ",
                     "but 8 were given",
                 )
             ),
@@ -220,7 +207,7 @@ class DataEdit(_DataClient):
             *(None, None, None, None, None, None, None),
         )
 
-    def test_001___init___003(self):
+    def test_001___init___002(self):
         self.assertEqual(
             isinstance(
                 self._DataEdit(

@@ -91,11 +91,12 @@ class RecordShow(_DataClient):
             TypeError,
             "".join(
                 (
-                    r"__init__\(\) missing 1 required positional argument: ",
-                    "'instance'",
+                    r"__init__\(\) takes from 1 to 2 positional arguments ",
+                    "but 3 were given",
                 )
             ),
             datashow.RecordShow,
+            *(None, None),
         )
 
     def test_002_on_data_change_001(self):
@@ -141,11 +142,12 @@ class DataShow(_DataClient):
             TypeError,
             "".join(
                 (
-                    r"__init__\(\) missing 4 required positional arguments: ",
-                    "'instance', 'parent', 'oldview', and 'title'",
+                    r"__init__\(\) takes from 1 to 5 positional arguments ",
+                    "but 6 were given",
                 )
             ),
             datashow.DataShow,
+            *(None, None, None, None, None),
         )
 
     def test_002_dialog_clear_error_markers_001(self):
