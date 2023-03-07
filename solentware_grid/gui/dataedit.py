@@ -50,6 +50,17 @@ class RecordEdit(DataClient):
         edit proceeding if the record is changed elsewhere first.
 
         """
+        self.edit_no_refresh(commit=commit)
+        self.datasource.refresh_widgets(self.oldobject)
+
+    def edit_no_refresh(self, commit=True):
+        """Edit without doing refresh widgets.
+
+        This is leading part of edit split in an attempt to fix a problem
+        introduced as a consequence of explicit read-only transactions in
+        Symas LMMD.
+
+        """
         if commit:
             self.datasource.dbhome.start_transaction()
         self.oldobject.edit_record(
@@ -60,7 +71,6 @@ class RecordEdit(DataClient):
         )
         if commit:
             self.datasource.dbhome.commit()
-        self.datasource.refresh_widgets(self.oldobject)
 
     def on_data_change(self, instance):
         """Block record edit if instance is record being edited.

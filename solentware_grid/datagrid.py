@@ -556,6 +556,7 @@ class DataGridBase(DataClient, Bindings):
         fill the grid, reset the scrollbar, and close cursor.
 
         """
+        self.datasource.dbhome.start_read_only_transaction()
         self.make_client_cursor()
         try:
             self.set_fill_parameters(
@@ -568,6 +569,7 @@ class DataGridBase(DataClient, Bindings):
             self.fill_data_grid()
         finally:
             self.close_client_cursor()
+            self.datasource.dbhome.end_read_only_transaction()
 
     def fill_view_from_bottom(self):
         """Load view starting at self.bottomkey."""
@@ -579,11 +581,13 @@ class DataGridBase(DataClient, Bindings):
 
     def fill_view_from_position(self, position):
         """Load view starting at position."""
+        self.datasource.dbhome.start_read_only_transaction()
         self.make_client_cursor()
         try:
             key = self.cursor.get_record_at_position(position)
         finally:
             self.close_client_cursor()
+            self.datasource.dbhome.end_read_only_transaction()
         self.fill_view(currentkey=key, exclude=False)
 
     def fill_view_from_record(self, record):
@@ -637,6 +641,7 @@ class DataGridBase(DataClient, Bindings):
     def get_client_item_and_record_counts(self):
         """Return scrollbar slider positioning information."""
         items = self.get_client_item_count()
+        self.datasource.dbhome.start_read_only_transaction()
         self.make_client_cursor()
         try:
             if self.record_count is None:
@@ -645,6 +650,7 @@ class DataGridBase(DataClient, Bindings):
             return self.record_count, items, position
         finally:
             self.close_client_cursor()
+            self.datasource.dbhome.end_read_only_transaction()
 
     def get_client_item_count(self):
         """Return grid item count."""
@@ -770,19 +776,28 @@ class DataGridBase(DataClient, Bindings):
     def load_new_index(self):
         """Clear selection and reload grid after changing index."""
         self.record_count = None
+        self.datasource.dbhome.start_read_only_transaction()
         self.make_client_cursor()
         try:
             self.clear_grid_keys()
             self.fill_data_grid()
         finally:
             self.close_client_cursor()
+            self.datasource.dbhome.end_read_only_transaction()
 
     def load_new_partial_key(self, key):
         """Clear selection and reload grid after changing partial key."""
         self.record_count = None
         self.set_partial_key(key)
-        self.clear_grid_keys()
-        self.fill_data_grid()
+        # Presumably to avoid calling a subclass' load_new_index() method.
+        self.datasource.dbhome.start_read_only_transaction()
+        self.make_client_cursor()
+        try:
+            self.clear_grid_keys()
+            self.fill_data_grid()
+        finally:
+            self.close_client_cursor()
+            self.datasource.dbhome.end_read_only_transaction()
 
     def make_header(self, specification):
         """Set header_maker as callback to create, and return, header widget.
@@ -874,16 +889,19 @@ class DataGridBase(DataClient, Bindings):
 
     def move_to_row_in_grid(self, key):
         """Navigate grid to nearest row starting with key."""
+        self.datasource.dbhome.start_read_only_transaction()
         cursor = self.datasource.get_cursor()
         try:
             cursor.set_partial_key(self.partial)
             row = cursor.nearest(self.encode_navigate_grid_key(key))
         finally:
             cursor.close()
+            self.datasource.dbhome.end_read_only_transaction()
         self.fill_view(currentkey=row, exclude=False)
 
     def on_configure_canvas(self, event=None):
         """Populate grid for a <Configure> event (resize)."""
+        self.datasource.dbhome.start_read_only_transaction()
         self.make_client_cursor()
         try:
             self.set_fill_parameters(currentkey=False)
@@ -891,6 +909,7 @@ class DataGridBase(DataClient, Bindings):
             self.fill_data_grid()
         finally:
             self.close_client_cursor()
+            self.datasource.dbhome.end_read_only_transaction()
 
     def on_data_change(self, instance):
         """Refresh data control after database update for instance.
@@ -909,6 +928,7 @@ class DataGridBase(DataClient, Bindings):
                 self.fill_view_from_top()
                 return
             # does self.fill_view_from_top() do this as well? if so use it!
+            self.datasource.dbhome.start_read_only_transaction()
             record = self.make_client_cursor(self.keys[0])
             try:
                 if record is None:
@@ -918,6 +938,7 @@ class DataGridBase(DataClient, Bindings):
                 self.fill_data_grid()
             finally:
                 self.close_client_cursor()
+                self.datasource.dbhome.end_read_only_transaction()
             return
 
         oldkeys = instance.get_keys(self.datasource)
@@ -1208,9 +1229,42 @@ class DataGridBase(DataClient, Bindings):
         # too early when after_idle is involved in a path which closes a grid.
         # Do nothing because get_client_item_and_record_counts will try to make
         # a cursor for self.datasource.
+
+        # At revision 5213 (appsuites), 5214 (app-lmdb), self.topkey points
+        # to record relevant after moving slider in bsddb3, but to record
+        # relevant before moving slider in lmdb, at this point when the
+        # primary database (Berkeley DB term) is displayed in the grid.
+        # Thus the call to self.get_client_item_and_record_counts()
+        # calculates the wrong position for slider in lmdb.
+        # Secondary databases (Berkeley DB term) are not affected.
+        # Other database engine behave like bsddb3, or berkeleydb,
+        # whichever is installed, and supported, by the version of Python
+        # used (berkeleydb available >= 3.6 and bsddb3 < 10). 
+
+        # There is another problem with ordered display by secondary database
+        # key first confirmed on lmdb.
+        # An erratic number of rows are displayed on the grid, both
+        # initally and on scrolling in some way, and an exception occurs
+        # sooner or later on repeated scrolling action.
+        # (This is a convenient place for noting it's existence.)
+        # (No idea if the problem is related to the one tracked to here.)
+
+        # Running solentware_base.samples.compare_secondary_dumps and
+        # solentware_base.samples.compare_primary_dumps suggests the problem
+        # arises from splicing the final segment of one import with the
+        # first segment of the next import whenever an import does not end
+        # on a segment boundary.  The problem affects bsddb3 too, but not
+        # vedis or sqlite3, so there seems to be a problem in the _dbdu
+        # module, and the _dbdu_tkinter and _lmdbdu modules derived from it.
+        # The primary database seems to be fine, but all secondary databases
+        # are affected.  The problem exists on ancient versions where just
+        # bsddb3 was available.
+
+        # There was some cursor confusion in method
+        # solentware_base.core._dbdu.Database._sort_and_write_high_or_chunk().
+
         if self.datasource is None:
             return
-
         count, items, position = self.get_client_item_and_record_counts()
         try:
             first = float(position) / count

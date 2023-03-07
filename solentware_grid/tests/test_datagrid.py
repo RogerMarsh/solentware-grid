@@ -60,7 +60,20 @@ class _DataGridBase(unittest.TestCase):
             def database_cursor_exists(self):
                 return False
 
+        class Dbhome:
+            def start_read_only_transaction(self):
+                pass
+
+            def end_read_only_transaction(self):
+                pass
+
+        # Extended in a couple of places to include an extra method.
+        self.Dbhome = Dbhome
+
         class Datasource:
+
+            dbhome = self.Dbhome()
+
             def get_cursor(self):
                 return Cursor()
 
@@ -1176,7 +1189,7 @@ class DataGridBase(_DataGridBase):
         class Event:
             widget = tkinter.Entry()
 
-        class Dbhome:
+        class Dbhome(self.Dbhome):
             def encode_record_selector(self, key):
                 return key
 
@@ -1203,7 +1216,7 @@ class DataGridBase(_DataGridBase):
         class Event:
             widget = tkinter.Entry()
 
-        class Dbhome:
+        class Dbhome(self.Dbhome):
             def encode_record_selector(self, key):
                 return key
 
@@ -2275,7 +2288,8 @@ class DataGridBase__add_record_to_view__with_startkey(_DataGridBase):
         super().setUp()
 
         class Datasource(self.Datasource):
-            dbhome = None
+
+            dbhome = self.Dbhome()
             dbset = None
             dbname = None
 
@@ -2327,6 +2341,9 @@ class DataGridBase_on_data_change_instance_is_None(_DataGridBase):
                 return None
 
         class Datasource(self.Datasource):
+
+            dbhome = self.Dbhome()
+
             def new_row(self):
                 return Datarow()
 
@@ -3488,6 +3505,8 @@ class DataGrid(_DataGridBase):
         self.Instance = Instance
 
         class Datasource:
+
+            dbhome = self.Dbhome()
             new_row = self.Instance
 
         self.Datasource = Datasource
