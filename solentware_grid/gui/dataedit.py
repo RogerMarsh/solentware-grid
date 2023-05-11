@@ -101,6 +101,17 @@ class RecordEdit(DataClient):
         edit proceeding if the record is changed elsewhere first.
 
         """
+        self.put_no_refresh(commit=commit)
+        self.datasource.refresh_widgets(self.newobject)
+
+    def put_no_refresh(self, commit=True):
+        """Insert the record without doing refresh widgets.
+
+        This is leading part of put split in an attempt to fix a problem
+        introduced as a consequence of explicit read-only transactions in
+        Symas LMMD.
+
+        """
         if commit:
             self.datasource.dbhome.start_transaction()
         self.newobject.put_record(
@@ -108,7 +119,6 @@ class RecordEdit(DataClient):
         )
         if commit:
             self.datasource.dbhome.commit()
-        self.datasource.refresh_widgets(self.newobject)
 
 
 class DataEdit(RecordEdit, Bindings):
