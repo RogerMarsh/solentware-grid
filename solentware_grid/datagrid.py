@@ -1239,7 +1239,7 @@ class DataGridBase(DataClient, Bindings):
         # Secondary databases (Berkeley DB term) are not affected.
         # Other database engine behave like bsddb3, or berkeleydb,
         # whichever is installed, and supported, by the version of Python
-        # used (berkeleydb available >= 3.6 and bsddb3 < 10). 
+        # used (berkeleydb available >= 3.6 and bsddb3 < 10).
 
         # There is another problem with ordered display by secondary database
         # key first confirmed on lmdb.
