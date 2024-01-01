@@ -431,6 +431,20 @@ class DataGridBase(DataClient, Bindings):
             self.selection = []
             self.set_properties(key)
 
+    def clear_bookmarks(self):
+        """Clear bookmarks and remove actual visible indicators."""
+        for key in self.bookmarks:
+            if key in self.keys:
+                self.set_properties(key)
+        self.bookmarks = []
+
+    def clear_selections(self):
+        """Clear selections and remove actual visible indicators."""
+        for key in self.selection:
+            if key in self.keys:
+                self.set_properties(key)
+        self.selection = []
+
     def clear_client_keys(self):
         """Extend to set background for listed items if re-listed."""
         super().clear_client_keys()
@@ -597,6 +611,10 @@ class DataGridBase(DataClient, Bindings):
     def fill_view_from_top(self):
         """Load view starting at self.topkey."""
         self.fill_view(currentkey=self.topkey)
+
+    def fill_view_with_top(self):
+        """Load view starting at, and including, self.topkey."""
+        self.fill_view(currentkey=self.topkey, exclude=False)
 
     def fill_view_to_item_index(self, index):
         """Load view ending at record at item index."""

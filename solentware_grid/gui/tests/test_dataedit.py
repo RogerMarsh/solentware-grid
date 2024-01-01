@@ -43,7 +43,6 @@ class _DataClient(unittest.TestCase):
         self.parent = tkinter.Tk()
 
         class View:
-
             top_widget = tkinter.Frame(master=self.parent)
             takefocus_widget = top_widget
 

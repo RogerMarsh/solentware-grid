@@ -12,7 +12,6 @@ from .. import datagrid
 
 
 class _DataGridBase(unittest.TestCase):
-
     datagridclass = datagrid.DataGridBase
 
     def setUp(self):
@@ -71,7 +70,6 @@ class _DataGridBase(unittest.TestCase):
         self.Dbhome = Dbhome
 
         class Datasource:
-
             dbhome = self.Dbhome()
 
             def get_cursor(self):
@@ -1049,6 +1047,7 @@ class DataGridBase(_DataGridBase):
         )
 
     def test_047_load_new_partial_key_002(self):
+        self.datagridinstance.datasource = self.Datasource()
         self.datagridinstance.header_maker = self.header_maker
         self.assertEqual(
             self.datagridinstance.load_new_partial_key("key"), None
@@ -2161,6 +2160,75 @@ class DataGridBase(_DataGridBase):
             True,
         )
 
+    def test_084_fill_view_with_top_001(self):
+        self.assertRaisesRegex(
+            TypeError,
+            "".join(
+                (
+                    r"fill_view_with_top\(\) takes 1 positional ",
+                    "argument but 2 were given",
+                )
+            ),
+            self.datagridinstance.fill_view_with_top,
+            *(None,),
+        )
+
+    def test_085_clear_bookmarks_001(self):
+        self.assertRaisesRegex(
+            TypeError,
+            "".join(
+                (
+                    r"clear_bookmarks\(\) takes 1 positional ",
+                    "argument but 2 were given",
+                )
+            ),
+            self.datagridinstance.clear_bookmarks,
+            *(None,),
+        )
+
+    def test_085_clear_bookmarks_002(self):
+        self.datagridinstance.bookmarks.append("key")
+        self.datagridinstance.bookmarks.append("key1")
+        self.datagridinstance.keys.append("key")
+        self.datagridinstance.objects["key"] = self.Datarow()
+        self.datagridinstance.gridrows_for_key[
+            "key"
+        ] = self.datagridinstance.objects["key"]
+        self.datagridinstance.datasource = self.Datasource()
+        self.datagridinstance.header_maker = self.header_maker
+        self.assertEqual(self.datagridinstance.clear_bookmarks(), None)
+        self.assertEqual(len(self.datagridinstance.bookmarks), 0)
+
+    def test_086_clear_selections_001(self):
+        self.assertRaisesRegex(
+            TypeError,
+            "".join(
+                (
+                    r"clear_selections\(\) takes 1 positional ",
+                    "argument but 2 were given",
+                )
+            ),
+            self.datagridinstance.clear_selections,
+            *(None,),
+        )
+
+    def test_086_clear_selections_002(self):
+        self.datagridinstance.selection.append(("key", None))
+        self.assertEqual(self.datagridinstance.clear_selections(), None)
+        self.assertEqual(len(self.datagridinstance.selection), 0)
+
+    def test_086_clear_selections_003(self):
+        self.datagridinstance.selection.append(("key", None))
+        self.datagridinstance.keys.append("key")
+        self.datagridinstance.objects["key"] = self.Datarow()
+        self.datagridinstance.gridrows_for_key[
+            "key"
+        ] = self.datagridinstance.objects["key"]
+        self.datagridinstance.datasource = self.Datasource()
+        self.datagridinstance.header_maker = self.header_maker
+        self.assertEqual(self.datagridinstance.clear_selections(), None)
+        self.assertEqual(len(self.datagridinstance.selection), 0)
+
 
 class DataGridBase_bookmark_down_bookmark_up(_DataGridBase):
     def setUp(self):
@@ -2288,7 +2356,6 @@ class DataGridBase__add_record_to_view__with_startkey(_DataGridBase):
         super().setUp()
 
         class Datasource(self.Datasource):
-
             dbhome = self.Dbhome()
             dbset = None
             dbname = None
@@ -2341,7 +2408,6 @@ class DataGridBase_on_data_change_instance_is_None(_DataGridBase):
                 return None
 
         class Datasource(self.Datasource):
-
             dbhome = self.Dbhome()
 
             def new_row(self):
@@ -2689,6 +2755,9 @@ class DataGridBase_dummy_fill_data_grid(_DataGridBase):
     def test_028_fill_view_to_top_002(self):
         self.assertEqual(self.datagridinstance.fill_view_to_top(), None)
 
+    def test_084_fill_view_with_top_002(self):
+        self.assertEqual(self.datagridinstance.fill_view_with_top(), None)
+
 
 class DataGridBase_fill_data_grid(_DataGridBase):
     def setUp(self):
@@ -2958,7 +3027,6 @@ class DataGridBase_move_slider(_DataGridBase):
 
 
 class DataGridReadOnly___init___del___ignored(_DataGridBase):
-
     datagridclass = datagrid.DataGridReadOnly
 
     def test_501___init___001(self):
@@ -2976,7 +3044,6 @@ class DataGridReadOnly___init___del___ignored(_DataGridBase):
 
 
 class DataGridReadOnly(_DataGridBase):
-
     datagridclass = datagrid.DataGridReadOnly
 
     def test_501_bind_off_001(self):
@@ -3308,7 +3375,6 @@ class DataGridReadOnly(_DataGridBase):
 
 
 class DataGridReadOnly_dummy_fill_view(_DataGridBase):
-
     datagridclass = datagrid.DataGridReadOnly
 
     def setUp(self):
@@ -3459,7 +3525,6 @@ class DataGridReadOnly_dummy_fill_view(_DataGridBase):
 
 
 class DataGrid___init_____del___ignored(_DataGridBase):
-
     datagridclass = datagrid.DataGrid
 
     def test_701___init___001(self):
@@ -3477,7 +3542,6 @@ class DataGrid___init_____del___ignored(_DataGridBase):
 
 
 class DataGrid(_DataGridBase):
-
     datagridclass = datagrid.DataGrid
 
     def setUp(self):
@@ -3505,7 +3569,6 @@ class DataGrid(_DataGridBase):
         self.Instance = Instance
 
         class Datasource:
-
             dbhome = self.Dbhome()
             new_row = self.Instance
 
