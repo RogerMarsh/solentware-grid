@@ -10,10 +10,6 @@
 from .dataclient import DataSource
 
 
-class DataSourceCursorError(Exception):
-    """Exception for DataSourceCursor class."""
-
-
 class DataSourceCursor(DataSource):
     """Provide bsddb3 style cursor access to recordset of arbitrary records."""
 
@@ -30,41 +26,17 @@ class DataSourceCursor(DataSource):
         # self.dbhome.table[self.dbset]._sources[self] = None
         # which would imply that the close() method be transplanted as well.
 
+    # This method originally present only in ..dpt.datasourcecursor module.
+    # Implication is clients of this module must call the close() method
+    # if .datasourcecursor and ..dpt.datasourcecursor can be merged.
+    def close(self):
+        """Do database engine specific close actions on self.recordset."""
+        self.dbhome.close_datasourcecursor_recordset(self)
+
     def get_cursor(self):
         """Create and return cursor on this datasource's recordset."""
-        if self.recordset:
-            if self.dbidentity == self.recordset.recordset.dbidentity:
-                cursor = self.recordset.dbhome.create_recordset_cursor(
-                    self.recordset.recordset
-                )
-            else:
-                raise DataSourceCursorError(
-                    "Recordset and DataSource are for different databases"
-                )
-        else:
-            self.recordset = self.dbhome.recordlist_nil(self.dbset)
-            cursor = self.recordset.dbhome.create_recordset_cursor(
-                self.recordset.recordset
-            )
-        return cursor
+        return self.dbhome.get_datasourcecursor_recordset_cursor(self)
 
     def set_recordset(self, recordset):
-        """Validate and set recordset as this datasource's recordset.
-
-        The recordset and this datasource must be associated with the same
-        database identity.
-        """
-        if self.recordset:
-            if self.recordset.dbidentity == recordset.recordset.dbidentity:
-                self.recordset.recordset.close()
-                self.recordset = recordset
-            else:
-                raise DataSourceCursorError(
-                    "New and existing Recordsets are for different databases"
-                )
-        elif self.dbidentity == recordset.recordset.dbidentity:
-            self.recordset = recordset
-        else:
-            raise DataSourceCursorError(
-                "New Recordset and DataSource are for different databases"
-            )
+        """Set recordset as this datasource's recordset."""
+        self.dbhome.set_datasourcecursor_recordset(self, recordset)
