@@ -150,16 +150,25 @@ class _DataGridBase(unittest.TestCase):
 
 
 class DataGridBase___init_____del___ignored(_DataGridBase):
+    # For solentware_bind.gui.bindings.Bindings.__del__ attributes referenced.
+    # Without this an 'Exception ignored in <function Bindings.__del__> is
+    # raised for attribute '_binding'.
+    class DGC(_DataGridBase.datagridclass):
+        _frozen_binding = set()
+
+        def unbind_all_handlers(self, **kwargs):
+            del kwargs
+
     def test_001___init___001(self):
         self.assertRaisesRegex(
             TypeError,
             "".join(
                 (
                     r"__init__\(\) takes from 1 to 2 positional arguments ",
-                    "but 3 were given",
+                    "but 3 were given$",
                 )
             ),
-            self.datagridclass,
+            self.DGC,
             *(None, None),
         )
 
@@ -171,7 +180,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"add_bookmark\(\) missing 1 required ",
-                    "positional argument: 'key'",
+                    "positional argument: 'key'$",
                 )
             ),
             self.datagridinstance.add_bookmark,
@@ -210,7 +219,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"add_selection_bookmark\(\) takes 1 positional argument ",
-                    "but 2 were given",
+                    "but 2 were given$",
                 )
             ),
             self.datagridinstance.add_selection_bookmark,
@@ -233,7 +242,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"_add_record_to_view\(\) takes 1 positional argument ",
-                    "but 2 were given",
+                    "but 2 were given$",
                 )
             ),
             self.datagridinstance._add_record_to_view,
@@ -250,7 +259,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"add_widget_to_spare_pool\(\) missing 1 required ",
-                    "positional argument: 'widget'",
+                    "positional argument: 'widget'$",
                 )
             ),
             self.datagridinstance.add_widget_to_spare_pool,
@@ -263,7 +272,9 @@ class DataGridBase(_DataGridBase):
             self.datagridinstance.add_widget_to_spare_pool(self.Widget()), None
         )
         # self.assertEqual(len(self.datagridinstance._spare_rows), 1)
-        # self.assertEqual(len(self.datagridinstance._spare_rows[self.Widget]), 1)
+        # self.assertEqual(
+        #    len(self.datagridinstance._spare_rows[self.Widget]), 1
+        # )
         self.assertEqual(len(self.datagridinstance._spare_rows), 0)
         self.assertEqual(
             self.Widget in self.datagridinstance._spare_rows, False
@@ -272,7 +283,9 @@ class DataGridBase(_DataGridBase):
             self.datagridinstance.add_widget_to_spare_pool(self.Widget()), None
         )
         # self.assertEqual(len(self.datagridinstance._spare_rows), 1)
-        # self.assertEqual(len(self.datagridinstance._spare_rows[self.Widget]), 2)
+        # self.assertEqual(
+        #     len(self.datagridinstance._spare_rows[self.Widget]), 2
+        # )
         self.assertEqual(len(self.datagridinstance._spare_rows), 0)
         self.assertEqual(
             self.Widget in self.datagridinstance._spare_rows, False
@@ -284,7 +297,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"bind_off\(\) takes 1 positional argument ",
-                    "but 2 were given",
+                    "but 2 were given$",
                 )
             ),
             self.datagridinstance.bind_off,
@@ -300,7 +313,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"bind_on\(\) takes 1 positional argument ",
-                    "but 2 were given",
+                    "but 2 were given$",
                 )
             ),
             self.datagridinstance.bind_on,
@@ -316,7 +329,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"__bind_on\(\) takes 1 positional argument ",
-                    "but 2 were given",
+                    "but 2 were given$",
                 )
             ),
             self.datagridinstance.__bind_on,
@@ -332,7 +345,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"bookmark_down\(\) takes 1 positional argument ",
-                    "but 2 were given",
+                    "but 2 were given$",
                 )
             ),
             self.datagridinstance.bookmark_down,
@@ -355,7 +368,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"bookmark_up\(\) takes 1 positional argument ",
-                    "but 2 were given",
+                    "but 2 were given$",
                 )
             ),
             self.datagridinstance.bookmark_up,
@@ -378,7 +391,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"cancel_selection_bookmark\(\) takes 1 positional ",
-                    "argument but 2 were given",
+                    "argument but 2 were given$",
                 )
             ),
             self.datagridinstance.cancel_selection_bookmark,
@@ -403,7 +416,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"cancel_bookmark\(\) missing 1 required positional ",
-                    "argument: 'key'",
+                    "argument: 'key'$",
                 )
             ),
             self.datagridinstance.cancel_bookmark,
@@ -437,7 +450,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"cancel_selection\(\) takes 1 positional ",
-                    "argument but 2 were given",
+                    "argument but 2 were given$",
                 )
             ),
             self.datagridinstance.cancel_selection,
@@ -458,7 +471,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"cancel_visible_selection\(\) missing 1 required ",
-                    "positional argument: 'key'",
+                    "positional argument: 'key'$",
                 )
             ),
             self.datagridinstance.cancel_visible_selection,
@@ -486,7 +499,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"clear_client_keys\(\) takes 1 positional ",
-                    "argument but 2 were given",
+                    "argument but 2 were given$",
                 )
             ),
             self.datagridinstance.clear_client_keys,
@@ -502,7 +515,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"clear_grid_description\(\) takes 1 positional ",
-                    "argument but 2 were given",
+                    "argument but 2 were given$",
                 )
             ),
             self.datagridinstance.clear_grid_description,
@@ -518,7 +531,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"clear_grid_keys\(\) takes 1 positional ",
-                    "argument but 2 were given",
+                    "argument but 2 were given$",
                 )
             ),
             self.datagridinstance.clear_grid_keys,
@@ -534,7 +547,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"fill_data_grid\(\) takes 1 positional argument ",
-                    "but 2 were given",
+                    "but 2 were given$",
                 )
             ),
             self.datagridinstance.fill_data_grid,
@@ -546,7 +559,7 @@ class DataGridBase(_DataGridBase):
     def test_019_fill_view_001(self):
         self.assertRaisesRegex(
             TypeError,
-            r"fill_view\(\) got an unexpected keyword argument 'badkey'",
+            r"fill_view\(\) got an unexpected keyword argument 'badkey'$",
             self.datagridinstance.fill_view,
             **dict(
                 currentkey=None,
@@ -563,7 +576,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"fill_view_from_bottom\(\) takes 1 positional ",
-                    "argument but 2 were given",
+                    "argument but 2 were given$",
                 )
             ),
             self.datagridinstance.fill_view_from_bottom,
@@ -576,7 +589,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"fill_view_from_item_index\(\) missing 1 required ",
-                    "positional argument: 'index'",
+                    "positional argument: 'index'$",
                 )
             ),
             self.datagridinstance.fill_view_from_item_index,
@@ -588,7 +601,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"fill_view_from_position\(\) missing 1 required ",
-                    "positional argument: 'position'",
+                    "positional argument: 'position'$",
                 )
             ),
             self.datagridinstance.fill_view_from_position,
@@ -600,7 +613,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"fill_view_from_record\(\) missing 1 required ",
-                    "positional argument: 'record'",
+                    "positional argument: 'record'$",
                 )
             ),
             self.datagridinstance.fill_view_from_record,
@@ -612,7 +625,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"fill_view_from_top\(\) takes 1 positional ",
-                    "argument but 2 were given",
+                    "argument but 2 were given$",
                 )
             ),
             self.datagridinstance.fill_view_from_top,
@@ -625,7 +638,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"fill_view_to_item_index\(\) missing 1 required ",
-                    "positional argument: 'index'",
+                    "positional argument: 'index'$",
                 )
             ),
             self.datagridinstance.fill_view_to_item_index,
@@ -637,7 +650,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"fill_view_to_position\(\) missing 1 required ",
-                    "positional argument: 'position'",
+                    "positional argument: 'position'$",
                 )
             ),
             self.datagridinstance.fill_view_to_position,
@@ -649,7 +662,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"fill_view_to_record\(\) missing 1 required ",
-                    "positional argument: 'record'",
+                    "positional argument: 'record'$",
                 )
             ),
             self.datagridinstance.fill_view_to_record,
@@ -661,7 +674,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"fill_view_to_top\(\) takes 1 positional ",
-                    "argument but 2 were given",
+                    "argument but 2 were given$",
                 )
             ),
             self.datagridinstance.fill_view_to_top,
@@ -671,7 +684,12 @@ class DataGridBase(_DataGridBase):
     def test_029_focus_set_frame_001(self):
         self.assertRaisesRegex(
             TypeError,
-            r"focus_set_frame\(\) got an unexpected keyword argument 'badkey'",
+            "".join(
+                (
+                    r"focus_set_frame\(\) got an unexpected keyword ",
+                    "argument 'badkey'$",
+                )
+            ),
             self.datagridinstance.focus_set_frame,
             **dict(event=None, badkey=None),
         )
@@ -685,7 +703,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"focus_set_grid_on_click_child_widget\(\) missing 1 ",
-                    "required positional argument: 'widget'",
+                    "required positional argument: 'widget'$",
                 )
             ),
             self.datagridinstance.focus_set_grid_on_click_child_widget,
@@ -705,7 +723,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"get_client_item_and_record_counts\(\) takes ",
-                    "1 positional argument but 2 were given",
+                    "1 positional argument but 2 were given$",
                 )
             ),
             self.datagridinstance.get_client_item_and_record_counts,
@@ -725,7 +743,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"get_client_item_count\(\) takes 1 positional ",
-                    "argument but 2 were given",
+                    "argument but 2 were given$",
                 )
             ),
             self.datagridinstance.get_client_item_count,
@@ -741,7 +759,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"get_row_widgets\(\) missing 1 required ",
-                    "positional argument: 'key'",
+                    "positional argument: 'key'$",
                 )
             ),
             self.datagridinstance.get_row_widgets,
@@ -762,7 +780,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"get_data_canvas\(\) takes 1 positional ",
-                    "argument but 2 were given",
+                    "argument but 2 were given$",
                 )
             ),
             self.datagridinstance.get_data_canvas,
@@ -781,7 +799,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"get_data_frame\(\) takes 1 positional ",
-                    "argument but 2 were given",
+                    "argument but 2 were given$",
                 )
             ),
             self.datagridinstance.get_data_frame,
@@ -799,7 +817,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"get_frame\(\) takes 1 positional ",
-                    "argument but 2 were given",
+                    "argument but 2 were given$",
                 )
             ),
             self.datagridinstance.get_frame,
@@ -817,7 +835,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"get_horizontal_scrollbar\(\) takes 1 positional ",
-                    "argument but 2 were given",
+                    "argument but 2 were given$",
                 )
             ),
             self.datagridinstance.get_horizontal_scrollbar,
@@ -836,7 +854,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"get_selected_record\(\) takes 1 positional ",
-                    "argument but 2 were given",
+                    "argument but 2 were given$",
                 )
             ),
             self.datagridinstance.get_selected_record,
@@ -864,7 +882,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"get_spare_row_widget\(\) got an unexpected keyword ",
-                    "argument 'badkey'",
+                    "argument 'badkey'$",
                 )
             ),
             self.datagridinstance.get_spare_row_widget,
@@ -891,7 +909,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"get_vertical_scrollbar\(\) takes 1 positional ",
-                    "argument but 2 were given",
+                    "argument but 2 were given$",
                 )
             ),
             self.datagridinstance.get_vertical_scrollbar,
@@ -910,7 +928,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"get_visible_key\(\) missing 1 required ",
-                    "positional argument: 'key'",
+                    "positional argument: 'key'$",
                 )
             ),
             self.datagridinstance.get_visible_key,
@@ -930,7 +948,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"get_visible_record\(\) missing 1 required ",
-                    "positional argument: 'key'",
+                    "positional argument: 'key'$",
                 )
             ),
             self.datagridinstance.get_visible_record,
@@ -953,7 +971,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"get_visible_selected_key\(\) takes 1 positional ",
-                    "argument but 2 were given",
+                    "argument but 2 were given$",
                 )
             ),
             self.datagridinstance.get_visible_selected_key,
@@ -986,7 +1004,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"is_load_direction_down\(\) takes 1 positional ",
-                    "argument but 2 were given",
+                    "argument but 2 were given$",
                 )
             ),
             self.datagridinstance.is_load_direction_down,
@@ -1002,7 +1020,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"load_data_change\(\) missing 2 required ",
-                    "positional arguments: 'oldkeys' and 'newkeys'",
+                    "positional arguments: 'oldkeys' and 'newkeys'$",
                 )
             ),
             self.datagridinstance.load_data_change,
@@ -1022,7 +1040,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"load_new_index\(\) takes 1 positional ",
-                    "argument but 2 were given",
+                    "argument but 2 were given$",
                 )
             ),
             self.datagridinstance.load_new_index,
@@ -1040,7 +1058,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"load_new_partial_key\(\) missing 1 required ",
-                    "positional argument: 'key'",
+                    "positional argument: 'key'$",
                 )
             ),
             self.datagridinstance.load_new_partial_key,
@@ -1059,7 +1077,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"make_header\(\) missing 1 required ",
-                    "positional argument: 'specification'",
+                    "positional argument: 'specification'$",
                 )
             ),
             self.datagridinstance.make_header,
@@ -1086,7 +1104,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"make_row\(\) missing 1 required ",
-                    "positional argument: 'record'",
+                    "positional argument: 'record'$",
                 )
             ),
             self.datagridinstance.make_row,
@@ -1109,7 +1127,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"move_slider\(\) got an unexpected keyword ",
-                    "argument 'badkey'",
+                    "argument 'badkey'$",
                 )
             ),
             self.datagridinstance.move_slider,
@@ -1126,7 +1144,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"encode_navigate_grid_key\(\) missing 1 required ",
-                    "positional argument: 'key'",
+                    "positional argument: 'key'$",
                 )
             ),
             self.datagridinstance.encode_navigate_grid_key,
@@ -1138,7 +1156,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"encode_navigate_grid_key\(\) got an unexpected keyword ",
-                    "argument 'badkey'",
+                    "argument 'badkey'$",
                 )
             ),
             self.datagridinstance.encode_navigate_grid_key,
@@ -1162,7 +1180,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"navigate_grid_by_key\(\) got an unexpected keyword ",
-                    "argument 'badkey'",
+                    "argument 'badkey'$",
                 )
             ),
             self.datagridinstance.navigate_grid_by_key,
@@ -1172,7 +1190,7 @@ class DataGridBase(_DataGridBase):
     def test_052_navigate_grid_by_key_002(self):
         self.assertRaisesRegex(
             AttributeError,
-            "'NoneType' object has no attribute 'widget'",
+            "'NoneType' object has no attribute 'widget'$",
             self.datagridinstance.navigate_grid_by_key,
         )
 
@@ -1205,7 +1223,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"move_to_row_in_grid\(\) missing 1 required ",
-                    "positional argument: 'key'",
+                    "positional argument: 'key'$",
                 )
             ),
             self.datagridinstance.move_to_row_in_grid,
@@ -1232,7 +1250,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"on_configure_canvas\(\) got an unexpected keyword ",
-                    "argument 'badkey'",
+                    "argument 'badkey'$",
                 )
             ),
             self.datagridinstance.on_configure_canvas,
@@ -1250,7 +1268,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"on_data_change\(\) missing 1 required ",
-                    "positional argument: 'instance'",
+                    "positional argument: 'instance'$",
                 )
             ),
             self.datagridinstance.on_data_change,
@@ -1310,7 +1328,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"reverse_add_record_direction\(\) takes 1 positional ",
-                    "argument but 2 were given",
+                    "argument but 2 were given$",
                 )
             ),
             self.datagridinstance.reverse_add_record_direction,
@@ -1353,7 +1371,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"scroll_grid_down_one_line\(\) takes 1 positional ",
-                    "argument but 2 were given",
+                    "argument but 2 were given$",
                 )
             ),
             self.datagridinstance.scroll_grid_down_one_line,
@@ -1373,7 +1391,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"scroll_grid_up_one_line\(\) takes 1 positional ",
-                    "argument but 2 were given",
+                    "argument but 2 were given$",
                 )
             ),
             self.datagridinstance.scroll_grid_up_one_line,
@@ -1391,7 +1409,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"select_cycle_down\(\) takes 1 positional ",
-                    "argument but 2 were given",
+                    "argument but 2 were given$",
                 )
             ),
             self.datagridinstance.select_cycle_down,
@@ -1423,7 +1441,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"select_cycle_up\(\) takes 1 positional ",
-                    "argument but 2 were given",
+                    "argument but 2 were given$",
                 )
             ),
             self.datagridinstance.select_cycle_up,
@@ -1455,7 +1473,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"select_down\(\) takes 1 positional ",
-                    "argument but 2 were given",
+                    "argument but 2 were given$",
                 )
             ),
             self.datagridinstance.select_down,
@@ -1474,7 +1492,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"select_up\(\) takes 1 positional ",
-                    "argument but 2 were given",
+                    "argument but 2 were given$",
                 )
             ),
             self.datagridinstance.select_up,
@@ -1493,7 +1511,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"set_data_header\(\) got an unexpected keyword ",
-                    "argument 'badkey'",
+                    "argument 'badkey'$",
                 )
             ),
             self.datagridinstance.set_data_header,
@@ -1509,7 +1527,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"set_fill_parameters\(\) got an unexpected keyword ",
-                    "argument 'badkey'",
+                    "argument 'badkey'$",
                 )
             ),
             self.datagridinstance.set_fill_parameters,
@@ -1641,7 +1659,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"set_grid_properties\(\) takes 1 positional ",
-                    "argument but 2 were given",
+                    "argument but 2 were given$",
                 )
             ),
             self.datagridinstance.set_grid_properties,
@@ -1660,7 +1678,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"set_properties\(\) missing 1 required ",
-                    "positional argument: 'key'",
+                    "positional argument: 'key'$",
                 )
             ),
             self.datagridinstance.set_properties,
@@ -1672,7 +1690,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"set_properties\(\) got an unexpected ",
-                    "keyword argument 'badkey'",
+                    "keyword argument 'badkey'$",
                 )
             ),
             self.datagridinstance.set_properties,
@@ -1701,7 +1719,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"set_row_under_pointer_background\(\) missing ",
-                    "1 required positional argument: 'key'",
+                    "1 required positional argument: 'key'$",
                 )
             ),
             self.datagridinstance.set_row_under_pointer_background,
@@ -1711,7 +1729,7 @@ class DataGridBase(_DataGridBase):
         self.assertEqual(len(self.datagridinstance.keys), 0)
         self.assertRaisesRegex(
             KeyError,
-            "'key'",
+            "'key'$",
             self.datagridinstance.set_row_under_pointer_background,
             *("key",),
         )
@@ -1731,7 +1749,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"set_row\(\) missing 1 required ",
-                    "positional argument: 'key'",
+                    "positional argument: 'key'$",
                 )
             ),
             self.datagridinstance.set_row,
@@ -1743,7 +1761,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"set_row\(\) got multiple values for ",
-                    "argument 'dodefaultaction'",
+                    "argument 'dodefaultaction'$",
                 )
             ),
             self.datagridinstance.set_row,
@@ -1771,7 +1789,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"set_selection\(\) missing 1 required ",
-                    "positional argument: 'key'",
+                    "positional argument: 'key'$",
                 )
             ),
             self.datagridinstance.set_selection,
@@ -1793,7 +1811,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"set_yscrollbar\(\) takes 1 positional argument ",
-                    "but 2 were given",
+                    "but 2 were given$",
                 )
             ),
             self.datagridinstance.set_yscrollbar,
@@ -1814,7 +1832,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"set_xview\(\) got an unexpected keyword ",
-                    "argument 'badkey'",
+                    "argument 'badkey'$",
                 )
             ),
             self.datagridinstance.set_xview,
@@ -1830,7 +1848,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"set_yview\(\) got an unexpected keyword ",
-                    "argument 'badkey'",
+                    "argument 'badkey'$",
                 )
             ),
             self.datagridinstance.set_yview,
@@ -1931,7 +1949,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"select_row_by_click\(\) got an unexpected keyword ",
-                    "argument 'badkey'",
+                    "argument 'badkey'$",
                 )
             ),
             self.datagridinstance.select_row_by_click,
@@ -1941,7 +1959,7 @@ class DataGridBase(_DataGridBase):
     def test_073_select_row_by_click_002(self):
         self.assertRaisesRegex(
             AttributeError,
-            "'NoneType' object has no attribute 'widget'",
+            "'NoneType' object has no attribute 'widget'$",
             self.datagridinstance.select_row_by_click,
         )
 
@@ -1966,7 +1984,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"show_popup_menu\(\) takes 1 positional ",
-                    "argument but 2 were given",
+                    "argument but 2 were given$",
                 )
             ),
             self.datagridinstance.show_popup_menu,
@@ -1982,7 +2000,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"show_popup_menu_no_row\(\) got an unexpected keyword ",
-                    "argument 'badkey'",
+                    "argument 'badkey'$",
                 )
             ),
             self.datagridinstance.show_popup_menu_no_row,
@@ -1999,7 +2017,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"show_grid_or_row_popup_menu_at_top_left_by_keypress",
-                    r"\(\) got an unexpected keyword argument 'badkey'",
+                    r"\(\) got an unexpected keyword argument 'badkey'$",
                 )
             ),
             dgb.show_grid_or_row_popup_menu_at_top_left_by_keypress,
@@ -2015,7 +2033,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"show_grid_or_row_popup_menu_at_pointer_by_keypress",
-                    r"\(\) got an unexpected keyword argument 'badkey'",
+                    r"\(\) got an unexpected keyword argument 'badkey'$",
                 )
             ),
             dgb.show_grid_or_row_popup_menu_at_pointer_by_keypress,
@@ -2030,7 +2048,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"move_selection_to_popup_selection\(\) takes 1 ",
-                    "positional argument but 2 were given",
+                    "positional argument but 2 were given$",
                 )
             ),
             self.datagridinstance.move_selection_to_popup_selection,
@@ -2063,7 +2081,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"exit_popup\(\) got an unexpected keyword ",
-                    "argument 'badkey'",
+                    "argument 'badkey'$",
                 )
             ),
             self.datagridinstance.exit_popup,
@@ -2081,7 +2099,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"enter_popup\(\) got an unexpected keyword ",
-                    "argument 'badkey'",
+                    "argument 'badkey'$",
                 )
             ),
             self.datagridinstance.enter_popup,
@@ -2099,7 +2117,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"get_pointerxy\(\) takes 1 ",
-                    "positional argument but 2 were given",
+                    "positional argument but 2 were given$",
                 )
             ),
             self.datagridinstance.get_pointerxy,
@@ -2119,7 +2137,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"_fill_down\(\) missing 2 required ",
-                    "positional arguments: 'rows' and 'cheight'",
+                    "positional arguments: 'rows' and 'cheight'$",
                 )
             ),
             self.datagridinstance._fill_down,
@@ -2133,7 +2151,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"_fill_up\(\) missing 2 required ",
-                    "positional arguments: 'rows' and 'cheight'",
+                    "positional arguments: 'rows' and 'cheight'$",
                 )
             ),
             self.datagridinstance._fill_up,
@@ -2147,7 +2165,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"_get_row_reqheight\(\) missing 1 required ",
-                    "positional argument: 'rows'",
+                    "positional argument: 'rows'$",
                 )
             ),
             self.datagridinstance._get_row_reqheight,
@@ -2166,7 +2184,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"fill_view_with_top\(\) takes 1 positional ",
-                    "argument but 2 were given",
+                    "argument but 2 were given$",
                 )
             ),
             self.datagridinstance.fill_view_with_top,
@@ -2179,7 +2197,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"clear_bookmarks\(\) takes 1 positional ",
-                    "argument but 2 were given",
+                    "argument but 2 were given$",
                 )
             ),
             self.datagridinstance.clear_bookmarks,
@@ -2205,7 +2223,7 @@ class DataGridBase(_DataGridBase):
             "".join(
                 (
                     r"clear_selections\(\) takes 1 positional ",
-                    "argument but 2 were given",
+                    "argument but 2 were given$",
                 )
             ),
             self.datagridinstance.clear_selections,
@@ -3027,7 +3045,14 @@ class DataGridBase_move_slider(_DataGridBase):
 
 
 class DataGridReadOnly___init___del___ignored(_DataGridBase):
-    datagridclass = datagrid.DataGridReadOnly
+    # For solentware_bind.gui.bindings.Bindings.__del__ attributes referenced.
+    # Without this an 'Exception ignored in <function Bindings.__del__> is
+    # raised for attribute '_binding'.
+    class DGC(datagrid.DataGridReadOnly):
+        _frozen_binding = set()
+
+        def unbind_all_handlers(self, **kwargs):
+            del kwargs
 
     def test_501___init___001(self):
         self.assertRaisesRegex(
@@ -3035,10 +3060,10 @@ class DataGridReadOnly___init___del___ignored(_DataGridBase):
             "".join(
                 (
                     r"__init__\(\) takes 1 positional argument but ",
-                    "2 were given",
+                    "2 were given$",
                 )
             ),
-            self.datagridclass,
+            self.DGC,
             *(None,),
         )
 
@@ -3052,7 +3077,7 @@ class DataGridReadOnly(_DataGridBase):
             "".join(
                 (
                     r"bind_off\(\) takes 1 ",
-                    "positional argument but 2 were given",
+                    "positional argument but 2 were given$",
                 )
             ),
             self.datagridinstance.bind_off,
@@ -3068,7 +3093,7 @@ class DataGridReadOnly(_DataGridBase):
             "".join(
                 (
                     r"bind_on\(\) takes 1 ",
-                    "positional argument but 2 were given",
+                    "positional argument but 2 were given$",
                 )
             ),
             self.datagridinstance.bind_on,
@@ -3084,7 +3109,7 @@ class DataGridReadOnly(_DataGridBase):
             "".join(
                 (
                     r"__bind_on\(\) takes 1 ",
-                    "positional argument but 2 were given",
+                    "positional argument but 2 were given$",
                 )
             ),
             self.datagridinstance.__bind_on,
@@ -3100,7 +3125,7 @@ class DataGridReadOnly(_DataGridBase):
             "".join(
                 (
                     r"up_one_page\(\) missing 1 required ",
-                    "positional argument: 'event'",
+                    "positional argument: 'event'$",
                 )
             ),
             self.datagridinstance.up_one_page,
@@ -3114,7 +3139,7 @@ class DataGridReadOnly(_DataGridBase):
             "".join(
                 (
                     r"down_one_page\(\) missing 1 required ",
-                    "positional argument: 'event'",
+                    "positional argument: 'event'$",
                 )
             ),
             self.datagridinstance.down_one_page,
@@ -3128,7 +3153,7 @@ class DataGridReadOnly(_DataGridBase):
             "".join(
                 (
                     r"down_all\(\) got an unexpected keyword ",
-                    "argument 'badkey'",
+                    "argument 'badkey'$",
                 )
             ),
             self.datagridinstance.down_all,
@@ -3143,7 +3168,7 @@ class DataGridReadOnly(_DataGridBase):
             "".join(
                 (
                     r"up_all\(\) got an unexpected keyword ",
-                    "argument 'badkey'",
+                    "argument 'badkey'$",
                 )
             ),
             self.datagridinstance.up_all,
@@ -3158,7 +3183,7 @@ class DataGridReadOnly(_DataGridBase):
             "".join(
                 (
                     r"up_one_line\(\) missing 1 required ",
-                    "positional argument: 'event'",
+                    "positional argument: 'event'$",
                 )
             ),
             self.datagridinstance.up_one_line,
@@ -3172,7 +3197,7 @@ class DataGridReadOnly(_DataGridBase):
             "".join(
                 (
                     r"up_one_line_selection\(\) missing 1 required ",
-                    "positional argument: 'event'",
+                    "positional argument: 'event'$",
                 )
             ),
             self.datagridinstance.up_one_line_selection,
@@ -3186,7 +3211,7 @@ class DataGridReadOnly(_DataGridBase):
             "".join(
                 (
                     r"down_one_line\(\) missing 1 required ",
-                    "positional argument: 'event'",
+                    "positional argument: 'event'$",
                 )
             ),
             self.datagridinstance.down_one_line,
@@ -3200,7 +3225,7 @@ class DataGridReadOnly(_DataGridBase):
             "".join(
                 (
                     r"down_one_line_selection\(\) missing 1 required ",
-                    "positional argument: 'event'",
+                    "positional argument: 'event'$",
                 )
             ),
             self.datagridinstance.down_one_line_selection,
@@ -3214,7 +3239,7 @@ class DataGridReadOnly(_DataGridBase):
             "".join(
                 (
                     r"select_bookmark_up_one_line\(\) missing 1 required ",
-                    "positional argument: 'event'",
+                    "positional argument: 'event'$",
                 )
             ),
             self.datagridinstance.select_bookmark_up_one_line,
@@ -3228,7 +3253,7 @@ class DataGridReadOnly(_DataGridBase):
             "".join(
                 (
                     r"select_up_one_line_shift\(\) missing 1 required ",
-                    "positional argument: 'event'",
+                    "positional argument: 'event'$",
                 )
             ),
             self.datagridinstance.select_up_one_line_shift,
@@ -3242,7 +3267,7 @@ class DataGridReadOnly(_DataGridBase):
             "".join(
                 (
                     r"select_up_one_line\(\) got an unexpected keyword ",
-                    "argument 'badkey'",
+                    "argument 'badkey'$",
                 )
             ),
             self.datagridinstance.select_up_one_line,
@@ -3257,7 +3282,7 @@ class DataGridReadOnly(_DataGridBase):
             "".join(
                 (
                     r"select_up_one_line_control\(\) got an unexpected ",
-                    "keyword argument 'badkey'",
+                    "keyword argument 'badkey'$",
                 )
             ),
             self.datagridinstance.select_up_one_line_control,
@@ -3272,7 +3297,7 @@ class DataGridReadOnly(_DataGridBase):
             "".join(
                 (
                     r"select_bookmark_down_one_line\(\) missing 1 required ",
-                    "positional argument: 'event'",
+                    "positional argument: 'event'$",
                 )
             ),
             self.datagridinstance.select_bookmark_down_one_line,
@@ -3286,7 +3311,7 @@ class DataGridReadOnly(_DataGridBase):
             "".join(
                 (
                     r"select_down_one_line_shift\(\) missing 1 required ",
-                    "positional argument: 'event'",
+                    "positional argument: 'event'$",
                 )
             ),
             self.datagridinstance.select_down_one_line_shift,
@@ -3300,7 +3325,7 @@ class DataGridReadOnly(_DataGridBase):
             "".join(
                 (
                     r"select_down_one_line\(\) got an unexpected keyword ",
-                    "argument 'badkey'",
+                    "argument 'badkey'$",
                 )
             ),
             self.datagridinstance.select_down_one_line,
@@ -3315,7 +3340,7 @@ class DataGridReadOnly(_DataGridBase):
             "".join(
                 (
                     r"select_down_one_line_control\(\) got an unexpected ",
-                    "keyword argument 'badkey'",
+                    "keyword argument 'badkey'$",
                 )
             ),
             self.datagridinstance.select_down_one_line_control,
@@ -3330,7 +3355,7 @@ class DataGridReadOnly(_DataGridBase):
             "".join(
                 (
                     r"add_bookmark_event\(\) missing 1 required ",
-                    "positional argument: 'event'",
+                    "positional argument: 'event'$",
                 )
             ),
             self.datagridinstance.add_bookmark_event,
@@ -3345,7 +3370,7 @@ class DataGridReadOnly(_DataGridBase):
             "".join(
                 (
                     r"cancel_bookmark_event\(\) missing 1 required ",
-                    "positional argument: 'event'",
+                    "positional argument: 'event'$",
                 )
             ),
             self.datagridinstance.cancel_bookmark_event,
@@ -3362,7 +3387,7 @@ class DataGridReadOnly(_DataGridBase):
             "".join(
                 (
                     r"cancel_selection_event\(\) missing 1 required ",
-                    "positional argument: 'event'",
+                    "positional argument: 'event'$",
                 )
             ),
             self.datagridinstance.cancel_selection_event,
@@ -3525,7 +3550,14 @@ class DataGridReadOnly_dummy_fill_view(_DataGridBase):
 
 
 class DataGrid___init_____del___ignored(_DataGridBase):
-    datagridclass = datagrid.DataGrid
+    # For solentware_bind.gui.bindings.Bindings.__del__ attributes referenced.
+    # Without this an 'Exception ignored in <function Bindings.__del__> is
+    # raised for attribute '_binding'.
+    class DGC(datagrid.DataGrid):
+        _frozen_binding = set()
+
+        def unbind_all_handlers(self, **kwargs):
+            del kwargs
 
     def test_701___init___001(self):
         self.assertRaisesRegex(
@@ -3533,10 +3565,10 @@ class DataGrid___init_____del___ignored(_DataGridBase):
             "".join(
                 (
                     r"__init__\(\) takes 1 positional argument but ",
-                    "2 were given",
+                    "2 were given$",
                 )
             ),
-            self.datagridclass,
+            self.DGC,
             *(None,),
         )
 
@@ -3593,7 +3625,7 @@ class DataGrid(_DataGridBase):
             "".join(
                 (
                     r"bind_off\(\) takes 1 ",
-                    "positional argument but 2 were given",
+                    "positional argument but 2 were given$",
                 )
             ),
             self.datagridinstance.bind_off,
@@ -3609,7 +3641,7 @@ class DataGrid(_DataGridBase):
             "".join(
                 (
                     r"bind_on\(\) takes 1 ",
-                    "positional argument but 2 were given",
+                    "positional argument but 2 were given$",
                 )
             ),
             self.datagridinstance.bind_on,
@@ -3625,7 +3657,7 @@ class DataGrid(_DataGridBase):
             "".join(
                 (
                     r"__bind_on\(\) takes 1 ",
-                    "positional argument but 2 were given",
+                    "positional argument but 2 were given$",
                 )
             ),
             self.datagridinstance.__bind_on,
@@ -3641,7 +3673,7 @@ class DataGrid(_DataGridBase):
             "".join(
                 (
                     r"create_delete_dialog\(\) missing 3 required positional ",
-                    "arguments: 'instance', 'oldobject', and 'modal'",
+                    "arguments: 'instance', 'oldobject', and 'modal'$",
                 )
             ),
             self.datagridinstance.create_delete_dialog,
@@ -3653,7 +3685,7 @@ class DataGrid(_DataGridBase):
             "".join(
                 (
                     r"create_delete_dialog\(\) got an unexpected keyword ",
-                    "argument 'badkey'",
+                    "argument 'badkey'$",
                 )
             ),
             self.datagridinstance.create_delete_dialog,
@@ -3676,7 +3708,7 @@ class DataGrid(_DataGridBase):
                 (
                     r"create_edit_dialog\(\) missing 5 required positional ",
                     "arguments: 'instance', 'newobject', 'oldobject', ",
-                    "'showinitial', and 'modal'",
+                    "'showinitial', and 'modal'$",
                 )
             ),
             self.datagridinstance.create_edit_dialog,
@@ -3688,7 +3720,7 @@ class DataGrid(_DataGridBase):
             "".join(
                 (
                     r"create_edit_dialog\(\) got an unexpected keyword ",
-                    "argument 'badkey'",
+                    "argument 'badkey'$",
                 )
             ),
             self.datagridinstance.create_edit_dialog,
@@ -3710,7 +3742,7 @@ class DataGrid(_DataGridBase):
             "".join(
                 (
                     r"create_show_dialog\(\) missing 3 required positional ",
-                    "arguments: 'instance', 'oldobject', and 'modal'",
+                    "arguments: 'instance', 'oldobject', and 'modal'$",
                 )
             ),
             self.datagridinstance.create_show_dialog,
@@ -3722,7 +3754,7 @@ class DataGrid(_DataGridBase):
             "".join(
                 (
                     r"create_show_dialog\(\) got an unexpected keyword ",
-                    "argument 'badkey'",
+                    "argument 'badkey'$",
                 )
             ),
             self.datagridinstance.create_show_dialog,
@@ -3744,7 +3776,7 @@ class DataGrid(_DataGridBase):
             "".join(
                 (
                     r"edit_dialog\(\) missing 2 required positional ",
-                    "arguments: 'key' and 'event'",
+                    "arguments: 'key' and 'event'$",
                 )
             ),
             self.datagridinstance.edit_dialog,
@@ -3756,7 +3788,7 @@ class DataGrid(_DataGridBase):
             "".join(
                 (
                     r"edit_dialog\(\) got an unexpected keyword ",
-                    "argument 'badkey'",
+                    "argument 'badkey'$",
                 )
             ),
             self.datagridinstance.edit_dialog,
@@ -3795,7 +3827,7 @@ class DataGrid(_DataGridBase):
             "".join(
                 (
                     r"edit_dialog_event\(\) missing 1 required positional ",
-                    "argument: 'event'",
+                    "argument: 'event'$",
                 )
             ),
             self.datagridinstance.edit_dialog_event,
@@ -3819,7 +3851,7 @@ class DataGrid(_DataGridBase):
             "".join(
                 (
                     r"delete_dialog\(\) missing 2 required positional ",
-                    "arguments: 'key' and 'event'",
+                    "arguments: 'key' and 'event'$",
                 )
             ),
             self.datagridinstance.delete_dialog,
@@ -3831,7 +3863,7 @@ class DataGrid(_DataGridBase):
             "".join(
                 (
                     r"delete_dialog\(\) got an unexpected keyword ",
-                    "argument 'badkey'",
+                    "argument 'badkey'$",
                 )
             ),
             self.datagridinstance.delete_dialog,
@@ -3857,7 +3889,7 @@ class DataGrid(_DataGridBase):
             "".join(
                 (
                     r"delete_dialog_event\(\) missing 1 required positional ",
-                    "argument: 'event'",
+                    "argument: 'event'$",
                 )
             ),
             self.datagridinstance.delete_dialog_event,
@@ -3881,7 +3913,7 @@ class DataGrid(_DataGridBase):
             "".join(
                 (
                     r"show_dialog\(\) missing 2 required positional ",
-                    "arguments: 'key' and 'event'",
+                    "arguments: 'key' and 'event'$",
                 )
             ),
             self.datagridinstance.show_dialog,
@@ -3893,7 +3925,7 @@ class DataGrid(_DataGridBase):
             "".join(
                 (
                     r"show_dialog\(\) got an unexpected keyword ",
-                    "argument 'badkey'",
+                    "argument 'badkey'$",
                 )
             ),
             self.datagridinstance.show_dialog,
@@ -3919,7 +3951,7 @@ class DataGrid(_DataGridBase):
             "".join(
                 (
                     r"show_dialog_event\(\) missing 1 required positional ",
-                    "argument: 'event'",
+                    "argument: 'event'$",
                 )
             ),
             self.datagridinstance.show_dialog_event,
@@ -3943,7 +3975,7 @@ class DataGrid(_DataGridBase):
             "".join(
                 (
                     r"delete_from_popup\(\) takes 1 ",
-                    "positional argument but 2 were given",
+                    "positional argument but 2 were given$",
                 )
             ),
             self.datagridinstance.delete_from_popup,
@@ -3961,7 +3993,7 @@ class DataGrid(_DataGridBase):
             "".join(
                 (
                     r"edit_from_popup\(\) takes 1 ",
-                    "positional argument but 2 were given",
+                    "positional argument but 2 were given$",
                 )
             ),
             self.datagridinstance.edit_from_popup,
@@ -3979,7 +4011,7 @@ class DataGrid(_DataGridBase):
             "".join(
                 (
                     r"edit_show_from_popup\(\) takes 1 ",
-                    "positional argument but 2 were given",
+                    "positional argument but 2 were given$",
                 )
             ),
             self.datagridinstance.edit_show_from_popup,
@@ -3997,7 +4029,7 @@ class DataGrid(_DataGridBase):
             "".join(
                 (
                     r"insert_from_popup\(\) takes 1 ",
-                    "positional argument but 2 were given",
+                    "positional argument but 2 were given$",
                 )
             ),
             self.datagridinstance.insert_from_popup,
@@ -4015,7 +4047,7 @@ class DataGrid(_DataGridBase):
             "".join(
                 (
                     r"show_from_popup\(\) takes 1 ",
-                    "positional argument but 2 were given",
+                    "positional argument but 2 were given$",
                 )
             ),
             self.datagridinstance.show_from_popup,
@@ -4033,7 +4065,7 @@ class DataGrid(_DataGridBase):
             "".join(
                 (
                     r"launch_edit_record\(\) missing 1 required positional ",
-                    "argument: 'key'",
+                    "argument: 'key'$",
                 )
             ),
             self.datagridinstance.launch_edit_record,
@@ -4045,7 +4077,7 @@ class DataGrid(_DataGridBase):
             "".join(
                 (
                     r"launch_edit_record\(\) got an unexpected keyword ",
-                    "argument 'badkey'",
+                    "argument 'badkey'$",
                 )
             ),
             self.datagridinstance.launch_edit_record,
@@ -4063,7 +4095,7 @@ class DataGrid(_DataGridBase):
             "".join(
                 (
                     r"launch_edit_show_record\(\) missing 1 required ",
-                    "positional argument: 'key'",
+                    "positional argument: 'key'$",
                 )
             ),
             self.datagridinstance.launch_edit_show_record,
@@ -4075,7 +4107,7 @@ class DataGrid(_DataGridBase):
             "".join(
                 (
                     r"launch_edit_show_record\(\) got an unexpected keyword ",
-                    "argument 'badkey'",
+                    "argument 'badkey'$",
                 )
             ),
             self.datagridinstance.launch_edit_show_record,
@@ -4095,7 +4127,7 @@ class DataGrid(_DataGridBase):
             "".join(
                 (
                     r"launch_insert_new_record\(\) got an unexpected keyword ",
-                    "argument 'badkey'",
+                    "argument 'badkey'$",
                 )
             ),
             self.datagridinstance.launch_insert_new_record,
@@ -4113,7 +4145,7 @@ class DataGrid(_DataGridBase):
             "".join(
                 (
                     r"launch_show_record\(\) missing 1 required ",
-                    "positional argument: 'key'",
+                    "positional argument: 'key'$",
                 )
             ),
             self.datagridinstance.launch_show_record,
@@ -4125,7 +4157,7 @@ class DataGrid(_DataGridBase):
             "".join(
                 (
                     r"launch_show_record\(\) got an unexpected keyword ",
-                    "argument 'badkey'",
+                    "argument 'badkey'$",
                 )
             ),
             self.datagridinstance.launch_show_record,
