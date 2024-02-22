@@ -1284,12 +1284,17 @@ class DataGridBase(DataClient, Bindings):
         if self.datasource is None:
             return
         count, items, position = self.get_client_item_and_record_counts()
-        try:
-            first = float(position) / count
-            last = float(position + items) / count
-        except:
-            return
-        self.vsbar.set(first, last)
+        # There may be not enough records to fill the widget; and position
+        # is counted from 1 while slider position calculation needs a
+        # position counted from 0 (zero).
+        # Assume items == 0 if count == 0.
+        if count <= items:
+            self.vsbar.set(0.0, 1.0)
+        else:
+            self.vsbar.set(
+                float(position - 1) / count,
+                float(position - 1 + items) / count,
+            )
 
     def set_xview(self, scroll=None, number=None, scrollunit=None):
         """Adjust datagrid on horizontal scrollbar action."""
