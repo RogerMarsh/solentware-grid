@@ -1535,6 +1535,72 @@ class DataGridReadOnly(DataGridBase):
         """Delegate to superclass then enable event bindings for this class."""
         super().__init__(**kwargs)
         self.__bind_on()
+        self.menupopup_grid_actions = tkinter.Menu(
+            master=self.menupopup, tearoff=False
+        )
+        self.menupopup.add_cascade(
+            label="Grid Actions", menu=self.menupopup_grid_actions
+        )
+        for function, accelerator in (
+            (self.fill_view_to_top, EventSpec.up_one_page),
+            (self.fill_view_from_bottom, EventSpec.down_one_page),
+            (self.up_all, EventSpec.up_all),
+            (self.down_all, EventSpec.down_all),
+            (self.scroll_grid_up_one_line, EventSpec.up_one_line),
+            (self.scroll_grid_down_one_line, EventSpec.down_one_line),
+            (self.select_cycle_up, EventSpec.up_one_line_in_selection),
+            (self.select_cycle_down, EventSpec.down_one_line_in_selection),
+            (
+                self.select_up_one_line,
+                EventSpec.move_visible_select_up_one_line,
+            ),
+            (
+                self.select_down_one_line,
+                EventSpec.move_visible_select_down_one_line,
+            ),
+            (
+                self.select_up_one_line_control,
+                EventSpec.up_one_line_move_select,
+            ),
+            (
+                self.select_down_one_line_control,
+                EventSpec.down_one_line_move_select,
+            ),
+            (self.select_up, EventSpec.move_select_up_one_line_after_align),
+            (
+                self.select_down,
+                EventSpec.move_select_down_one_line_after_align,
+            ),
+            (self.bookmark_up, EventSpec.up_one_bookmarked_line_move_select),
+            (
+                self.bookmark_down,
+                EventSpec.down_one_bookmarked_line_move_select,
+            ),
+            (self.add_selection_bookmark, EventSpec.bookmark_selected_line),
+            (
+                self.cancel_selection_bookmark,
+                EventSpec.remove_selected_line_from_bookmark,
+            ),
+            (
+                self.cancel_selection,
+                EventSpec.remove_selected_line_from_selection,
+            ),
+        ):
+            self.menupopup_grid_actions.add_command(
+                label=accelerator[1],
+                command=self.try_command(
+                    function, self.menupopup_grid_actions
+                ),
+                accelerator=accelerator[2],
+            )
+        for function, accelerator in (
+            (self.show_from_popup, EventSpec.launch_show_dialog),
+        ):
+            self.menupopup.add_command(
+                label=accelerator[1],
+                command=self.try_command(function, self.menupopup),
+                accelerator=accelerator[2],
+            )
 
     def bind_off(self):
         """Disable all bindings."""
@@ -1559,6 +1625,10 @@ class DataGridReadOnly(DataGridBase):
             (EventSpec.bookmark_selected_line, ""),
             (EventSpec.remove_selected_line_from_bookmark, ""),
             (EventSpec.remove_selected_line_from_selection, ""),
+        ):
+            self.bind(self.frame, sequence[0], function=function)
+        for sequence, function in (
+            (EventSpec.launch_show_dialog, ""),
         ):
             self.bind(self.frame, sequence[0], function=function)
 
@@ -1622,6 +1692,10 @@ class DataGridReadOnly(DataGridBase):
                 EventSpec.remove_selected_line_from_selection,
                 self.cancel_selection_event,
             ),
+        ):
+            self.bind(self.frame, sequence[0], function=function)
+        for sequence, function in (
+            (EventSpec.launch_show_dialog, self.show_dialog_event),
         ):
             self.bind(self.frame, sequence[0], function=function)
 
@@ -1727,6 +1801,64 @@ class DataGridReadOnly(DataGridBase):
         """Cancel selection."""
         self.cancel_selection()
 
+    def show_dialog(self, key, event, modal=True):
+        """Create and display object.
+
+        By default use the datagrid new_row() method.  If the row instance does
+        not implement the full behaviour needed to generate the database
+        transaction this delete_dialog method must be overridden in the
+        DataGrid subclass.
+
+        """
+        if key not in self.keys:
+            return
+        self.launch_show_record(key)
+
+    def show_dialog_event(self, event):
+        """Cancel selection and database record show function."""
+        if self.selection:
+            selected = self.selection[0]
+        else:
+            selected = None
+        self.show_dialog(selected, event, False)
+
+    def show_from_popup(self):
+        """Launch a show record dialogue."""
+        self.launch_show_record(self.pointer_popup_selection)
+        self.move_selection_to_popup_selection()
+
+    def create_show_dialog(
+        self, instance, oldobject, modal, title="Show record"
+    ):
+        """Create dialogue and display.
+
+        Create a toplevel widget and pass it to the record's delete_row
+        method for completion before concluding the dialog.
+
+        This method may need to be extended in subclasses, especially if the
+        launch_... methods are extended.
+
+        """
+        # need to make dialog modal if requested {dialog.grab_set() sequence}.
+        dialog = tkinter.Toplevel(master=self.parent)
+        dialog.wm_title(title)
+        datashow = instance.show_row(dialog, oldobject)
+        datashow.set_data_source(self.datasource, datashow.on_data_change)
+
+    def launch_show_record(self, key, modal=True):
+        """Create show dialogue.
+
+        By default use the datagrid new_row() method for insert and clones of
+        the displayed row for edit.  If the row instance does not implement
+        the full behaviour needed to generate the database transaction the
+        launch_... methods, and probably the create_edit_dialog method, will
+        need to be extended in the DataGrid subclass.
+
+        """
+        self.create_show_dialog(
+            self.objects[key], self.objects[key].clone, modal
+        )
+
 
 class DataGrid(DataGridReadOnly):
     """Data grid defining all update navigation."""
@@ -1736,7 +1868,6 @@ class DataGrid(DataGridReadOnly):
         super().__init__(**kwargs)
         self.__bind_on()
         for function, accelerator in (
-            (self.show_from_popup, EventSpec.launch_show_dialog),
             (self.insert_from_popup, EventSpec.launch_insert_dialog),
             (self.edit_from_popup, EventSpec.launch_edit_dialog),
             (self.edit_show_from_popup, EventSpec.launch_edit_and_show_dialog),
@@ -1755,70 +1886,11 @@ class DataGrid(DataGridReadOnly):
                 command=self.try_command(function, self.menupopupnorow),
                 accelerator=accelerator[2],
             )
-        self.menupopup_grid_actions = tkinter.Menu(
-            master=self.menupopup, tearoff=False
-        )
-        self.menupopup.add_cascade(
-            label="Grid Actions", menu=self.menupopup_grid_actions
-        )
-        for function, accelerator in (
-            (self.fill_view_to_top, EventSpec.up_one_page),
-            (self.fill_view_from_bottom, EventSpec.down_one_page),
-            (self.up_all, EventSpec.up_all),
-            (self.down_all, EventSpec.down_all),
-            (self.scroll_grid_up_one_line, EventSpec.up_one_line),
-            (self.scroll_grid_down_one_line, EventSpec.down_one_line),
-            (self.select_cycle_up, EventSpec.up_one_line_in_selection),
-            (self.select_cycle_down, EventSpec.down_one_line_in_selection),
-            (
-                self.select_up_one_line,
-                EventSpec.move_visible_select_up_one_line,
-            ),
-            (
-                self.select_down_one_line,
-                EventSpec.move_visible_select_down_one_line,
-            ),
-            (
-                self.select_up_one_line_control,
-                EventSpec.up_one_line_move_select,
-            ),
-            (
-                self.select_down_one_line_control,
-                EventSpec.down_one_line_move_select,
-            ),
-            (self.select_up, EventSpec.move_select_up_one_line_after_align),
-            (
-                self.select_down,
-                EventSpec.move_select_down_one_line_after_align,
-            ),
-            (self.bookmark_up, EventSpec.up_one_bookmarked_line_move_select),
-            (
-                self.bookmark_down,
-                EventSpec.down_one_bookmarked_line_move_select,
-            ),
-            (self.add_selection_bookmark, EventSpec.bookmark_selected_line),
-            (
-                self.cancel_selection_bookmark,
-                EventSpec.remove_selected_line_from_bookmark,
-            ),
-            (
-                self.cancel_selection,
-                EventSpec.remove_selected_line_from_selection,
-            ),
-        ):
-            self.menupopup_grid_actions.add_command(
-                label=accelerator[1],
-                command=self.try_command(
-                    function, self.menupopup_grid_actions
-                ),
-                accelerator=accelerator[2],
-            )
 
     def bind_off(self):
         """Disable all bindings."""
         super().bind_off()
         for sequence, function in (
-            (EventSpec.launch_show_dialog, ""),
             (EventSpec.launch_insert_dialog, ""),
             (EventSpec.launch_delete_dialog, ""),
         ):
@@ -1832,7 +1904,6 @@ class DataGrid(DataGridReadOnly):
     def __bind_on(self):
         """Enable all bindings."""
         for sequence, function in (
-            (EventSpec.launch_show_dialog, self.show_dialog_event),
             (EventSpec.launch_insert_dialog, self.edit_dialog_event),
             (EventSpec.launch_delete_dialog, self.delete_dialog_event),
         ):
@@ -1880,24 +1951,6 @@ class DataGrid(DataGridReadOnly):
         dataedit = instance.edit_row(dialog, newobject, oldobject, showinitial)
         dataedit.set_data_source(self.datasource, dataedit.on_data_change)
 
-    def create_show_dialog(
-        self, instance, oldobject, modal, title="Show record"
-    ):
-        """Create dialogue and display.
-
-        Create a toplevel widget and pass it to the record's delete_row
-        method for completion before concluding the dialog.
-
-        This method may need to be extended in subclasses, especially if the
-        launch_... methods are extended.
-
-        """
-        # need to make dialog modal if requested {dialog.grab_set() sequence}.
-        dialog = tkinter.Toplevel(master=self.parent)
-        dialog.wm_title(title)
-        datashow = instance.show_row(dialog, oldobject)
-        datashow.set_data_source(self.datasource, datashow.on_data_change)
-
     def edit_dialog(self, key, event, modal=True):
         """Display object for editing and optionally a copy of original."""
         if key not in self.keys:
@@ -1938,27 +1991,6 @@ class DataGrid(DataGridReadOnly):
             selected = None
         self.delete_dialog(selected, event, False)
 
-    def show_dialog(self, key, event, modal=True):
-        """Create and display object.
-
-        By default use the datagrid new_row() method.  If the row instance does
-        not implement the full behaviour needed to generate the database
-        transaction this delete_dialog method must be overridden in the
-        DataGrid subclass.
-
-        """
-        if key not in self.keys:
-            return
-        self.launch_show_record(key)
-
-    def show_dialog_event(self, event):
-        """Cancel selection and database record show function."""
-        if self.selection:
-            selected = self.selection[0]
-        else:
-            selected = None
-        self.show_dialog(selected, event, False)
-
     def delete_from_popup(self):
         """Launch a delete record dialogue."""
         self.launch_delete_record(self.pointer_popup_selection)
@@ -1977,11 +2009,6 @@ class DataGrid(DataGridReadOnly):
     def insert_from_popup(self):
         """Launch an insert new record dialogue from popup."""
         self.launch_insert_new_record()
-
-    def show_from_popup(self):
-        """Launch a delete record dialogue."""
-        self.launch_show_record(self.pointer_popup_selection)
-        self.move_selection_to_popup_selection()
 
     def launch_delete_record(self, key, modal=True):
         """Create delete dialogue.
@@ -2048,18 +2075,4 @@ class DataGrid(DataGridReadOnly):
         newobject.empty()
         self.create_edit_dialog(
             instance, newobject, None, False, modal, title="New Record"
-        )
-
-    def launch_show_record(self, key, modal=True):
-        """Create show dialogue.
-
-        By default use the datagrid new_row() method for insert and clones of
-        the displayed row for edit.  If the row instance does not implement
-        the full behaviour needed to generate the database transaction the
-        launch_... methods, and probably the create_edit_dialog method, will
-        need to be extended in the DataGrid subclass.
-
-        """
-        self.create_show_dialog(
-            self.objects[key], self.objects[key].clone, modal
         )
